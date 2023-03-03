@@ -136,12 +136,12 @@ void receivedData()
       {
         if (receivedMessage.charAt(2) == '0')
         {
-          sonoVolume(0);
+          sonoVolume(1);
         }
 
         else if (receivedMessage.charAt(2) == '1')
         {
-          sonoVolume(1);
+          sonoVolume(0);
         }
       }
     }

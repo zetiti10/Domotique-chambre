@@ -266,6 +266,9 @@ void switchDisplay()
         moveDisplayServo(pos);
         delay(1);
     }
+    for(int i = 0; i < 50; i++) {
+        moveDisplayServo(130);
+    }
     for (int pos = 130; pos >= 80; pos--)
     {
         moveDisplayServo(pos);
@@ -378,15 +381,15 @@ void sonoVolume(int action)
 {
     if (action == 0)
     {
-        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
-        delay(100);
         digitalWrite(PIN_IR_LED_SIGNAL, LOW);
+        delay(100);
+        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
     }
     else
     {
-        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
-        delay(150);
         digitalWrite(PIN_IR_LED_SIGNAL, LOW);
+        delay(150);
+        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
     }
 }
 

@@ -198,7 +198,7 @@ void loop()
         yesSound();
       }
 
-      else
+      else if(bedroomDoorState == LOW)
       {
         switchAlarm(2);
       }

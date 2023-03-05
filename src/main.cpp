@@ -75,6 +75,7 @@ void setup()
   pinMode(PIN_DOORBELL_BUTTON, INPUT_PULLUP);
   pinMode(PIN_RFID_DATA_1_SENSOR, INPUT_PULLUP);
   pinMode(PIN_RFID_DATA_2_SENSOR, INPUT_PULLUP);
+  pinMode(PIN_MUTE_BUTTON, INPUT_PULLUP);
   pinMode(PIN_POWER_SUPPLY, OUTPUT);
   pinMode(PIN_ALARM_RELAY, OUTPUT);
   pinMode(PIN_FAN_RELAY, OUTPUT);
@@ -147,12 +148,13 @@ void loop()
 
   powerSupplyControl();
 
-  if (muteButtonState == LOW)
+  if (muteButtonState == HIGH)
   {
 
     if (muteModePreviousState == true)
     {
       muteModePreviousState = false;
+      muteMode = false;
     }
 
     // Gestion de l'armoire.
@@ -171,7 +173,7 @@ void loop()
     }
 
     // Gestion de la sonnette.
-    if (doorbellState != doorbellMode)
+    if (doorbellState != doorbellMode && alarmMode == false)
     {
       printBell();
       musique1();
@@ -198,7 +200,7 @@ void loop()
         yesSound();
       }
 
-      else if(bedroomDoorState == LOW)
+      else if (bedroomDoorState == LOW)
       {
         switchAlarm(2);
       }
@@ -324,7 +326,18 @@ void loop()
           switchTV(2);
           break;
         case 4261480199: // Source.
-          switchMulticolor(2);
+          if (digitalRead(PIN_LED_CUBE_RELAY) == LOW && multicolorMode == false)
+          {
+            switchMulticolor(1);
+            switchLEDCube(1);
+          }
+
+          else
+          {
+            switchMulticolor(0);
+            switchLEDCube(0);
+          }
+
           break;
         case 4161210119: // Vol+.
           sonoVolume(1);
@@ -333,7 +346,6 @@ void loop()
           sonoVolume(0);
           break;
         }
-        Serial.println(irrecv.decodedIRData.decodedRawData);
         irrecv.resume();
       }
     }
@@ -381,8 +393,14 @@ void loop()
   }
   else if (muteModePreviousState == false)
   {
-    muteModePreviousState = true;
-    stopEverything();
+    delay(10);
+    muteButtonState = digitalRead(PIN_MUTE_BUTTON);
+    if (muteButtonState == LOW)
+    {
+      muteModePreviousState = true;
+      muteMode = true;
+      stopEverything();
+    }
   }
 
   // Gestion des informations reçues par l'ESP8266-01.

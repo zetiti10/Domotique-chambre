@@ -420,7 +420,8 @@ void stopEverything() {
     switchAlarm(0);
     switchMulticolor(0);
     switchSoundReact(0);
-    printAllOFF();
+    display.clearDisplay();
+    display.display();
     powerSupplyControl();
 }
 

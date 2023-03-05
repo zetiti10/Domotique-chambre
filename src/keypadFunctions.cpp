@@ -57,9 +57,12 @@ void keypadButton2()
 
   else if (keypadMode == "D")
   {
-    microSensibility = microSensibility - 5;
-    EEPROM.put(3, microSensibility);
-    printMicroSensibility();
+    if(microSensibility <= 5)
+    {
+      microSensibility = microSensibility - 5;
+      EEPROM.put(3, microSensibility);
+      printMicroSensibility();
+    }
   }
 }
 
@@ -82,9 +85,12 @@ void keypadButton3()
 
   else if (keypadMode == "D")
   {
-    microSensibility = microSensibility + 5;
-    EEPROM.put(3, microSensibility);
-    printMicroSensibility();
+    if(microSensibility >= 300)
+    {
+      microSensibility = microSensibility + 5;
+      EEPROM.put(3, microSensibility);
+      printMicroSensibility();
+    }
   }
 }
 

@@ -9,6 +9,7 @@
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <IRremote.h>
 
 // Autres fichiers du programme.
 #include <main.hpp>
@@ -57,7 +58,7 @@ void keypadButton2()
 
   else if (keypadMode == "D")
   {
-    if(microSensibility <= 5)
+    if(microSensibility >= 5)
     {
       microSensibility = microSensibility - 5;
       EEPROM.put(3, microSensibility);
@@ -85,7 +86,7 @@ void keypadButton3()
 
   else if (keypadMode == "D")
   {
-    if(microSensibility >= 300)
+    if(microSensibility <= 300)
     {
       microSensibility = microSensibility + 5;
       EEPROM.put(3, microSensibility);

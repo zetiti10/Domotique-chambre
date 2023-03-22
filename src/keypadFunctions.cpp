@@ -9,7 +9,6 @@
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 #include <EEPROM.h>
-#include <IRremote.h>
 
 // Autres fichiers du programme.
 #include <main.hpp>
@@ -37,6 +36,11 @@ void keypadButton1()
       printLEDState();
     }
   }
+
+  else if (keypadMode == "C")
+  {
+    sonoVolume(0);
+  }
 }
 
 void keypadButton2()
@@ -56,9 +60,14 @@ void keypadButton2()
     }
   }
 
+  else if (keypadMode == "C")
+  {
+    sonoVolume(2);
+  }
+
   else if (keypadMode == "D")
   {
-    if(microSensibility >= 5)
+    if (microSensibility >= 5)
     {
       microSensibility = microSensibility - 5;
       EEPROM.put(3, microSensibility);
@@ -84,9 +93,14 @@ void keypadButton3()
     }
   }
 
+  else if (keypadMode == "C")
+  {
+    sonoVolume(1);
+  }
+
   else if (keypadMode == "D")
   {
-    if(microSensibility <= 300)
+    if (microSensibility <= 300)
     {
       microSensibility = microSensibility + 5;
       EEPROM.put(3, microSensibility);
@@ -151,12 +165,7 @@ void keypadButton6()
 
 void keypadButton7()
 {
-  if (keypadMode == "A")
-  {
-    sonoVolume(0);
-  }
-
-  else if (keypadMode == "B")
+  if (keypadMode == "B")
   {
     if (multicolorDelay > 1)
     {
@@ -167,12 +176,7 @@ void keypadButton7()
 
 void keypadButton8()
 {
-  if (keypadMode == "A")
-  {
-    sonoVolume(1);
-  }
-
-  else if (keypadMode == "B")
+  if (keypadMode == "B")
   {
     switchMulticolor(2);
   }
@@ -191,7 +195,7 @@ void keypadButton9()
     else
     {
       powerSupplyDelayON = powerSupplyDelayON + 3600000;
-      //Si l'alimentation était éteinte précédemment, on évide de détecter un double-clique accidentel.
+      // Si l'alimentation était éteinte précédemment, on évide de détecter un double-clique accidentel.
       if (!(powerSupplyDelayON == 3600000))
       {
         button9Timer = 1;

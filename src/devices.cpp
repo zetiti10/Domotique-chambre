@@ -266,7 +266,8 @@ void switchDisplay()
         moveDisplayServo(pos);
         delay(1);
     }
-    for(int i = 0; i < 50; i++) {
+    for (int i = 0; i < 500; i++)
+    {
         moveDisplayServo(130);
     }
     for (int pos = 130; pos >= 80; pos--)
@@ -284,10 +285,8 @@ void switchTV(int action)
         {
             digitalWrite(PIN_TV_RELAY, LOW);
             printDeviceState("tv", false);
-            digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-            delay(50);
-            digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
             switchDisplay();
+            switchSono();
         }
     }
     else if (action == 1)
@@ -296,10 +295,8 @@ void switchTV(int action)
         {
             digitalWrite(PIN_TV_RELAY, HIGH);
             printDeviceState("tv", true);
-            digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-            delay(50);
-            digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
             switchDisplay();
+            switchSono();
         }
     }
     else
@@ -308,19 +305,15 @@ void switchTV(int action)
         {
             digitalWrite(PIN_TV_RELAY, HIGH);
             printDeviceState("tv", true);
-            digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-            delay(50);
-            digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
             switchDisplay();
+            switchSono();
         }
         else
         {
             digitalWrite(PIN_TV_RELAY, LOW);
             printDeviceState("tv", false);
-            digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-            delay(50);
-            digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
             switchDisplay();
+            switchSono();
         }
     }
 }
@@ -376,21 +369,33 @@ void switchAlarm(int action)
     }
 }
 
-// Paramètre :  0 = diminuer le volume - 1 = augmenter le volume.
+// Paramètre :  0 = diminuer le volume - 1 = augmenter le volume - 2 = couper le son.
 void sonoVolume(int action)
 {
     if (action == 0)
     {
         digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-        delay(100);
+        delay(20);
         digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
     }
-    else
+    else if (action == 1)
     {
         digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-        delay(150);
+        delay(30);
+        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
+    } else {
+        digitalWrite(PIN_IR_LED_SIGNAL, LOW);
+        delay(40);
         digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
     }
+}
+
+// Basculer l'état de la sono.
+void switchSono()
+{
+    digitalWrite(PIN_IR_LED_SIGNAL, LOW);
+    delay(10);
+    digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
 }
 
 // Cette fonction sert à contrôler l'alimentation (pour l'allumer / l'éteindre).
@@ -411,7 +416,8 @@ void powerSupplyControl()
     }
 }
 
-void stopEverything() {
+void stopEverything()
+{
     powerSupplyDelayON = 0;
     switchFan(0);
     switchLEDCube(0);

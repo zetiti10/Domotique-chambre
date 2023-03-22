@@ -345,9 +345,11 @@ void loop()
         case 4094363399: // Vol-.
           sonoVolume(0);
           break;
+        case 4027516679: // Mute.
+          sonoVolume(2);
         }
-        irrecv.resume();
       }
+      irrecv.resume();
     }
 
     // Gestion du décompte permettant de garder l'alimentation allumée un certain temps (pour charger des appareils).

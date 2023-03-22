@@ -9,6 +9,7 @@ void switchSoundReact(int action);
 void switchTV(int action);
 void switchAlarm(int action);
 void sonoVolume(int action);
+void switchSono();
 void powerSupplyControl();
 void stopEverything();
 void yesSound();

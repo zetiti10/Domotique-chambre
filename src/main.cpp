@@ -340,12 +340,15 @@ void loop()
 
           break;
         case 4161210119: // Vol+.
+          delay(1000); // Ce délais permet d'attendre que le bouton de la télécommande soir relachée pour ne pas créer d'interférences avec la DEL qui gère la sono.
           sonoVolume(1);
           break;
         case 4094363399: // Vol-.
+          delay(1000); // Ce délais permet d'attendre que le bouton de la télécommande soir relachée pour ne pas créer d'interférences avec la DEL qui gère la sono.
           sonoVolume(0);
           break;
         case 4027516679: // Mute.
+          delay(1000); // Ce délais permet d'attendre que le bouton de la télécommande soir relachée pour ne pas créer d'interférences avec la DEL qui gère la sono.
           sonoVolume(2);
         }
       }

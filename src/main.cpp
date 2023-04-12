@@ -41,7 +41,7 @@ int button9Timer = 0;
 long powerSupplyDelayON = 0;
 
 // Création de la communication à l'ESP8266-01 pour la connexion à Home Assistant.
-SoftwareSerial ESP8266(10, 11);
+SoftwareSerial ESP8266(10, 11); // Broches 8 et 9
 
 // Création du clavier pour contrôler le système.
 const byte KEYPAD_ROWS = 4;

@@ -13,10 +13,10 @@
 
 // Définition des broches des actionneurs.
 #define PIN_MICRO 55
-#define PIN_BUZZER 2
-#define PIN_RED_LED 3
-#define PIN_GREEN_LED 4
-#define PIN_BLUE_LED 5
+#define PIN_BUZZER 2 // Broche 5
+#define PIN_RED_LED 3 // Broche 9
+#define PIN_GREEN_LED 4 // Broche 10
+#define PIN_BLUE_LED 5 // Broche 11
 #define PIN_ALARM_RELAY 28
 #define PIN_FAN_RELAY 26
 #define PIN_LED_CUBE_RELAY 24
@@ -30,7 +30,7 @@
 #define PIN_MOTOR_TRAY_2 45
 #define PIN_MUTE_BUTTON 47
 #define PIN_POWER_SUPPLY 48
-#define PIN_SCREEN_SERVO 8
+#define PIN_SCREEN_SERVO 8 // Broche 6
 #define PIN_IR_LED_SIGNAL 52
 
 #endif

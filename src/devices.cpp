@@ -263,16 +263,16 @@ void moveDisplayServo(int pos)
 // Effectue un clique avec le servomoteur sur le bouton ON/OFF de l'écran.
 void switchDisplay()
 {
-    for (int pos = 110; pos <= 130; pos++)
+    for (int pos = 80; pos <= 130; pos++)
     {
         moveDisplayServo(pos);
         delay(1);
     }
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 100; i++)
     {
         moveDisplayServo(130);
     }
-    for (int pos = 130; pos >= 110; pos--)
+    for (int pos = 130; pos >= 80; pos--)
     {
         moveDisplayServo(pos);
         delay(1);

@@ -31,6 +31,6 @@
 #define PIN_MUTE_BUTTON 47
 #define PIN_POWER_SUPPLY 48
 #define PIN_SCREEN_SERVO 8 // Broche 6
-#define PIN_IR_LED_SIGNAL 52
+#define IR_LED_PIN 6 // Broche ???
 
 #endif

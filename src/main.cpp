@@ -13,7 +13,7 @@
 #include <Keypad.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <IRremote.h>
+#include <IRremote.hpp>
 
 // Autres fichiers du programme.
 #include <pinDefinitions.hpp>
@@ -90,12 +90,12 @@ void setup()
   pinMode(PIN_RED_LED, OUTPUT);
   pinMode(PIN_GREEN_LED, OUTPUT);
   pinMode(PIN_BLUE_LED, OUTPUT);
-  pinMode(PIN_IR_LED_SIGNAL, OUTPUT);
   pinMode(PIN_ALARM_SIGNAL, OUTPUT);
 
   // Lancement des communications.
   ESP8266.begin(9600);
   irrecv.enableIRIn();
+  IrSender.begin(IR_LED_PIN);
   // Serial.begin(115200); // Uniquement pour la résolution de problèmes.
 
   // Récupération des informations stockées dans la mémoire persistante.

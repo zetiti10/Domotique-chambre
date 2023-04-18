@@ -9,6 +9,8 @@
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 #include <Adafruit_SSD1306.h>
+#define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
+#include <IRremote.hpp>
 
 // Autres fichiers du programme.
 #include <pinDefinitions.hpp>
@@ -261,16 +263,16 @@ void moveDisplayServo(int pos)
 // Effectue un clique avec le servomoteur sur le bouton ON/OFF de l'écran.
 void switchDisplay()
 {
-    for (int pos = 80; pos <= 130; pos++)
+    for (int pos = 110; pos <= 130; pos++)
     {
         moveDisplayServo(pos);
         delay(1);
     }
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 50; i++)
     {
         moveDisplayServo(130);
     }
-    for (int pos = 130; pos >= 80; pos--)
+    for (int pos = 130; pos >= 110; pos--)
     {
         moveDisplayServo(pos);
         delay(1);
@@ -374,32 +376,24 @@ void sonoVolume(int action)
 {
     if (action == 0)
     {
-        digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-        delay(20);
-        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
+        IrSender.sendNEC(0x44C1, 0xC7, REPETITIONS_VOLUME);
     }
     
     else if (action == 1)
     {
-        digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-        delay(30);
-        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
+        IrSender.sendNEC(0x44C1, 0x47, REPETITIONS_VOLUME);
     }
     
     else
     {
-        digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-        delay(40);
-        digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
+        IrSender.sendNEC(0x44C1, 0x77, 3);
     }
 }
 
 // Basculer l'état de la sono.
 void switchSono()
 {
-    digitalWrite(PIN_IR_LED_SIGNAL, LOW);
-    delay(10);
-    digitalWrite(PIN_IR_LED_SIGNAL, HIGH);
+    IrSender.sendNEC(0x44C1, 0x87, 3);
 }
 
 // Cette fonction sert à contrôler l'alimentation (pour l'allumer / l'éteindre).

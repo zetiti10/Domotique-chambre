@@ -4,6 +4,8 @@
 #include <Adafruit_SSD1306.h>
 #include <SoftwareSerial.h>
 
+#define REPETITIONS_VOLUME 5
+
 extern boolean bedroomDoorState;
 extern boolean doorbellToSend;
 extern boolean muteMode;

@@ -1,6 +1,7 @@
 #ifndef LED_STRIPS_DEFINITIONS
 #define LED_STRIPS_DEFINITIONS
 
+extern int LEDPowerSteps;
 extern int RLEDValue;
 extern int GLEDValue;
 extern int BLEDValue;
@@ -12,7 +13,7 @@ extern boolean soundReactMode;
 extern int multicolorCounterR;
 extern int multicolorCounterG;
 extern int multicolorCounterB;
-extern int multicolorDelay;
+extern int multicolorSpeed;
 
 void multicolor();
 void stopMulticolor();

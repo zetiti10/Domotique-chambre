@@ -2,7 +2,7 @@
  * @file keypadFunctions.cpp
  * @author Louis L
  * @brief Fonctions de gestion du clavier du boîtier de contrôle.
- * @version 1.0
+ * @version 1.1
  * @date 2023-03-01
  */
 
@@ -16,7 +16,7 @@
 #include <devices.hpp>
 #include <LEDStrips.hpp>
 #include <pinDefinitions.hpp>
-#include <screen.hpp>
+#include <display.hpp>
 
 String keypadMode = "A";
 
@@ -29,9 +29,9 @@ void keypadButton1()
 
   else if (keypadMode == "B")
   {
-    if (RLEDValue <= 245)
+    if (RLEDValue <= (255 - LEDPowerSteps))
     {
-      RLEDValue = RLEDValue + 10;
+      RLEDValue = RLEDValue + LEDPowerSteps;
       analogWrite(PIN_RED_LED, RLEDValue);
       printLEDState();
     }
@@ -39,7 +39,17 @@ void keypadButton1()
 
   else if (keypadMode == "C")
   {
-    sonoVolume(0);
+    volumeSono(0);
+  }
+
+  else if (keypadMode == "D")
+  {
+    if (microSensibility < 200)
+    {
+      microSensibility = microSensibility + 5;
+      EEPROM.update(3, microSensibility);
+      printMicroSensibility();
+    }
   }
 }
 
@@ -52,9 +62,9 @@ void keypadButton2()
 
   else if (keypadMode == "B")
   {
-    if (GLEDValue <= 245)
+    if (GLEDValue <= (255 - LEDPowerSteps))
     {
-      GLEDValue = GLEDValue + 10;
+      GLEDValue = GLEDValue + LEDPowerSteps;
       analogWrite(PIN_GREEN_LED, GLEDValue);
       printLEDState();
     }
@@ -62,16 +72,16 @@ void keypadButton2()
 
   else if (keypadMode == "C")
   {
-    sonoVolume(2);
+    volumeSono(2);
   }
 
   else if (keypadMode == "D")
   {
-    if (microSensibility >= 5)
+    if (multicolorSpeed < 30)
     {
-      microSensibility = microSensibility - 5;
-      EEPROM.put(3, microSensibility);
-      printMicroSensibility();
+      multicolorSpeed++;
+      EEPROM.update(4, multicolorSpeed);
+      printMulticolorSpeed();
     }
   }
 }
@@ -85,9 +95,9 @@ void keypadButton3()
 
   else if (keypadMode == "B")
   {
-    if (BLEDValue <= 245)
+    if (BLEDValue <= (255 - LEDPowerSteps))
     {
-      BLEDValue = BLEDValue + 10;
+      BLEDValue = BLEDValue + LEDPowerSteps;
       analogWrite(PIN_BLUE_LED, BLEDValue);
       printLEDState();
     }
@@ -95,16 +105,16 @@ void keypadButton3()
 
   else if (keypadMode == "C")
   {
-    sonoVolume(1);
+    volumeSono(1);
   }
 
   else if (keypadMode == "D")
   {
-    if (microSensibility <= 300)
+    if (volumePrecision < 20)
     {
-      microSensibility = microSensibility + 5;
-      EEPROM.put(3, microSensibility);
-      printMicroSensibility();
+      volumePrecision++;
+      EEPROM.update(5, volumePrecision);
+      printVolumePrecision();
     }
   }
 }
@@ -113,16 +123,46 @@ void keypadButton4()
 {
   if (keypadMode == "A")
   {
-    switchTV(2);
+    if (button4Timer != 0)
+    {
+      powerSupplyDelayON = 0;
+      printPowerSupplyONTime();
+    }
+
+    else
+    {
+      powerSupplyDelayON = powerSupplyDelayON + 3600000;
+      // Si l'alimentation était éteinte précédemment, on évide de détecter un double-clique accidentel.
+      if (!(powerSupplyDelayON == 3600000))
+      {
+        button4Timer = 1;
+      }
+    }
+    printPowerSupplyONTime();
   }
 
   else if (keypadMode == "B")
   {
-    if (RLEDValue >= 10)
+    if (RLEDValue >= LEDPowerSteps)
     {
-      RLEDValue = RLEDValue - 10;
+      RLEDValue = RLEDValue - LEDPowerSteps;
       analogWrite(PIN_RED_LED, RLEDValue);
       printLEDState();
+    }
+  }
+
+  else if (keypadMode == "C")
+  {
+    switchTV(2);
+  }
+
+  else if (keypadMode == "D")
+  {
+    if (microSensibility >= 5)
+    {
+      microSensibility = microSensibility - 5;
+      EEPROM.update(3, microSensibility);
+      printMicroSensibility();
     }
   }
 }
@@ -136,11 +176,21 @@ void keypadButton5()
 
   else if (keypadMode == "B")
   {
-    if (GLEDValue >= 10)
+    if (GLEDValue >= LEDPowerSteps)
     {
-      GLEDValue = GLEDValue - 10;
+      GLEDValue = GLEDValue - LEDPowerSteps;
       analogWrite(PIN_GREEN_LED, GLEDValue);
       printLEDState();
+    }
+  }
+
+  else if (keypadMode == "D")
+  {
+    if (multicolorSpeed >= 1)
+    {
+      multicolorSpeed--;
+      EEPROM.update(4, multicolorSpeed);
+      printMulticolorSpeed();
     }
   }
 }
@@ -154,11 +204,21 @@ void keypadButton6()
 
   else if (keypadMode == "B")
   {
-    if (BLEDValue >= 10)
+    if (BLEDValue >= LEDPowerSteps)
     {
-      BLEDValue = BLEDValue - 10;
+      BLEDValue = BLEDValue - LEDPowerSteps;
       analogWrite(PIN_BLUE_LED, BLEDValue);
       printLEDState();
+    }
+  }
+
+  else if (keypadMode == "D")
+  {
+    if (volumePrecision >= 1)
+    {
+      volumePrecision--;
+      EEPROM.update(5, volumePrecision);
+      printVolumePrecision();
     }
   }
 }
@@ -167,9 +227,15 @@ void keypadButton7()
 {
   if (keypadMode == "B")
   {
-    if (multicolorDelay > 1)
+    if (soundReactMode == false)
     {
-      multicolorDelay--;
+      soundReactMode = true;
+      printDeviceState("soundReactMode", true);
+    }
+
+    else
+    {
+      stopSoundReact();
     }
   }
 }
@@ -182,39 +248,14 @@ void keypadButton8()
   }
 }
 
-void keypadButton9()
-{
-  if (keypadMode == "A")
-  {
-    if (button9Timer != 0)
-    {
-      powerSupplyDelayON = 0;
-      printPowerSupplyONTime();
-    }
-
-    else
-    {
-      powerSupplyDelayON = powerSupplyDelayON + 3600000;
-      // Si l'alimentation était éteinte précédemment, on évide de détecter un double-clique accidentel.
-      if (!(powerSupplyDelayON == 3600000))
-      {
-        button9Timer = 1;
-      }
-    }
-    printPowerSupplyONTime();
-  }
-
-  else if (keypadMode == "B")
-  {
-    multicolorDelay++;
-  }
-}
+void keypadButton9() {}
 
 void keypadButton0()
 {
   if (keypadMode == "A")
   {
     stopEverything();
+    printAllOFF();
   }
 
   else if (keypadMode == "B")
@@ -244,32 +285,7 @@ void keypadButton0()
   }
 }
 
-void keypadButtonHash()
-{
-  if (keypadMode == "B")
-  {
-    if (soundReactMode == false)
-    {
-      soundReactMode = true;
-      printDeviceState("soundReactMode", true);
-    }
-
-    else
-    {
-      soundReactMode = false;
-      multicolorCounterR = 0;
-      multicolorCounterG = 0;
-      multicolorCounterB = 0;
-      RLEDValueSave = 0;
-      GLEDValueSave = 0;
-      BLEDValueSave = 0;
-      digitalWrite(PIN_RED_LED, RLEDValue);
-      digitalWrite(PIN_GREEN_LED, GLEDValue);
-      digitalWrite(PIN_BLUE_LED, BLEDValue);
-      printDeviceState("soundReactMode", false);
-    }
-  }
-}
+void keypadButtonHash() {}
 
 void keypadButtonStar() {}
 

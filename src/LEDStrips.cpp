@@ -2,7 +2,7 @@
  * @file LEDStrips.cpp
  * @author Louis L
  * @brief Fonctions de gestion des rubans de DEL multicolores.
- * @version 1.0
+ * @version 1.1
  * @date 2023-03-01
  */
 
@@ -10,12 +10,15 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
+#include <LEDStrips.hpp>
 #include <pinDefinitions.hpp>
 #include <main.hpp>
 #include <devices.hpp>
-#include <screen.hpp>
+#include <display.hpp>
 
 // Variables globales
+int LEDPowerSteps = 25;
+
 int RLEDValue = 0;
 int GLEDValue = 0;
 int BLEDValue = 0;
@@ -74,15 +77,15 @@ void multicolor()
         multicolorCounterB = 0;
         multicolorCounterFirst2 = true;
       }
+
       multicolorCounter2 = multicolorCounter2 + 1;
       multicolorCounterG -= 1;
       multicolorCounterB += 1;
+
       GLEDValue = multicolorCounterG;
       analogWrite(PIN_GREEN_LED, multicolorCounterG);
       BLEDValue = multicolorCounterB;
       analogWrite(PIN_BLUE_LED, multicolorCounterB);
-      return;
-      ///////////////////////
     }
 
     else if (multicolorCounter3 < 255)
@@ -95,15 +98,15 @@ void multicolor()
         multicolorCounterB = 255;
         multicolorCounterFirst3 = true;
       }
+
       multicolorCounter3 = multicolorCounter3 + 1;
       multicolorCounterB -= 1;
       multicolorCounterR += 1;
+
       BLEDValue = multicolorCounterB;
       analogWrite(PIN_BLUE_LED, multicolorCounterB);
       RLEDValue = multicolorCounterR;
       analogWrite(PIN_RED_LED, multicolorCounterR);
-      return;
-      /////////////////////////
     }
 
     else

@@ -2,7 +2,7 @@
  * @file devices.cpp
  * @author Louis L
  * @brief Fonctions liées aux périphériques du système de domotique.
- * @version 1.0
+ * @version 1.1
  * @date 2023-03-01
  */
 
@@ -14,14 +14,18 @@
 
 // Autres fichiers du programme.
 #include <pinDefinitions.hpp>
-#include <screen.hpp>
+#include <display.hpp>
 #include <main.hpp>
 #include <devices.hpp>
 #include <alarm.hpp>
 #include <pitches.hpp>
 #include <LEDStrips.hpp>
+#include <TimerFreeTone.h>
 
-// Les fonction de contrôle ont un paramètre : O = eteindre - 1 = allumer - 2 = changer l'etat.
+// Variables globales.
+int volumePrecision = 5;
+
+// Les fonction de contrôle ont un paramètre : O = éteindre - 1 = allumer - 2 = changer l'état.
 
 void switchFan(int action)
 {
@@ -33,6 +37,7 @@ void switchFan(int action)
             printDeviceState("fan", false);
         }
     }
+
     else if (action == 1)
     {
         if (digitalRead(PIN_FAN_RELAY) == LOW)
@@ -41,17 +46,17 @@ void switchFan(int action)
             printDeviceState("fan", true);
         }
     }
+
     else
     {
         if (digitalRead(PIN_FAN_RELAY) == LOW)
         {
-            digitalWrite(PIN_FAN_RELAY, HIGH);
-            printDeviceState("fan", true);
+            switchFan(1);
         }
+
         else
         {
-            digitalWrite(PIN_FAN_RELAY, LOW);
-            printDeviceState("fan", false);
+            switchFan(0);
         }
     }
 }
@@ -66,6 +71,7 @@ void switchLEDCube(int action)
             printDeviceState("cube", false);
         }
     }
+
     else if (action == 1)
     {
         if (digitalRead(PIN_LED_CUBE_RELAY) == LOW)
@@ -74,17 +80,17 @@ void switchLEDCube(int action)
             printDeviceState("cube", true);
         }
     }
+
     else
     {
         if (digitalRead(PIN_LED_CUBE_RELAY) == LOW)
         {
-            digitalWrite(PIN_LED_CUBE_RELAY, HIGH);
-            printDeviceState("cube", true);
+            switchLEDCube(1);
         }
+
         else
         {
-            digitalWrite(PIN_LED_CUBE_RELAY, LOW);
-            printDeviceState("cube", false);
+            switchLEDCube(0);
         }
     }
 }
@@ -94,96 +100,64 @@ void switchTray(int action)
     if (action == 0)
     {
         if (trayIsOpen == true)
+    {
+        digitalWrite(PIN_POWER_SUPPLY, LOW);
+        digitalWrite(PIN_MOTOR_TRAY_1, LOW);
+        digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
+        for (int i = 0; i < 11; i++)
         {
-            digitalWrite(PIN_POWER_SUPPLY, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_1, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            for (int i = 0; i < 11; i++)
-            {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
-            }
-            display.display();
-            for (int i = 0; i < 12; i++)
-            {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 22 - i, 83, 22 - i, SSD1306_BLACK);
-                display.display();
-                delay(80);
-            }
-            ScreenCurrentOnTime = ScreenOnTime;
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            trayIsOpen = false;
-            powerSupplyControl();
+            display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
+            display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
         }
+        display.display();
+        for (int i = 0; i < 12; i++)
+        {
+            display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
+            display.drawLine(45, 22 - i, 83, 22 - i, SSD1306_BLACK);
+            display.display();
+            delay(80);
+        }
+        ScreenCurrentOnTime = ScreenOnTime;
+        digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+        digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
+        trayIsOpen = false;
+        powerSupplyControl();
     }
+    }
+
     else if (action == 1)
     {
         if (trayIsOpen == false)
+    {
+        digitalWrite(PIN_POWER_SUPPLY, LOW);
+        digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+        digitalWrite(PIN_MOTOR_TRAY_2, LOW);
+        display.clearDisplay();
+        for (int i = 0; i < 11; i++)
         {
-            digitalWrite(PIN_POWER_SUPPLY, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, LOW);
-            display.clearDisplay();
-            for (int i = 0; i < 11; i++)
-            {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
-                display.display();
-                delay(80);
-            }
-            ScreenCurrentOnTime = ScreenOnTime;
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            trayIsOpen = true;
-            powerSupplyControl();
+            display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
+            display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
+            display.display();
+            delay(80);
         }
+        ScreenCurrentOnTime = ScreenOnTime;
+        digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+        digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
+        trayIsOpen = true;
+        powerSupplyControl();
     }
+    }
+
     else
     {
         if (trayIsOpen == false)
         {
-            digitalWrite(PIN_POWER_SUPPLY, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, LOW);
-            display.clearDisplay();
-            for (int i = 0; i < 11; i++)
-            {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
-                display.display();
-                delay(80);
-            }
-            ScreenCurrentOnTime = ScreenOnTime;
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            trayIsOpen = true;
-            powerSupplyControl();
+            switchTray(1);
         }
+
         else
         {
-            digitalWrite(PIN_POWER_SUPPLY, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_1, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            for (int i = 0; i < 11; i++)
-            {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
-            }
-            display.display();
-            for (int i = 0; i < 12; i++)
-            {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 22 - i, 83, 22 - i, SSD1306_BLACK);
-                display.display();
-                delay(80);
-            }
-            ScreenCurrentOnTime = ScreenOnTime;
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            trayIsOpen = false;
-            powerSupplyControl();
+            switchTray(0);
         }
     }
 }
@@ -197,6 +171,7 @@ void switchMulticolor(int action)
             stopMulticolor();
         }
     }
+
     else if (action == 1)
     {
         if (multicolorMode == false)
@@ -205,16 +180,17 @@ void switchMulticolor(int action)
             printDeviceState("multicolor", true);
         }
     }
+
     else
     {
         if (multicolorMode == false)
         {
-            multicolorMode = true;
-            printDeviceState("multicolor", true);
+           switchMulticolor(1);
         }
+
         else
         {
-            stopMulticolor();
+            switchMulticolor(0);
         }
     }
 }
@@ -228,6 +204,7 @@ void switchSoundReact(int action)
             stopSoundReact();
         }
     }
+
     else if (action == 1)
     {
         if (soundReactMode == false)
@@ -236,16 +213,17 @@ void switchSoundReact(int action)
             printDeviceState("SoundReact", true);
         }
     }
+
     else
     {
         if (soundReactMode == false)
         {
-            soundReactMode = true;
-            printDeviceState("SoundReact", true);
+            switchSoundReact(1);
         }
+
         else
         {
-            stopSoundReact();
+            switchSoundReact(0);
         }
     }
 }
@@ -268,10 +246,12 @@ void switchDisplay()
         moveDisplayServo(pos);
         delay(1);
     }
+
     for (int i = 0; i < 100; i++)
     {
         moveDisplayServo(130);
     }
+
     for (int pos = 130; pos >= 80; pos--)
     {
         moveDisplayServo(pos);
@@ -291,6 +271,7 @@ void switchTV(int action)
             switchSono();
         }
     }
+
     else if (action == 1)
     {
         if (digitalRead(PIN_TV_RELAY) == LOW)
@@ -301,21 +282,17 @@ void switchTV(int action)
             switchSono();
         }
     }
+
     else
     {
         if (digitalRead(PIN_TV_RELAY) == LOW)
         {
-            digitalWrite(PIN_TV_RELAY, HIGH);
-            printDeviceState("tv", true);
-            switchDisplay();
-            switchSono();
+            switchTV(1);
         }
+
         else
         {
-            digitalWrite(PIN_TV_RELAY, LOW);
-            printDeviceState("tv", false);
-            switchDisplay();
-            switchSono();
+            switchTV(0);
         }
     }
 }
@@ -330,62 +307,57 @@ void switchAlarm(int action)
             {
                 stopAlarme();
             }
+
+            printAlarm(0);
             alarmMode = false;
             infoAlarme();
             yesSound();
         }
     }
+
     else if (action == 1)
     {
         if (alarmMode == false)
         {
-            printDeviceState("alarme", true);
+            printAlarm(1);
             alarmMode = true;
             infoAlarme();
             yesSound();
         }
     }
+
     else
     {
         if (alarmMode == false)
         {
-            printDeviceState("alarme", true);
-            alarmMode = true;
-            infoAlarme();
-            yesSound();
+            switchAlarm(1);
         }
+
         else
         {
-            if (alarmMode == true)
-            {
-                if (alarmIsRinging == true)
-                {
-                    stopAlarme();
-                }
-                alarmMode = false;
-                printDeviceState("alarme", false);
-                infoAlarme();
-                yesSound();
-            }
+            switchAlarm(0);
         }
     }
 }
 
 // Paramètre :  0 = diminuer le volume - 1 = augmenter le volume - 2 = couper le son.
-void sonoVolume(int action)
+void volumeSono(int action)
 {
     if (action == 0)
     {
-        IrSender.sendNEC(0x44C1, 0xC7, REPETITIONS_VOLUME);
+        printVolume(0);
+        IrSender.sendNEC(0x44C1, 0xC7, volumePrecision);
     }
-    
+
     else if (action == 1)
     {
-        IrSender.sendNEC(0x44C1, 0x47, REPETITIONS_VOLUME);
+        printVolume(1);
+        IrSender.sendNEC(0x44C1, 0x47, volumePrecision);
     }
-    
+
     else
     {
+        printVolume(2);
         IrSender.sendNEC(0x44C1, 0x77, 3);
     }
 }
@@ -396,7 +368,7 @@ void switchSono()
     IrSender.sendNEC(0x44C1, 0x87, 3);
 }
 
-// Cette fonction sert à contrôler l'alimentation (pour l'allumer / l'éteindre).
+// Cette fonction sert à contrôler l'alimentation (pour l'allumer / l'éteindre) en fonction de si il y a des périphériques d'allumés ou non.
 void powerSupplyControl()
 {
 
@@ -404,10 +376,12 @@ void powerSupplyControl()
     {
         digitalWrite(PIN_POWER_SUPPLY, LOW);
     }
+
     else if (RLEDValue != 0 || GLEDValue != 0 || BLEDValue != 0 || powerSupplyDelayON > 0)
     {
         digitalWrite(PIN_POWER_SUPPLY, LOW);
     }
+
     else
     {
         digitalWrite(PIN_POWER_SUPPLY, HIGH);
@@ -431,17 +405,16 @@ void stopEverything()
 
 void yesSound()
 {
-    tone(PIN_BUZZER, NOTE_G5, 1000);
+    TimerFreeTone(PIN_BUZZER, NOTE_G5, 500);
 }
 
 void noSound()
 {
-    tone(PIN_BUZZER, NOTE_D4, 1000);
+    TimerFreeTone(PIN_BUZZER, NOTE_D4, 500);
 }
 
 // Les deux fonctions suivantes sont utilisées pour produire la musique de la sonnette.
-int music[] = {
-
+int doorbellMusicNotes[] = {
     NOTE_E5,
     8,
     NOTE_D5,
@@ -468,25 +441,25 @@ int music[] = {
     4,
     NOTE_A4,
     2,
-
 };
 
-void musique1()
+void doorbellMusic()
 {
 
     int divider = 0;
     int noteDuration = 0;
 
-    for (unsigned long thisNote = 0; thisNote < (sizeof(music) / sizeof(music[0])); thisNote = thisNote + 2)
+    for (unsigned long thisNote = 0; thisNote < (sizeof(doorbellMusicNotes) / sizeof(doorbellMusicNotes[0])); thisNote = thisNote + 2)
     {
 
-        divider = music[thisNote + 1];
+        divider = doorbellMusicNotes[thisNote + 1];
 
         if (divider > 0)
         {
 
             noteDuration = ((60000 * 4) / 180) / divider;
         }
+
         else if (divider < 0)
         {
 
@@ -494,8 +467,6 @@ void musique1()
             noteDuration *= 1.5;
         }
 
-        tone(PIN_BUZZER, music[thisNote], noteDuration * 0.9);
-        delay(noteDuration);
-        noTone(PIN_BUZZER);
+        TimerFreeTone(PIN_BUZZER, doorbellMusicNotes[thisNote], noteDuration * 0.9);
     }
 }

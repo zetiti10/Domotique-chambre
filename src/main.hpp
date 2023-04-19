@@ -4,8 +4,6 @@
 #include <Adafruit_SSD1306.h>
 #include <SoftwareSerial.h>
 
-#define REPETITIONS_VOLUME 5
-
 extern boolean bedroomDoorState;
 extern boolean doorbellToSend;
 extern boolean muteMode;
@@ -15,10 +13,9 @@ extern int microValue;
 extern int microSensibility;
 extern int microDelay;
 extern long powerSupplyDelayON;
+extern int button4Timer;
 
 extern SoftwareSerial ESP8266;
 extern Adafruit_SSD1306 display;
-
-extern int button9Timer;
 
 #endif

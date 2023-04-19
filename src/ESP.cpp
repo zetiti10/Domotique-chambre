@@ -2,7 +2,7 @@
  * @file ESP.cpp
  * @author Louis L
  * @brief Gestion de la communication avec l'ESP8266-01.
- * @version 1.0
+ * @version 1.1
  * @date 2023-03-01
  */
 
@@ -11,6 +11,7 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
+#include <ESP.hpp>
 #include <devices.hpp>
 #include <main.hpp>
 #include <pinDefinitions.hpp>
@@ -33,6 +34,7 @@ void receivedData()
   }
 
   // Analyse du message reçu. Pour en savoir plus sur la communication, se réferer à la documentation du projet.
+
   // Si on reçoit un message de type action à effectuer.
   if (receivedMessage.charAt(0) == '0')
   {
@@ -50,6 +52,7 @@ void receivedData()
           switchFan(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '1')
       {
         if (receivedMessage.charAt(2) == '0')
@@ -62,6 +65,7 @@ void receivedData()
           switchLEDCube(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '2')
       {
         if (receivedMessage.charAt(2) == '0')
@@ -74,6 +78,7 @@ void receivedData()
           switchTray(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '3')
       {
         if (receivedMessage.charAt(2) == '0')
@@ -86,6 +91,7 @@ void receivedData()
           switchTV(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '4')
       {
         if (receivedMessage.charAt(2) == '0')
@@ -98,16 +104,18 @@ void receivedData()
           switchAlarm(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '5')
       {
         if (receivedMessage.charAt(2) == '1')
         {
-          EEPROM.put(1, 0);
-          EEPROM.put(2, 0);
+          EEPROM.update(1, 0);
+          EEPROM.update(2, 0);
           intrusionCounter = 0;
           refusalCounter = 0;
         }
       }
+
       else if (receivedMessage.charAt(1) == '6')
       {
         if (receivedMessage.charAt(2) == '0')
@@ -120,6 +128,7 @@ void receivedData()
           switchMulticolor(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '7')
       {
         if (receivedMessage.charAt(2) == '0')
@@ -132,16 +141,17 @@ void receivedData()
           switchSoundReact(1);
         }
       }
+
       else if (receivedMessage.charAt(1) == '8')
       {
         if (receivedMessage.charAt(2) == '0')
         {
-          sonoVolume(1);
+          volumeSono(1);
         }
 
         else if (receivedMessage.charAt(2) == '1')
         {
-          sonoVolume(0);
+          volumeSono(0);
         }
       }
     }
@@ -337,7 +347,7 @@ void receivedData()
     }
   }
 
-  // Si on reçoit un message de type changement de la couleur des rubans de DELs
+  // Si on reçoit un message de type changement de la couleur des rubans de DEL.
   else if (receivedMessage.charAt(0) == '3' && receivedMessage.length() == 10)
   {
     if (muteMode == false)
@@ -345,6 +355,7 @@ void receivedData()
       int rv = 0;
       int vv = 0;
       int bv = 0;
+      
       rv = (receivedMessage.charAt(1) - 48) * 100;
       rv = rv + (receivedMessage.charAt(2) - 48) * 10;
       rv = rv + (receivedMessage.charAt(3) - 48);

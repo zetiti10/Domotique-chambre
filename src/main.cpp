@@ -2,7 +2,7 @@
  * @file main.cpp
  * @author Louis L
  * @brief Fichier principal du système de domotique.
- * @version 1.0
+ * @version 1.1
  * @date 2023-03-01
  */
 
@@ -16,9 +16,10 @@
 #include <IRremote.hpp>
 
 // Autres fichiers du programme.
+#include <main.hpp>
 #include <pinDefinitions.hpp>
 #include <keypadFunctions.hpp>
-#include <screen.hpp>
+#include <display.hpp>
 #include <devices.hpp>
 #include <alarm.hpp>
 #include <LEDStrips.hpp>
@@ -37,11 +38,11 @@ int microValue;
 int microSensibility;
 int microDelay;
 int IRRemoteCounter = 0;
-int button9Timer = 0;
+int button4Timer = 0;
 long powerSupplyDelayON = 0;
 
 // Création de la communication à l'ESP8266-01 pour la connexion à Home Assistant.
-SoftwareSerial ESP8266(10, 11); // Broches 8 et 9
+SoftwareSerial ESP8266(10, 11);
 
 // Création du clavier pour contrôler le système.
 const byte KEYPAD_ROWS = 4;
@@ -58,50 +59,53 @@ Keypad keypad = Keypad(makeKeymap(keypadHexaKeys), keypadRowPins, keypadColPins,
 // Création de l'écran OLED qui affiche des informations sur le système.
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 
-// Création de la DEL infrarouge pour contrôler la sono.
-// Code ici.
-
 // Création du récepteur infrarouge pour utiliser la télécommande du chromecast avec le système.
 IRrecv irrecv(PIN_IR_SENSOR);
 decode_results result;
 
 void setup()
 {
-  // Définition des modes des broches.
-  pinMode(PIN_BUZZER, OUTPUT);
-  pinMode(PIN_BEDROOM_DOOR_SENSOR, INPUT_PULLUP);
+  // Définition des modes des broches des capteurs.
   pinMode(PIN_WARDROBE_DOOR_SENSOR, INPUT);
-  pinMode(PIN_CHARGING_STATION_BUTTON, INPUT);
-  pinMode(PIN_DOORBELL_BUTTON, INPUT_PULLUP);
   pinMode(PIN_RFID_DATA_1_SENSOR, INPUT_PULLUP);
   pinMode(PIN_RFID_DATA_2_SENSOR, INPUT_PULLUP);
+  pinMode(PIN_DOORBELL_BUTTON, INPUT_PULLUP);
+  pinMode(PIN_BEDROOM_DOOR_SENSOR, INPUT_PULLUP);
   pinMode(PIN_MUTE_BUTTON, INPUT_PULLUP);
-  pinMode(PIN_POWER_SUPPLY, OUTPUT);
-  pinMode(PIN_ALARM_RELAY, OUTPUT);
-  pinMode(PIN_FAN_RELAY, OUTPUT);
-  pinMode(PIN_LED_CUBE_RELAY, OUTPUT);
-  pinMode(PIN_TV_RELAY, OUTPUT);
-  pinMode(PIN_WARDROBE_LIGHTS_RELAY, OUTPUT);
-  pinMode(PIN_RELAY_6, OUTPUT);
-  pinMode(PIN_RELAY_7, OUTPUT);
-  pinMode(PIN_RELAY_8, OUTPUT);
-  pinMode(PIN_MOTOR_TRAY_1, OUTPUT);
-  pinMode(PIN_MOTOR_TRAY_2, OUTPUT);
+  pinMode(PIN_CHARGING_STATION_BUTTON, INPUT);
+  pinMode(PIN_TEMPERATURE_SENSOR, INPUT);
+  pinMode(PIN_MICRO, INPUT);
+
+  // Définition des modes des broches des actionneurs.
+  pinMode(PIN_BUZZER, OUTPUT);
   pinMode(PIN_RED_LED, OUTPUT);
   pinMode(PIN_GREEN_LED, OUTPUT);
   pinMode(PIN_BLUE_LED, OUTPUT);
+  pinMode(PIN_TV_RELAY, OUTPUT);
+  pinMode(PIN_RELAY_8, OUTPUT);
+  pinMode(PIN_LED_CUBE_RELAY, OUTPUT);
+  pinMode(PIN_RELAY_7, OUTPUT);
+  pinMode(PIN_FAN_RELAY, OUTPUT);
+  pinMode(PIN_RELAY_6, OUTPUT);
+  pinMode(PIN_ALARM_RELAY, OUTPUT);
+  pinMode(PIN_WARDROBE_LIGHTS_RELAY, OUTPUT);
   pinMode(PIN_ALARM_SIGNAL, OUTPUT);
+  pinMode(PIN_MOTOR_TRAY_1, OUTPUT);
+  pinMode(PIN_MOTOR_TRAY_2, OUTPUT);
+  pinMode(PIN_POWER_SUPPLY, OUTPUT);
 
   // Lancement des communications.
   ESP8266.begin(9600);
   irrecv.enableIRIn();
-  IrSender.begin(IR_LED_PIN);
+  IrSender.begin(PIN_IR_LED);
   // Serial.begin(115200); // Uniquement pour la résolution de problèmes.
 
   // Récupération des informations stockées dans la mémoire persistante.
   intrusionCounter = EEPROM.read(1);
   refusalCounter = EEPROM.read(2);
   microSensibility = EEPROM.read(3);
+  multicolorSpeed = EEPROM.read(4);
+  volumePrecision = EEPROM.read(5);
 
   // Initialisation de la sonnette : comme c'est un bouton ON/OFF, on met un système afin de le "transformer" en bouton poussoir. "doorbellState" correspond à l'état actuel de la sonnette et "dorrbellMode" correspond au mode précédent. Si les deux variables sont différentes, le bouton a été pressé.
   boolean doorbellState = digitalRead(PIN_DOORBELL_BUTTON);
@@ -146,11 +150,14 @@ void loop()
     temperature = FinalTemperature;
   }
 
+  // Fonction permettant la gestion de l'alimentation : si un périphérique est allumé, alors on allume l'alimentation.
   powerSupplyControl();
 
+  // Le programme général ne fonctionne que si le mode ne pas déranger est désactivé.
   if (muteButtonState == HIGH)
   {
 
+    // Si le mode ne pas déranger était précédemment activé, on l'éteint proprement.
     if (muteModePreviousState == true)
     {
       muteModePreviousState = false;
@@ -176,7 +183,7 @@ void loop()
     if (doorbellState != doorbellMode && alarmMode == false)
     {
       printBell();
-      musique1();
+      doorbellMusic();
       doorbellToSend = true;
       doorbellState = digitalRead(PIN_DOORBELL_BUTTON);
       doorbellMode = doorbellState;
@@ -188,7 +195,7 @@ void loop()
       digitalWrite(PIN_ALARM_RELAY, HIGH);
       alarmIsRinging = true;
       intrusionCounter++;
-      EEPROM.put(1, intrusionCounter);
+      EEPROM.update(1, intrusionCounter);
     }
 
     // Gestion des données reçues par l'Arduino Nano Every de la porte.
@@ -204,15 +211,17 @@ void loop()
       {
         switchAlarm(2);
       }
-      delay(500);
+
+      delay(150);
     }
 
     if (digitalRead(PIN_RFID_DATA_2_SENSOR) == HIGH)
     {
       refusalCounter++;
-      EEPROM.put(2, refusalCounter);
+      EEPROM.update(2, refusalCounter);
       noSound();
-      delay(500);
+
+      delay(150);
     }
 
     // Gestion de l'arrêt automatique de l'alarme.
@@ -221,22 +230,23 @@ void loop()
       allarmeAutoOff();
     }
 
-    // Gestion du mode des rubans de DELs multicolor.
+    // Gestion du mode des rubans de DEL multicolor.
     if (multicolorMode == true)
     {
       multicolor();
     }
 
-    // Gestion du mode des rubans de DELs son - réaction.
+    // Gestion du mode des rubans de DEL son - réaction.
     if (soundReactMode == true)
     {
       soundReact();
     }
 
-    // Gestion de l'arret automatique de l'écran OLED.
+    // Gestion de l'arret automatique de l'écran OLED lorsqu'un élement est affiché.
     if (ScreenCurrentOnTime >> 0)
     {
       ScreenCurrentOnTime--;
+
       if (ScreenCurrentOnTime == 0)
       {
         display.clearDisplay();
@@ -253,61 +263,77 @@ void loop()
       case '1':
         keypadButton1();
         break;
+
       case '2':
         keypadButton2();
         break;
+
       case '3':
         keypadButton3();
         break;
+      
       case '4':
         keypadButton4();
         break;
+      
       case '5':
         keypadButton5();
         break;
+      
       case '6':
         keypadButton6();
         break;
+      
       case '7':
         keypadButton7();
         break;
+      
       case '8':
         keypadButton8();
         break;
+      
       case '9':
         keypadButton9();
         break;
+      
       case '0':
         keypadButton0();
         break;
+      
       case '#':
         keypadButtonHash();
         break;
+      
       case '*':
         keypadButtonStar();
         break;
+      
       case 'A':
         keypadButtonA();
         break;
+      
       case 'B':
         keypadButtonB();
         break;
+      
       case 'C':
         keypadButtonC();
         break;
+      
       case 'D':
         keypadButtonD();
         break;
       }
     }
 
-    // Boucle pour insérer un délais entre de cliques sur la télécommande Google Chromecast.
+    // Boucle pour insérer un délais entre de cliques sur la télécommande Google Chromecast pour éviter de détecter un double clique accidentellement.
     if (IRRemoteCounter != 0)
     {
-      if (IRRemoteCounter == 500)
+      if (IRRemoteCounter == 250)
       {
         IRRemoteCounter = 0;
       }
+
       else
       {
         IRRemoteCounter++;
@@ -320,11 +346,13 @@ void loop()
       if (IRRemoteCounter == 0)
       {
         IRRemoteCounter = 1;
+
         switch (irrecv.decodedIRData.decodedRawData)
         {
         case 4244768519: // ON/OFF.
           switchTV(2);
           break;
+
         case 4261480199: // Source.
           if (digitalRead(PIN_LED_CUBE_RELAY) == LOW && multicolorMode == false)
           {
@@ -337,21 +365,22 @@ void loop()
             switchMulticolor(0);
             switchLEDCube(0);
           }
+          break;
 
-          break;
         case 4161210119: // Vol+.
-          delay(1000); // Ce délais permet d'attendre que le bouton de la télécommande soir relachée pour ne pas créer d'interférences avec la DEL qui gère la sono.
-          sonoVolume(1);
+          volumeSono(1);
           break;
+
         case 4094363399: // Vol-.
-          delay(1000); // Ce délais permet d'attendre que le bouton de la télécommande soir relachée pour ne pas créer d'interférences avec la DEL qui gère la sono.
-          sonoVolume(0);
+          volumeSono(0);
           break;
+
         case 4027516679: // Mute.
-          delay(1000); // Ce délais permet d'attendre que le bouton de la télécommande soir relachée pour ne pas créer d'interférences avec la DEL qui gère la sono.
-          sonoVolume(2);
+          volumeSono(2);
+          break;
         }
       }
+
       irrecv.resume();
     }
 
@@ -362,12 +391,12 @@ void loop()
     }
 
     // Gestion du double-clique sur la touche 9 pour remettre à zéro le décompte de l'alimentation allumée.
-    if (button9Timer > 0)
+    if (button4Timer > 0)
     {
-      button9Timer++;
-      if (button9Timer >= 750)
+      button4Timer++;
+      if (button4Timer >= 250)
       {
-        button9Timer = 0;
+        button4Timer = 0;
       }
     }
 
@@ -396,8 +425,11 @@ void loop()
       }
     }
   }
+
+  // Ce morceau de code est éxécuté lorsque le bouton "ne pas déranger" est activé.
   else if (muteModePreviousState == false)
   {
+    // On attend 10 millisecondes pour vérifier si ce n'est pas une fausse alerte.
     delay(10);
     muteButtonState = digitalRead(PIN_MUTE_BUTTON);
     if (muteButtonState == LOW)

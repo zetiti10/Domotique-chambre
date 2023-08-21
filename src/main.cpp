@@ -52,8 +52,8 @@ char keypadHexaKeys[KEYPAD_ROWS][KEYPAD_COLS] = {
     {'4', '5', '6', 'B'},
     {'7', '8', '9', 'C'},
     {'*', '0', '#', 'D'}};
-byte keypadRowPins[KEYPAD_ROWS] = {30, 32, 34, 36};
-byte keypadColPins[KEYPAD_COLS] = {31, 33, 35, 37};
+byte keypadRowPins[KEYPAD_ROWS] = {31, 33, 35, 37};
+byte keypadColPins[KEYPAD_COLS] = {30, 32, 34, 36};
 Keypad keypad = Keypad(makeKeymap(keypadHexaKeys), keypadRowPins, keypadColPins, KEYPAD_ROWS, KEYPAD_COLS);
 
 // Création de l'écran OLED qui affiche des informations sur le système.

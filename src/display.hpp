@@ -18,5 +18,6 @@ void printKeypadMode(String mode);
 void printMicroSensibility();
 void printMulticolorSpeed();
 void printVolumePrecision();
+void displaySheduler();
 
 #endif

@@ -1,23 +1,35 @@
 #ifndef KEYPAD_FUNCTIONS
 #define KEYPAD_FUNCTIONS
 
-extern String keypadMode;
+#define LIGHTS_MENU 1
 
-void keypadButton1();
-void keypadButton2();
-void keypadButton3();
-void keypadButton4();
-void keypadButton5();
-void keypadButton6();
-void keypadButton7();
-void keypadButton8();
-void keypadButton9();
-void keypadButton0();
-void keypadButtonHash();
-void keypadButtonStar();
-void keypadButtonA();
-void keypadButtonB();
-void keypadButtonC();
-void keypadButtonD();
+#define SOFA_LIGHT_CONTROL_SUBMENU 12
+#define SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU 121
+#define SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU 122
+#define SOFA_LIGHT_EFFECT_CONTROL_SUBMENU 123
+
+#define BEDSIDE_LIGHT_CONTROL_SUBMENU 13
+#define BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU 131
+#define BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU 132
+#define BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU 133
+#define BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU 134
+
+#define RGB_STRIP_CONTROL_SUBMENU 15
+#define RGB_STRIP_COLOR_CONTROL_SUBMENU 151
+#define RGB_STRIP_EFFECT_CONTROL_SUBMENU 152
+
+#define DEVICES_MENU 2
+#define TV_MENU 3
+#define CONFIGURATION_MENU 4
+
+
+extern int keypadMenu;
+extern int keypadSubMenu;
+extern int keypadPreviousMenu;
+extern boolean longClick;
+
+extern unsigned long pressedKeypadTouchTime;
+
+void keypadButtonPressed(char key, boolean longPress);
 
 #endif

@@ -145,7 +145,7 @@ void printLEDState()
 {
   display.clearDisplay();
   display.setTextSize(1);
-  
+
   display.setCursor(23, 0);
   display.println(F("R"));
   int rrr = int(map(RLEDValue, 0, 255, 14, 32));
@@ -300,4 +300,18 @@ void printVolumePrecision()
   display.println(volumePrecision);
   display.display();
   ScreenCurrentOnTime = ScreenOnTime;
+}
+
+void displaySheduler()
+{
+  if (ScreenCurrentOnTime >> 0)
+  {
+    ScreenCurrentOnTime--;
+
+    if (ScreenCurrentOnTime == 0)
+    {
+      display.clearDisplay();
+      display.display();
+    }
+  }
 }

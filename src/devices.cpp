@@ -11,224 +11,729 @@
 #include <Adafruit_SSD1306.h>
 #define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
 #include <IRremote.hpp>
+#include <PN532_HSU.h>
+#include <PN532.h>
+#include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include <pinDefinitions.hpp>
 #include <display.hpp>
 #include <main.hpp>
 #include <devices.hpp>
-#include <alarm.hpp>
 #include <pitches.hpp>
-#include <LEDStrips.hpp>
 #include <TimerFreeTone.h>
 
-// Variables globales.
-int volumePrecision = 5;
+/////////////////////////////
+// Gestion du module disco //
+/////////////////////////////
 
-// Les fonction de contrôle ont un paramètre : O = éteindre - 1 = allumer - 2 = changer l'état.
+boolean discoState = false;
 
-void switchFan(int action)
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
+void switchDisco(int action)
 {
-    if (action == 0)
+    if (action == SWITCH_OFF)
     {
-        if (digitalRead(PIN_FAN_RELAY) == HIGH)
+        if (discoState == true)
         {
-            digitalWrite(PIN_FAN_RELAY, LOW);
-            printDeviceState("fan", false);
+            digitalWrite(PIN_DISCO_RELAY, LOW);
+            printDeviceState("disco", false);
+            discoState = false;
         }
     }
 
-    else if (action == 1)
+    else if (action == SWITCH_ON)
     {
-        if (digitalRead(PIN_FAN_RELAY) == LOW)
+        if (discoState == false)
         {
-            digitalWrite(PIN_FAN_RELAY, HIGH);
-            printDeviceState("fan", true);
+            digitalWrite(PIN_DISCO_RELAY, HIGH);
+            printDeviceState("disco", true);
+            discoState = true;
         }
     }
 
     else
     {
-        if (digitalRead(PIN_FAN_RELAY) == LOW)
+        if (discoState == false)
         {
-            switchFan(1);
+            switchDisco(SWITCH_ON);
         }
 
         else
         {
-            switchFan(0);
+            switchDisco(SWITCH_OFF);
         }
     }
 }
 
+////////////////////////////
+// Gestion du cube de DEL //
+////////////////////////////
+
+boolean LEDCubeState = false;
+
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchLEDCube(int action)
 {
-    if (action == 0)
+    if (action == SWITCH_OFF)
     {
-        if (digitalRead(PIN_LED_CUBE_RELAY) == HIGH)
+        if (LEDCubeState == true)
         {
             digitalWrite(PIN_LED_CUBE_RELAY, LOW);
             printDeviceState("cube", false);
+            LEDCubeState = false;
         }
     }
 
-    else if (action == 1)
+    else if (action == SWITCH_ON)
     {
-        if (digitalRead(PIN_LED_CUBE_RELAY) == LOW)
+        if (LEDCubeState == false)
         {
             digitalWrite(PIN_LED_CUBE_RELAY, HIGH);
             printDeviceState("cube", true);
+            LEDCubeState = true;
         }
     }
 
     else
     {
-        if (digitalRead(PIN_LED_CUBE_RELAY) == LOW)
+        if (LEDCubeState == false)
         {
-            switchLEDCube(1);
+            switchLEDCube(SWITCH_ON);
         }
 
         else
         {
-            switchLEDCube(0);
+            switchLEDCube(SWITCH_OFF);
         }
     }
 }
 
+///////////////////////////////////
+// Gestion de la maquette de rue //
+///////////////////////////////////
+
+boolean streetState = false;
+
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
+void switchStreet(int action)
+{
+    if (action == SWITCH_OFF)
+    {
+        if (streetState == true)
+        {
+            digitalWrite(PIN_STREET_RELAY, LOW);
+            printDeviceState("street", false);
+            streetState = false;
+        }
+    }
+
+    else if (action == SWITCH_ON)
+    {
+        if (streetState == false)
+        {
+            digitalWrite(PIN_STREET_RELAY, HIGH);
+            printDeviceState("street", true);
+            streetState = true;
+        }
+    }
+
+    else
+    {
+        if (streetState == false)
+        {
+            switchStreet(SWITCH_ON);
+        }
+
+        else
+        {
+            switchStreet(SWITCH_OFF);
+        }
+    }
+}
+
+///////////////////////////////////
+// Gestion de la lampe de bureau //
+///////////////////////////////////
+
+boolean deskLightState = false;
+
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
+void switchDeskLight(int action)
+{
+    if (action == SWITCH_OFF)
+    {
+        if (deskLightState == true)
+        {
+            digitalWrite(PIN_DESK_LIGHT_RELAY, LOW);
+            printDeviceState("deskLight", false);
+            deskLightState = false;
+        }
+    }
+
+    else if (action == SWITCH_ON)
+    {
+        if (deskLightState == false)
+        {
+            digitalWrite(PIN_DESK_LIGHT_RELAY, HIGH);
+            printDeviceState("deskLight", true);
+            deskLightState = true;
+        }
+    }
+
+    else
+    {
+        if (deskLightState == false)
+        {
+            switchDeskLight(SWITCH_ON);
+        }
+
+        else
+        {
+            switchDeskLight(SWITCH_OFF);
+        }
+    }
+}
+
+////////////////////////
+// Gestion du plateau //
+////////////////////////
+
+boolean trayState = false;
+
+// Paramètre :  CLOSE = fermet le plateau - OPEN = ouvrir le plateau - TOGGLE = basculer le plateau.
 void switchTray(int action)
 {
-    if (action == 0)
+    if (action == CLOSE)
     {
-        if (trayIsOpen == true)
-    {
-        digitalWrite(PIN_POWER_SUPPLY, LOW);
-        digitalWrite(PIN_MOTOR_TRAY_1, LOW);
-        digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-        for (int i = 0; i < 11; i++)
+        if (trayState == true)
         {
-            display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-            display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
-        }
-        display.display();
-        for (int i = 0; i < 12; i++)
-        {
-            display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-            display.drawLine(45, 22 - i, 83, 22 - i, SSD1306_BLACK);
+            digitalWrite(PIN_MOTOR_TRAY_1, LOW);
+            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
+            for (int i = 0; i < 11; i++)
+            {
+                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
+                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
+            }
             display.display();
-            delay(80);
+            for (int i = 0; i < 12; i++)
+            {
+                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
+                display.drawLine(45, 22 - i, 83, 22 - i, SSD1306_BLACK);
+                display.display();
+                delay(80);
+            }
+            ScreenCurrentOnTime = ScreenOnTime;
+            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
+            trayState = false;
         }
-        ScreenCurrentOnTime = ScreenOnTime;
-        digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-        digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-        trayIsOpen = false;
-        powerSupplyControl();
-    }
     }
 
-    else if (action == 1)
+    else if (action == OPEN)
     {
-        if (trayIsOpen == false)
-    {
-        digitalWrite(PIN_POWER_SUPPLY, LOW);
-        digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-        digitalWrite(PIN_MOTOR_TRAY_2, LOW);
-        display.clearDisplay();
-        for (int i = 0; i < 11; i++)
+        if (trayState == false)
         {
-            display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-            display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
-            display.display();
-            delay(80);
+            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+            digitalWrite(PIN_MOTOR_TRAY_2, LOW);
+            display.clearDisplay();
+            for (int i = 0; i < 11; i++)
+            {
+                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
+                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
+                display.display();
+                delay(80);
+            }
+            ScreenCurrentOnTime = ScreenOnTime;
+            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
+            trayState = true;
         }
-        ScreenCurrentOnTime = ScreenOnTime;
-        digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-        digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-        trayIsOpen = true;
-        powerSupplyControl();
-    }
     }
 
     else
     {
-        if (trayIsOpen == false)
+        if (trayState == false)
         {
-            switchTray(1);
+            switchTray(OPEN);
         }
 
         else
         {
-            switchTray(0);
+            switchTray(CLOSE);
         }
     }
 }
 
+/////////////////////////// RVB ///////////////////////////////////
+int RLEDValue = 0;
+int GLEDValue = 0;
+int BLEDValue = 0;
+
+int RLEDOFFValue = 0;
+int GLEDOFFValue = 0;
+int BLEDOFFValue = 0;
+
+int RGBStripPrecision = 20;
+
+boolean RGBStripState = false;
+
+void switchRGBStrip(int action)
+{
+    if (multicolorState == true)
+    {
+        switchMulticolor(SWITCH_OFF);
+    }
+
+    if (soundReactState == true)
+    {
+        switchSoundReact(SWITCH_OFF);
+    }
+
+    if (action == SWITCH_OFF)
+    {
+        if (RGBStripState == true)
+        {
+            RLEDOFFValue = RLEDValue;
+            GLEDOFFValue = GLEDValue;
+            BLEDOFFValue = BLEDValue;
+
+            RLEDValue = 0;
+            GLEDValue = 0;
+            BLEDValue = 0;
+
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
+
+            RGBStripState = false;
+        }
+    }
+
+    else if (action == SWITCH_ON)
+    {
+        if (RGBStripState == false)
+        {
+            RLEDValue = RLEDOFFValue;
+            RLEDValue = RLEDOFFValue;
+            RLEDValue = RLEDOFFValue;
+
+            RLEDOFFValue = 0;
+            GLEDOFFValue = 0;
+            BLEDOFFValue = 0;
+
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
+
+            RGBStripState = true;
+        }
+    }
+
+    else
+    {
+        if (RGBStripState == false)
+        {
+            switchRGBStrip(SWITCH_ON);
+        }
+
+        else
+        {
+            switchRGBStrip(SWITCH_OFF);
+        }
+    }
+}
+
+void controlRGBStrip(int r, int g, int b)
+{
+    if (multicolorState == true)
+    {
+        switchMulticolor(SWITCH_OFF);
+    }
+
+    if (soundReactState == true)
+    {
+        switchSoundReact(SWITCH_OFF);
+    }
+
+    if (r <= 0 && g <= 0 && b <= 0)
+    {
+        switchRGBStrip(SWITCH_OFF);
+        return;
+    }
+
+    if (RGBStripState == false)
+    {
+        RLEDOFFValue = 0;
+        GLEDOFFValue = 0;
+        BLEDOFFValue = 0;
+
+        RGBStripState = true;
+    }
+
+    if (r < 0)
+        r = 0;
+
+    if (r > 255)
+        r = 255;
+
+    if (g < 0)
+        g = 0;
+
+    if (g > 255)
+        g = 255;
+
+    if (b < 0)
+        b = 0;
+
+    if (b > 255)
+        b = 255;
+
+    RLEDValue = r;
+    RLEDValue = g;
+    RLEDValue = b;
+
+    analogWrite(PIN_RED_LED, RLEDValue);
+    analogWrite(PIN_GREEN_LED, GLEDValue);
+    analogWrite(PIN_BLUE_LED, BLEDValue);
+}
+
+/////////////////////////////////////////////////
+// Gestion du mode multicolore du ruban de DEL //
+/////////////////////////////////////////////////
+
+boolean multicolorState = false;
+int multicolorSpeed = 10;
+int multicolorStep = 0;
+unsigned long multicolorLastTime = 0;
+
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchMulticolor(int action)
 {
-    if (action == 0)
+    if (action == SWITCH_OFF)
     {
-        if (multicolorMode == true)
+        if (multicolorState == true)
         {
-            stopMulticolor();
+            multicolorState = false;
+            printDeviceState("multicolor", false);
+            RLEDValue = 0;
+            GLEDValue = 0;
+            BLEDValue = 0;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
+            multicolorStep = 0;
         }
     }
 
-    else if (action == 1)
+    else if (action == SWITCH_ON)
     {
-        if (multicolorMode == false)
+        if (multicolorState == false)
         {
-            multicolorMode = true;
+            switchSoundReact(SWITCH_OFF);
+            multicolorState = true;
             printDeviceState("multicolor", true);
+            RLEDValue = 0;
+            GLEDValue = 0;
+            BLEDValue = 255;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
+            multicolorLastTime = millis();
         }
     }
 
     else
     {
-        if (multicolorMode == false)
+        if (multicolorState == false)
         {
-           switchMulticolor(1);
+            switchMulticolor(SWITCH_ON);
         }
 
         else
         {
-            switchMulticolor(0);
+            switchMulticolor(SWITCH_OFF);
         }
     }
 }
 
+void multicolorScheduler()
+{
+
+    if (multicolorState == false)
+    {
+        return;
+    }
+
+    unsigned long actualTime = millis();
+
+    if ((actualTime - multicolorLastTime) >= multicolorSpeed)
+    {
+        multicolorLastTime = actualTime;
+
+        if (multicolorStep == 0)
+        {
+            RLEDValue++;
+            BLEDValue--;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
+
+            if (RLEDValue == 255)
+            {
+                multicolorStep = 1;
+            }
+        }
+
+        else if (multicolorStep == 1)
+        {
+            GLEDValue++;
+            RLEDValue--;
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_RED_LED, RLEDValue);
+
+            if (GLEDValue == 255)
+            {
+                multicolorStep = 2;
+            }
+        }
+
+        else if (multicolorStep == 2)
+        {
+            BLEDValue++;
+            GLEDValue--;
+            analogWrite(PIN_BLUE_LED, BLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+
+            if (BLEDValue == 255)
+            {
+                multicolorStep = 0;
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////////////
+// Gestion du mode son-réaction du ruban de DEL //
+//////////////////////////////////////////////////
+
+boolean soundReactState = false;
+int soundReactMax = 0;
+double soundReactSensibility = 0.75;
+unsigned long soundReactLastTime = 0;
+
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchSoundReact(int action)
 {
-    if (action == 0)
+    if (action == SWITCH_OFF)
     {
-        if (soundReactMode == true)
+        if (soundReactState == true)
         {
-            stopSoundReact();
+            soundReactState = false;
+            printDeviceState("soundReact", false);
+            soundReactMax = 0;
+            RLEDValue = 0;
+            GLEDValue = 0;
+            BLEDValue = 0;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
         }
     }
 
-    else if (action == 1)
+    else if (action == SWITCH_ON)
     {
-        if (soundReactMode == false)
+        if (soundReactState == false)
         {
-            soundReactMode = true;
+            switchMulticolor(SWITCH_OFF);
+            soundReactState = true;
             printDeviceState("SoundReact", true);
+            randomSeed(PIN_RANDOM_SEED_GENERATOR);
+            soundReactLastTime = millis();
+            RLEDValue = 0;
+            GLEDValue = 0;
+            BLEDValue = 0;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
         }
     }
 
     else
     {
-        if (soundReactMode == false)
+        if (soundReactState == false)
         {
-            switchSoundReact(1);
+            switchSoundReact(SWITCH_ON);
         }
 
         else
         {
-            switchSoundReact(0);
+            switchSoundReact(SWITCH_OFF);
         }
     }
 }
 
-// Permet de faire bouger le servomoteur sans bibliothèque.
+void soundReactScheduler()
+{
+
+    if (soundReactState == false)
+    {
+        return;
+    }
+
+    int sound = analogRead(PIN_MICROPHONE);
+    sound = abs(sound);
+    sound = sound - 287;
+
+    boolean soundReactMaxChanged = false;
+
+    if (sound > soundReactMax)
+    {
+        soundReactMax == sound;
+        soundReactMaxChanged = true;
+    }
+
+    unsigned long actualTime = millis();
+
+    if ((actualTime - soundReactLastTime) >= 100)
+    {
+        if (soundReactMaxChanged == false)
+        {
+            soundReactMax--;
+        }
+
+        if (sound >= (soundReactSensibility * soundReactMax))
+        {
+            int eliminatedColor = random(2);
+            int firstColor = random(255);
+            int secondColor = random(255);
+
+            if (eliminatedColor == 0)
+            {
+                RLEDValue == 0;
+                GLEDValue == firstColor;
+                BLEDValue == secondColor;
+            }
+
+            else if (eliminatedColor == 1)
+            {
+                RLEDValue == firstColor;
+                GLEDValue == 0;
+                BLEDValue == secondColor;
+            }
+
+            else if (eliminatedColor == 2)
+            {
+                RLEDValue == firstColor;
+                GLEDValue == secondColor;
+                BLEDValue == 0;
+            }
+        }
+    }
+
+    else
+    {
+        if (RLEDValue > 0)
+        {
+            RLEDValue--;
+        }
+
+        if (GLEDValue > 0)
+        {
+            GLEDValue--;
+        }
+
+        if (BLEDValue > 0)
+        {
+            BLEDValue--;
+        }
+    }
+
+    analogWrite(PIN_RED_LED, RLEDValue);
+    analogWrite(PIN_GREEN_LED, GLEDValue);
+    analogWrite(PIN_BLUE_LED, BLEDValue);
+}
+
+//////////////////////////////////
+// Gestion du volume de la sono //
+//////////////////////////////////
+
+int volumePrecision = 5;
+int volume = 0; // Récupérer la valeur de EEPROM !
+boolean volumeMuted = false;
+
+// Paramètre :  DECREASE = diminuer le volume - INCREASE = augmenter le volume - MUTE = couper le son - UNMUTE = réetablir le son - TOGGLE_MUTE = basculer le son.
+void volumeSono(int action)
+{
+    if (TVState == true)
+    {
+        if (action == DECREASE)
+        {
+            if ((volume - volumePrecision) >= 0)
+            {
+                printVolume(DECREASE);
+                IrSender.sendNEC(0x44C1, 0xC7, volumePrecision);
+                volume = volume - volumePrecision;
+            }
+        }
+
+        else if (action == INCREASE)
+        {
+            if ((volume + volumePrecision) <= 100)
+            {
+                printVolume(INCREASE);
+                IrSender.sendNEC(0x44C1, 0x47, volumePrecision);
+                volume = volume + volumePrecision;
+            }
+        }
+
+        else if (action == MUTE)
+        {
+            if (volumeMuted == false)
+            {
+                printVolume(MUTE);
+                IrSender.sendNEC(0x44C1, 0x77, 3);
+                volumeMuted = true;
+            }
+        }
+
+        else if (action == UNMUTE)
+        {
+            if (volumeMuted == true)
+            {
+                printVolume(MUTE);
+                IrSender.sendNEC(0x44C1, 0x77, 3);
+                volumeMuted = false;
+            }
+        }
+
+        else if (action == TOGGLE_MUTE)
+        {
+            if (volumeMuted == false)
+            {
+                volumeSono(MUTE);
+            }
+
+            else
+            {
+                volumeSono(UNMUTE);
+            }
+        }
+    }
+}
+
+//////////////////////////////
+// Gestion de la télévision //
+//////////////////////////////
+
+boolean TVState = false;
+
+// Basculer l'état de la sono.
+void switchSono()
+{
+    IrSender.sendNEC(0x44C1, 0x87, 3);
+}
+
+// Fonction qui permet de faire bouger le servomoteur sans bibliothèque.
 void moveDisplayServo(int pos)
 {
     int pulseWidth = map(pos, 0, 180, 600, 2400);
@@ -238,7 +743,7 @@ void moveDisplayServo(int pos)
     delay(2);
 }
 
-// Effectue un clique avec le servomoteur sur le bouton ON/OFF de l'écran.
+// Fonction qui effectue un clique avec le servomoteur sur le bouton ON/OFF de l'écran.
 void switchDisplay()
 {
     for (int pos = 80; pos <= 130; pos++)
@@ -259,214 +764,249 @@ void switchDisplay()
     }
 }
 
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchTV(int action)
 {
-    if (action == 0)
+    if (action == SWITCH_OFF)
     {
-        if (digitalRead(PIN_TV_RELAY) == HIGH)
+        if (TVState == true)
         {
-            digitalWrite(PIN_TV_RELAY, LOW);
             printDeviceState("tv", false);
             switchDisplay();
             switchSono();
+            TVState = false;
         }
     }
 
-    else if (action == 1)
+    else if (action == SWITCH_ON)
     {
-        if (digitalRead(PIN_TV_RELAY) == LOW)
+        if (TVState == false)
         {
-            digitalWrite(PIN_TV_RELAY, HIGH);
             printDeviceState("tv", true);
             switchDisplay();
             switchSono();
+            TVState = false;
         }
     }
 
     else
     {
-        if (digitalRead(PIN_TV_RELAY) == LOW)
+        if (TVState == false)
         {
-            switchTV(1);
+            switchTV(SWITCH_ON);
         }
 
         else
         {
-            switchTV(0);
+            switchTV(SWITCH_OFF);
         }
     }
 }
 
+/////////////////////////
+// Gestion de l'alarme //
+/////////////////////////
+
+boolean alarmState = false;
+boolean alarmTriggered = false;
+unsigned long alarmAutoTriggerOFFCounter = 0;
+unsigned long alarmTriggeredLightsCounter = 0;
+
+// Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état - STOP_RINGING = arrêter la sonnerie.
 void switchAlarm(int action)
 {
-    if (action == 0)
+    if (action == SWITCH_OFF)
     {
-        if (alarmMode == true)
+        if (alarmState == true)
         {
-            if (alarmIsRinging == true)
+            if (alarmTriggered == true)
             {
-                stopAlarme();
+                stopAlarmRinging();
             }
 
+            digitalWrite(PIN_DOOR_LED, LOW);
             printAlarm(0);
-            alarmMode = false;
-            infoAlarme();
-            yesSound();
+            alarmState = false;
         }
     }
 
-    else if (action == 1)
+    else if (action == SWITCH_ON)
     {
-        if (alarmMode == false)
+        if (alarmState == false)
         {
+            digitalWrite(PIN_DOOR_LED, HIGH);
             printAlarm(1);
-            alarmMode = true;
-            infoAlarme();
-            yesSound();
+            alarmState = true;
         }
     }
 
-    else
+    else if (action == TOGGLE)
     {
-        if (alarmMode == false)
+        if (alarmState == false)
         {
-            switchAlarm(1);
+            switchAlarm(SWITCH_ON);
         }
 
         else
         {
-            switchAlarm(0);
+            switchAlarm(SWITCH_OFF);
+        }
+    }
+
+    else
+    {
+        if (alarmTriggered == true)
+        {
+            stopAlarmRinging();
         }
     }
 }
 
-// Paramètre :  0 = diminuer le volume - 1 = augmenter le volume - 2 = couper le son.
-void volumeSono(int action)
+// Fonction qui arrête de faire sonner l'alarme proprement.
+void stopAlarmRinging()
 {
-    if (action == 0)
+    if (alarmTriggered == false)
     {
-        printVolume(0);
-        IrSender.sendNEC(0x44C1, 0xC7, volumePrecision);
+        return;
     }
 
-    else if (action == 1)
-    {
-        printVolume(1);
-        IrSender.sendNEC(0x44C1, 0x47, volumePrecision);
-    }
+    alarmTriggered = false;
+    digitalWrite(PIN_ALARM_RELAY, LOW);
+    digitalWrite(PIN_RED_LED, LOW);
+    controlRGBStrip(0, 0, 0);
+    digitalWrite(PIN_DOOR_LED, LOW);
+    printAlarm(3);
 
-    else
-    {
-        printVolume(2);
-        IrSender.sendNEC(0x44C1, 0x77, 3);
-    }
-}
-
-// Basculer l'état de la sono.
-void switchSono()
-{
-    IrSender.sendNEC(0x44C1, 0x87, 3);
-}
-
-// Cette fonction sert à contrôler l'alimentation (pour l'allumer / l'éteindre) en fonction de si il y a des périphériques d'allumés ou non.
-void powerSupplyControl()
-{
-
-    if (digitalRead(PIN_ALARM_RELAY) == HIGH || digitalRead(PIN_FAN_RELAY) == HIGH || digitalRead(PIN_LED_CUBE_RELAY) == HIGH || digitalRead(PIN_TV_RELAY) == HIGH || digitalRead(PIN_WARDROBE_LIGHTS_RELAY) == HIGH || digitalRead(PIN_RELAY_6) == HIGH || digitalRead(PIN_RELAY_7) == HIGH || digitalRead(PIN_RELAY_8) == HIGH || soundReactMode == true)
-    {
-        digitalWrite(PIN_POWER_SUPPLY, LOW);
-    }
-
-    else if (RLEDValue != 0 || GLEDValue != 0 || BLEDValue != 0 || powerSupplyDelayON > 0)
-    {
-        digitalWrite(PIN_POWER_SUPPLY, LOW);
-    }
-
-    else
-    {
-        digitalWrite(PIN_POWER_SUPPLY, HIGH);
-    }
-}
-
-void stopEverything()
-{
-    powerSupplyDelayON = 0;
-    switchFan(0);
-    switchLEDCube(0);
-    switchTV(0);
-    switchTray(0);
-    switchAlarm(0);
-    switchMulticolor(0);
-    switchSoundReact(0);
+    display.invertDisplay(false);
     display.clearDisplay();
     display.display();
-    powerSupplyControl();
 }
 
-void yesSound()
+void triggerAlarm()
 {
-    TimerFreeTone(PIN_BUZZER, NOTE_G5, 500);
-}
-
-void noSound()
-{
-    TimerFreeTone(PIN_BUZZER, NOTE_D4, 500);
-}
-
-// Les deux fonctions suivantes sont utilisées pour produire la musique de la sonnette.
-int doorbellMusicNotes[] = {
-    NOTE_E5,
-    8,
-    NOTE_D5,
-    8,
-    NOTE_FS4,
-    4,
-    NOTE_GS4,
-    4,
-    NOTE_CS5,
-    8,
-    NOTE_B4,
-    8,
-    NOTE_D4,
-    4,
-    NOTE_E4,
-    4,
-    NOTE_B4,
-    8,
-    NOTE_A4,
-    8,
-    NOTE_CS4,
-    4,
-    NOTE_E4,
-    4,
-    NOTE_A4,
-    2,
-};
-
-void doorbellMusic()
-{
-
-    int divider = 0;
-    int noteDuration = 0;
-
-    for (unsigned long thisNote = 0; thisNote < (sizeof(doorbellMusicNotes) / sizeof(doorbellMusicNotes[0])); thisNote = thisNote + 2)
+    if (alarmState == false)
     {
-
-        divider = doorbellMusicNotes[thisNote + 1];
-
-        if (divider > 0)
-        {
-
-            noteDuration = ((60000 * 4) / 180) / divider;
-        }
-
-        else if (divider < 0)
-        {
-
-            noteDuration = ((60000 * 4) / 180) / abs(divider);
-            noteDuration *= 1.5;
-        }
-
-        TimerFreeTone(PIN_BUZZER, doorbellMusicNotes[thisNote], noteDuration * 0.9);
+        alarmState = true;
     }
+
+    digitalWrite(PIN_ALARM_RELAY, HIGH);
+    alarmTriggered = true;
+    alarmTriggeredLightsCounter = millis();
+    alarmAutoTriggerOFFCounter = millis();
+}
+
+// Boucle qui s'exécute lorsque l'alarme sonne. Elle permet de l'éteindre après un certain temps si la porte est refermée. De plus, cette boucle gère le clignottement des rubans de DELs en rouge.
+void alarmSheduler()
+{
+    uint8_t uid[] = {0, 0, 0, 0, 0};
+    uint8_t uidLength;
+
+    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 1))
+    {
+        if (checkCard(uid) == true)
+        {
+            if (alarmTriggered == true)
+            {
+                stopAlarmRinging();
+            }
+
+            else
+            {
+                switchAlarm(TOGGLE);
+            }
+        }
+
+        else
+        {
+            triggerAlarm();
+        }
+    }
+
+    if (alarmState == false)
+    {
+        return;
+    }
+
+    if (digitalRead(PIN_BEDROOM_DOOR_SENSOR) == HIGH && alarmTriggered == false)
+    {
+        triggerAlarm();
+    }
+
+    if (alarmTriggered == true)
+    {
+        // Si la porte est fermée, on lance un compteur de 10 secondes avant que l'alarme arrête de sonner. Si la porte est (r)ouverte, le compteur est remis à 0.
+        boolean bedroomDoorState = digitalRead(PIN_BEDROOM_DOOR_SENSOR);
+
+        if (bedroomDoorState == LOW)
+        {
+            if ((millis() - alarmAutoTriggerOFFCounter) >= 10000)
+            {
+                stopAlarmRinging();
+            }
+        }
+
+        else
+        {
+            alarmAutoTriggerOFFCounter = millis();
+        }
+
+        // On fait clignoter la chambre.
+        if ((millis() - alarmTriggeredLightsCounter) >= 200 && (millis() - alarmTriggeredLightsCounter) >= 300)
+        {
+            alarmTriggeredLightsCounter = alarmTriggeredLightsCounter - 100;
+            controlRGBStrip(255, 0, 0);
+            digitalWrite(PIN_DOOR_LED, HIGH);
+            printAlarm(2);
+        }
+
+        if ((millis() - alarmTriggeredLightsCounter) >= 200 && (millis() - alarmTriggeredLightsCounter) >= 300)
+        {
+            alarmTriggeredLightsCounter = millis();
+            controlRGBStrip(0, 0, 0);
+            digitalWrite(PIN_DOOR_LED, LOW);
+            printAlarm(3);
+        }
+    }
+}
+
+void storeCard(uint8_t card[5])
+{
+    int storeLocation = EEPROM.read(0) * 5 + 11;
+
+    for (int i = 0; i < 5; i++)
+    {
+        EEPROM.write(storeLocation + i, card[i]);
+    }
+
+    EEPROM.write(0, EEPROM.read(0) + 1);
+}
+
+void removeCards()
+{
+    int storedCardsNumber = EEPROM.read(0);
+
+    for (int i = 0; i < storedCardsNumber; i++)
+    {
+        int storeLocation = i * 5 + 11;
+
+        for (int j = 0; j < 5; j++)
+        {
+            EEPROM.write(storeLocation + j, 0);
+        }
+    }
+}
+
+boolean checkCard(uint8_t card[5])
+{
+    int storedCardsNumber = EEPROM.read(0);
+
+    for (int i = 0; i < storedCardsNumber; i++)
+    {
+        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3] && EEPROM.read(i * 5 + 15) == card[4])
+        {
+            return true;
+        }
+    }
+
+    return false;
 }

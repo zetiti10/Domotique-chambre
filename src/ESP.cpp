@@ -248,7 +248,7 @@ void receivedData()
       int truc = temperature * 100;
       messageToSend += truc;
 
-      if (multicolorMode)
+      if (multicolorState)
       {
         messageToSend += 1;
       }
@@ -258,7 +258,7 @@ void receivedData()
         messageToSend += 0;
       }
 
-      if (soundReactMode)
+      if (soundReactState)
       {
         messageToSend += 1;
       }

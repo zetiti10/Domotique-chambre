@@ -14,20 +14,403 @@
 #include <main.hpp>
 #include <keypadFunctions.hpp>
 #include <devices.hpp>
-#include <LEDStrips.hpp>
 #include <pinDefinitions.hpp>
 #include <display.hpp>
 
-String keypadMode = "A";
+int keypadMenu = LIGHTS_MENU;
 
-void keypadButton1()
+unsigned long pressedKeypadTouchTime = 0;
+
+void keypadButtonPressed(char key, boolean longPress)
 {
-  if (keypadMode == "A")
+
+  if (key == 'A')
+  {
+    keypadMenu = LIGHTS_MENU;
+    printKeypadMode("A");
+    return;
+  }
+
+  if (keypadMenu == LIGHTS_MENU)
+  {
+    switch (key)
+    {
+    case '1':
+      // Basculer lumière plafond et afficher à l'écran.
+      break;
+
+    case '2':
+      if (longPress == false)
+      {
+        // Basculer lumière canapé et afficher à l'écran.
+      }
+
+      else
+      {
+        keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
+        // Affichage à l'écran des options.
+      }
+
+      break;
+
+    case '3':
+      if (longPress == false)
+      {
+        // Basculer lampe de chevet et afficher à l'écran.
+      }
+
+      else
+      {
+        keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
+        // Affichage à l'écran des options.
+      }
+
+      break;
+
+    case '4':
+      // Basculer lampe de bureau et afficher à l'écran.
+      break;
+
+    case '5':
+      if (longPress == false)
+      {
+        switchRGBStrip(TOGGLE);
+      }
+
+      else
+      {
+        keypadMenu = RGB_STRIP_CONTROL_SUBMENU;
+        // Affichage à l'écran des options.
+      }
+      break;
+
+    case 'D':
+      keypadMenu = DEVICES_MENU;
+      printKeypadMode("B");
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == SOFA_LIGHT_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      keypadMenu = SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case '2':
+      keypadMenu = SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case '3':
+      keypadMenu = SOFA_LIGHT_EFFECT_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case 'B':
+      keypadMenu = LIGHTS_MENU;
+      printKeypadMode("A");
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      // Diminuer la température de couleur.
+      break;
+
+    case '3':
+      // Augmenter la température de couleur.
+      break;
+
+    case 'B':
+      keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      // Diminuer la luminosité.
+      break;
+
+    case '3':
+      // Augmenter la luminosité.
+      break;
+
+    case 'B':
+      keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == SOFA_LIGHT_EFFECT_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case 'B':
+      keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == BEDSIDE_LIGHT_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      keypadMenu = BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case '2':
+      keypadMenu = BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case '3':
+      keypadMenu = BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case '4':
+      keypadMenu = BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case 'B':
+      keypadMenu = LIGHTS_MENU;
+      printKeypadMode("A");
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      // Diminuer la température de couleur.
+      break;
+
+    case '3':
+      // Augmenter la température de couleur.
+      break;
+
+    case 'B':
+      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      // Diminuer la couleur.
+      break;
+
+    case '3':
+      // Augmenter la couleur.
+      break;
+
+    case 'B':
+      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      // Diminuer la luminosité.
+      break;
+
+    case '3':
+      // Augmenter la luminosité.
+      break;
+
+    case 'B':
+      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case 'B':
+      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
+      // Affichage du menu.
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == RGB_STRIP_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      keypadMenu = RGB_STRIP_COLOR_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case '2':
+      keypadMenu = RGB_STRIP_EFFECT_CONTROL_SUBMENU;
+      // Affichage à l'écran.
+      break;
+
+    case 'B':
+      keypadMenu = LIGHTS_MENU;
+      printKeypadMode("A");
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == RGB_STRIP_COLOR_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      controlRGBStrip(RLEDValue + RGBStripPrecision, GLEDValue, BLEDValue);
+      break;
+
+    case '2':
+      controlRGBStrip(RLEDValue, GLEDValue + RGBStripPrecision, BLEDValue);
+      break;
+
+    case '3':
+      controlRGBStrip(RLEDValue, GLEDValue, BLEDValue + RGBStripPrecision);
+      break;
+
+    case '4':
+      controlRGBStrip(RLEDValue - RGBStripPrecision, GLEDValue, BLEDValue);
+      break;
+
+    case '5':
+      controlRGBStrip(RLEDValue, GLEDValue - RGBStripPrecision, BLEDValue);
+      break;
+
+    case '6':
+      controlRGBStrip(RLEDValue, GLEDValue, BLEDValue - RGBStripPrecision);
+      break;
+
+    case 'B':
+      keypadMenu = RGB_STRIP_CONTROL_SUBMENU;
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == RGB_STRIP_EFFECT_CONTROL_SUBMENU)
+  {
+    switch (key)
+    {
+    case '1':
+      switchMulticolor(TOGGLE);
+      break;
+
+    case '2':
+      switchSoundReact(TOGGLE);
+      break;
+
+    case '4':
+      multicolorSpeed++;
+      break;
+
+    case '5':
+      if (soundReactSensibility <= 0.95)
+      {
+        soundReactSensibility = soundReactSensibility + 0.05;
+      }
+      break;
+
+    case '7':
+      if (multicolorSpeed >= 1)
+      {
+        multicolorSpeed = multicolorSpeed -1;
+      }
+      break;
+
+    case '8':
+      if (soundReactSensibility >= 0.05)
+      {
+        soundReactSensibility = soundReactSensibility - 0.05;
+      }
+      break;
+
+    case 'B':
+      keypadMenu = RGB_STRIP_CONTROL_SUBMENU;
+      break;
+
+    default:
+      break;
+    }
+  }
+}
+
+/*void keypadButton1(boolean longPress)
+{
+  if (keypadMenu == MENU_A)
   {
     switchFan(2);
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (RLEDValue <= (255 - LEDPowerSteps))
     {
@@ -37,12 +420,12 @@ void keypadButton1()
     }
   }
 
-  else if (keypadMode == "C")
+  else if (keypadMenu == MENU_C)
   {
     volumeSono(0);
   }
 
-  else if (keypadMode == "D")
+  else if (keypadMenu == MENU_D)
   {
     if (microSensibility < 200)
     {
@@ -53,14 +436,14 @@ void keypadButton1()
   }
 }
 
-void keypadButton2()
+void keypadButton2(boolean longPress)
 {
-  if (keypadMode == "A")
+  if (keypadMenu == MENU_A)
   {
     switchLEDCube(2);
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (GLEDValue <= (255 - LEDPowerSteps))
     {
@@ -70,12 +453,12 @@ void keypadButton2()
     }
   }
 
-  else if (keypadMode == "C")
+  else if (keypadMenu == MENU_C)
   {
     volumeSono(2);
   }
 
-  else if (keypadMode == "D")
+  else if (keypadMenu == MENU_D)
   {
     if (multicolorSpeed < 30)
     {
@@ -86,14 +469,14 @@ void keypadButton2()
   }
 }
 
-void keypadButton3()
+void keypadButton3(boolean longPress)
 {
-  if (keypadMode == "A")
+  if (keypadMenu == MENU_A)
   {
     switchTray(2);
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (BLEDValue <= (255 - LEDPowerSteps))
     {
@@ -103,12 +486,12 @@ void keypadButton3()
     }
   }
 
-  else if (keypadMode == "C")
+  else if (keypadMenu == MENU_C)
   {
     volumeSono(1);
   }
 
-  else if (keypadMode == "D")
+  else if (keypadMenu == MENU_D)
   {
     if (volumePrecision < 20)
     {
@@ -119,9 +502,9 @@ void keypadButton3()
   }
 }
 
-void keypadButton4()
+void keypadButton4(boolean longPress)
 {
-  if (keypadMode == "A")
+  if (keypadMenu == MENU_A)
   {
     if (button4Timer != 0)
     {
@@ -141,7 +524,7 @@ void keypadButton4()
     printPowerSupplyONTime();
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (RLEDValue >= LEDPowerSteps)
     {
@@ -151,12 +534,12 @@ void keypadButton4()
     }
   }
 
-  else if (keypadMode == "C")
+  else if (keypadMenu == MENU_C)
   {
     switchTV(2);
   }
 
-  else if (keypadMode == "D")
+  else if (keypadMenu == MENU_D)
   {
     if (microSensibility >= 5)
     {
@@ -167,14 +550,14 @@ void keypadButton4()
   }
 }
 
-void keypadButton5()
+void keypadButton5(boolean longPress)
 {
-  if (keypadMode == "A")
+  if (keypadMenu == MENU_A)
   {
     switchAlarm(2);
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (GLEDValue >= LEDPowerSteps)
     {
@@ -184,7 +567,7 @@ void keypadButton5()
     }
   }
 
-  else if (keypadMode == "D")
+  else if (keypadMenu == MENU_D)
   {
     if (multicolorSpeed >= 1)
     {
@@ -195,14 +578,14 @@ void keypadButton5()
   }
 }
 
-void keypadButton6()
+void keypadButton6(boolean longPress)
 {
-  if (keypadMode == "A")
+  if (keypadMenu == MENU_A)
   {
     printTemperature();
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (BLEDValue >= LEDPowerSteps)
     {
@@ -212,7 +595,7 @@ void keypadButton6()
     }
   }
 
-  else if (keypadMode == "D")
+  else if (keypadMenu == MENU_D)
   {
     if (volumePrecision >= 1)
     {
@@ -223,14 +606,14 @@ void keypadButton6()
   }
 }
 
-void keypadButton7()
+void keypadButton7(boolean longPress)
 {
-  if (keypadMode == "B")
+  if (keypadMenu == MENU_B)
   {
-    if (soundReactMode == false)
+    if (soundReactState == false)
     {
-      soundReactMode = true;
-      printDeviceState("soundReactMode", true);
+      soundReactState = true;
+      printDeviceState("soundReactState", true);
     }
 
     else
@@ -240,25 +623,25 @@ void keypadButton7()
   }
 }
 
-void keypadButton8()
+void keypadButton8(boolean longPress)
 {
-  if (keypadMode == "B")
+  if (keypadMenu == MENU_B)
   {
     switchMulticolor(2);
   }
 }
 
-void keypadButton9() {}
+void keypadButton9(boolean longPress) {}
 
-void keypadButton0()
+void keypadButton0(boolean longPress)
 {
-  if (keypadMode == "A")
+  if (keypadMenu == MENU_A)
   {
     stopEverything();
     printAllOFF();
   }
 
-  else if (keypadMode == "B")
+  else if (keypadMenu == MENU_B)
   {
     if (RLEDValue != 0 || GLEDValue != 0 || BLEDValue != 0)
     {
@@ -285,30 +668,30 @@ void keypadButton0()
   }
 }
 
-void keypadButtonHash() {}
+void keypadButtonHash(boolean longPress) {}
 
-void keypadButtonStar() {}
+void keypadButtonStar(boolean longPress) {}
 
-void keypadButtonA()
+void keypadButtonA(boolean longPress)
 {
-  keypadMode = "A";
+  keypadMenu = "A";
   printKeypadMode("A");
 }
 
-void keypadButtonB()
+void keypadButtonB(boolean longPress)
 {
-  keypadMode = "B";
+  keypadMenu = "B";
   printKeypadMode("B");
 }
 
-void keypadButtonC()
+void keypadButtonC(boolean longPress)
 {
-  keypadMode = "C";
+  keypadMenu = "C";
   printKeypadMode("C");
 }
 
-void keypadButtonD()
+void keypadButtonD(boolean longPress)
 {
-  keypadMode = "D";
+  keypadMenu = "D";
   printKeypadMode("D");
-}
+}*/

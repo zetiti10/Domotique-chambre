@@ -13,7 +13,7 @@
 #include <devices.hpp>
 #include <keypadFunctions.hpp>
 
-unsigned long ScreenCurrentOnTime = 0;
+unsigned long ScreenCurrentOnTime = 0UL;
 
 // Affichage des pictogrammes.
 void printBell()
@@ -28,20 +28,24 @@ void printBell()
 void printVolume(int element)
 {
   display.clearDisplay();
+  display.setCursor(0, 0);
 
   if (element == 0)
   {
     // display.drawBitmap(0, 0, logoVolumeMinus, 128, 32, 1);
+    display.println(F("PLUS"));
   }
 
   else if (element == 1)
   {
     // display.drawBitmap(0, 0, logoVolumePlus, 128, 32, 1);
+    display.println(F("MOINS"));
   }
 
   else if (element == 2)
   {
     // display.drawBitmap(0, 0, logoVolumeMute, 128, 32, 1);
+    display.println(F("MUTE"));
   }
 
   display.display();
@@ -52,11 +56,12 @@ void printVolume(int element)
 void printAlarm(int element)
 {
   display.clearDisplay();
+  display.setCursor(0, 0);
 
   if (element == 0)
   {
     //display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
-    display.println(F("Alerte"));
+    display.println(F("Alarme"));
     display.setTextSize(3);
     display.setCursor(5, 5);
     display.println(F("OFF"));
@@ -149,6 +154,7 @@ void printDeviceState(boolean on)
 void printKeypadMenu(int menu)
 {
   display.clearDisplay();
+  display.setCursor(0, 0);
 
   if (menu == LIGHTS_MENU)
   {
@@ -248,6 +254,7 @@ void printKeypadMenu(int menu)
   }
 
   display.display();
+  ScreenCurrentOnTime = millis();
 }
 
 void printMulticolorSpeed()

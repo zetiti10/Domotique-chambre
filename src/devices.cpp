@@ -266,6 +266,17 @@ void switchTray(int action)
 }
 
 /////////////////////////// RVB ///////////////////////////////////
+
+boolean soundReactState = false;
+int soundReactMax = 0;
+double soundReactSensibility = 0.75;
+unsigned long soundReactLastTime = 0;
+
+boolean multicolorState = false;
+unsigned long multicolorSpeed = 10UL;
+int multicolorStep = 0;
+unsigned long multicolorLastTime = 0;
+
 int RLEDValue = 0;
 int GLEDValue = 0;
 int BLEDValue = 0;
@@ -402,11 +413,6 @@ void controlRGBStrip(int r, int g, int b)
 // Gestion du mode multicolore du ruban de DEL //
 /////////////////////////////////////////////////
 
-boolean multicolorState = false;
-int multicolorSpeed = 10;
-int multicolorStep = 0;
-unsigned long multicolorLastTime = 0;
-
 // Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchMulticolor(int action)
 {
@@ -516,11 +522,6 @@ void multicolorScheduler()
 // Gestion du mode son-réaction du ruban de DEL //
 //////////////////////////////////////////////////
 
-boolean soundReactState = false;
-int soundReactMax = 0;
-double soundReactSensibility = 0.75;
-unsigned long soundReactLastTime = 0;
-
 // Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchSoundReact(int action)
 {
@@ -588,7 +589,7 @@ void soundReactScheduler()
 
     if (sound > soundReactMax)
     {
-        soundReactMax == sound;
+        soundReactMax = sound;
         soundReactMaxChanged = true;
     }
 
@@ -609,23 +610,23 @@ void soundReactScheduler()
 
             if (eliminatedColor == 0)
             {
-                RLEDValue == 0;
-                GLEDValue == firstColor;
-                BLEDValue == secondColor;
+                RLEDValue = 0;
+                GLEDValue = firstColor;
+                BLEDValue = secondColor;
             }
 
             else if (eliminatedColor == 1)
             {
-                RLEDValue == firstColor;
-                GLEDValue == 0;
-                BLEDValue == secondColor;
+                RLEDValue = firstColor;
+                GLEDValue = 0;
+                BLEDValue = secondColor;
             }
 
             else if (eliminatedColor == 2)
             {
-                RLEDValue == firstColor;
-                GLEDValue == secondColor;
-                BLEDValue == 0;
+                RLEDValue = firstColor;
+                GLEDValue = secondColor;
+                BLEDValue = 0;
             }
         }
     }
@@ -656,6 +657,8 @@ void soundReactScheduler()
 //////////////////////////////////
 // Gestion du volume de la sono //
 //////////////////////////////////
+
+boolean TVState = false;
 
 int volumePrecision = 5;
 int volume = 0; // Récupérer la valeur de EEPROM !
@@ -724,8 +727,6 @@ void volumeSono(int action)
 //////////////////////////////
 // Gestion de la télévision //
 //////////////////////////////
-
-boolean TVState = false;
 
 // Basculer l'état de la sono.
 void switchSono()
@@ -812,6 +813,31 @@ boolean alarmTriggered = false;
 unsigned long alarmAutoTriggerOFFCounter = 0;
 unsigned long alarmTriggeredLightsCounter = 0;
 
+// Fonction qui arrête de faire sonner l'alarme proprement.
+void stopAlarmRinging()
+{
+    if (alarmTriggered == false)
+    {
+        return;
+    }
+
+    alarmTriggered = false;
+
+    if (alarmBuzzerState == true)
+    {
+        digitalWrite(PIN_ALARM_RELAY, LOW);
+    }
+
+    digitalWrite(PIN_RED_LED, LOW);
+    controlRGBStrip(0, 0, 0);
+    digitalWrite(PIN_DOOR_LED, LOW);
+    printAlarm(3);
+
+    display.invertDisplay(false);
+    display.clearDisplay();
+    display.display();
+}
+
 // Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état - STOP_RINGING = arrêter la sonnerie.
 void switchAlarm(int action)
 {
@@ -867,31 +893,6 @@ void switchAlarm(int action)
     }
 }
 
-// Fonction qui arrête de faire sonner l'alarme proprement.
-void stopAlarmRinging()
-{
-    if (alarmTriggered == false)
-    {
-        return;
-    }
-
-    alarmTriggered = false;
-
-    if (alarmBuzzerState == true)
-    {
-        digitalWrite(PIN_ALARM_RELAY, LOW);
-    }
-
-    digitalWrite(PIN_RED_LED, LOW);
-    controlRGBStrip(0, 0, 0);
-    digitalWrite(PIN_DOOR_LED, LOW);
-    printAlarm(3);
-
-    display.invertDisplay(false);
-    display.clearDisplay();
-    display.display();
-}
-
 boolean alarmBuzzerState = true;
 
 void triggerAlarm()
@@ -909,6 +910,21 @@ void triggerAlarm()
     alarmTriggered = true;
     alarmTriggeredLightsCounter = millis();
     alarmAutoTriggerOFFCounter = millis();
+}
+
+boolean checkCard(uint8_t card[5])
+{
+    int storedCardsNumber = EEPROM.read(0);
+
+    for (int i = 0; i < storedCardsNumber; i++)
+    {
+        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3] && EEPROM.read(i * 5 + 15) == card[4])
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // Boucle qui s'exécute lorsque l'alarme sonne. Elle permet de l'éteindre après un certain temps si la porte est refermée. De plus, cette boucle gère le clignottement des rubans de DELs en rouge.
@@ -1020,19 +1036,4 @@ void removeCards()
             EEPROM.write(storeLocation + j, 0);
         }
     }
-}
-
-boolean checkCard(uint8_t card[5])
-{
-    int storedCardsNumber = EEPROM.read(0);
-
-    for (int i = 0; i < storedCardsNumber; i++)
-    {
-        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3] && EEPROM.read(i * 5 + 15) == card[4])
-        {
-            return true;
-        }
-    }
-
-    return false;
 }

@@ -49,7 +49,7 @@ byte keypadColPins[KEYPAD_COLS] = {30, 32, 34, 36};
 Adafruit_Keypad keypad = Adafruit_Keypad(makeKeymap(keypadKeys), keypadRowPins, keypadColPins, KEYPAD_ROWS, KEYPAD_COLS);
 
 // Création de l'écran OLED qui affiche des informations sur le système.
-Adafruit_SSD1306 display(128, 32, &Wire, -1);
+Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 // Création du récepteur infrarouge pour utiliser la télécommande du chromecast avec le système.
 IRrecv IRSensor(PIN_IR_SENSOR);
@@ -97,7 +97,7 @@ void setup()
   keypad.begin();
   airSensor.begin();
   nfcReader.begin();
-  // Serial.begin(115200); // Uniquement pour la résolution de problèmes.
+  Serial.begin(115200); // Uniquement pour la résolution de problèmes.
 
   // Configure le mode du lecteur RFID.
   nfcReader.SAMConfig();
@@ -106,7 +106,7 @@ void setup()
   // Refaire la gestion EEPROMM
 
   // Démarrage de l'écran OLED.
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
   {
     // ERREUR.
   }
@@ -114,9 +114,10 @@ void setup()
   // Faire un système de vérification des composants et un compteur d'erreurs qui s'affiche à la fin du démarrage.
 
   display.clearDisplay();
+  display.cp437(true);
   display.display();
-  display.setTextSize(1.7);
-  display.setCursor(0, 5);
+  display.setTextSize(1);
+  display.setCursor(0, 0);
   display.setTextColor(SSD1306_WHITE);
   display.println(F("Systeme demarre."));
   display.display();
@@ -215,6 +216,9 @@ void loop()
       {
         longPress = true;
       }
+
+      Serial.println("Touche relachée.");
+      Serial.println(longPress);
 
       keypadButtonPressed(e.bit.KEY, longPress);
     }

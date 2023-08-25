@@ -13,7 +13,7 @@
 #include <devices.hpp>
 #include <keypadFunctions.hpp>
 
-unsigned long ScreenCurrentOnTime = 0;
+unsigned long ScreenCurrentOnTime = 0UL;
 
 // Affichage des pictogrammes.
 void printBell()

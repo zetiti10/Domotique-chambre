@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 extern int ScreenOnTime;
-extern int ScreenCurrentOnTime;
+extern unsigned long ScreenCurrentOnTime;
 
 void printBell();
 void printVolume(int element);

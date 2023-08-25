@@ -8,123 +8,85 @@
 
 // Autres fichiers du programme.
 #include <main.hpp>
-#include <LEDStrips.hpp>
 #include <logos.hpp>
 #include <display.hpp>
 #include <devices.hpp>
+#include <keypadFunctions.hpp>
 
-int ScreenOnTime = 4000;
-int ScreenCurrentOnTime = 0;
+unsigned long ScreenCurrentOnTime = 0;
 
 // Affichage des pictogrammes.
 void printBell()
 {
   display.clearDisplay();
-  display.drawBitmap(0, 0, logoBell, 128, 32, 1);
+  // display.drawBitmap(0, 0, logoBell, 128, 32, 1);
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
+  ScreenCurrentOnTime = millis();
 }
 
 // Paramètre :  0 = diminuer le volume - 1 = augmenter le volume - 2 = couper le son.
 void printVolume(int element)
 {
+  display.clearDisplay();
+
   if (element == 0)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoVolumeMinus, 128, 32, 1);
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
+    // display.drawBitmap(0, 0, logoVolumeMinus, 128, 32, 1);
   }
 
   else if (element == 1)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoVolumePlus, 128, 32, 1);
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
+    // display.drawBitmap(0, 0, logoVolumePlus, 128, 32, 1);
   }
 
   else if (element == 2)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoVolumeMute, 128, 32, 1);
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
+    // display.drawBitmap(0, 0, logoVolumeMute, 128, 32, 1);
   }
+
+  display.display();
+  ScreenCurrentOnTime = millis();
 }
 
 // Paramètre :  0 = couper l'alarme - 1 = allumer l'alarme - 2 = l'alarme sonne (normal) - 3 = l'alarme sonne (inversé).
 void printAlarm(int element)
 {
+  display.clearDisplay();
+
   if (element == 0)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
+    //display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
+    display.println(F("Alerte"));
     display.setTextSize(3);
     display.setCursor(5, 5);
     display.println(F("OFF"));
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
   }
 
   else if (element == 1)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
+    //display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
+    display.println(F("Alerte"));
     display.setTextSize(3);
     display.setCursor(5, 5);
     display.println(F("ON"));
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
   }
 
   else if (element == 2)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
+    //display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
+    display.println(F("Alerte"));
     display.invertDisplay(false);
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
   }
 
   else if (element == 3)
   {
-    display.clearDisplay();
-    display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
+    //display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
+    display.println(F("Alerte"));
     display.invertDisplay(true);
-    display.display();
-    ScreenCurrentOnTime = ScreenOnTime;
-  }
-}
-
-void printAllOFF()
-{
-  display.clearDisplay();
-  display.drawBitmap(0, 0, logoAllOFF, 128, 32, 1);
-  display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
-}
-
-void printPowerSupplyONTime()
-{
-  display.clearDisplay();
-  display.drawBitmap(0, 0, logoChargingStation, 128, 32, 1);
-  display.setTextSize(3);
-  display.setCursor(5, 5);
-
-  if (powerSupplyDelayON == 0)
-  {
-    display.println(F("OFF"));
-  }
-
-  else
-  {
-    int timeInMinutes = powerSupplyDelayON / 60000;
-    display.println(timeInMinutes);
   }
 
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
+  ScreenCurrentOnTime = millis();
 }
 
 // Affichage de diverses informations.
@@ -138,7 +100,7 @@ void printTemperature()
   display.setCursor(15, 10);
   display.println(temperature);
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
+  ScreenCurrentOnTime = millis();
 }
 
 void printLEDState()
@@ -162,118 +124,130 @@ void printLEDState()
   display.drawLine(102, 14, 102, bbb, SSD1306_WHITE);
 
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
+  ScreenCurrentOnTime = millis();
 }
 
-void printDeviceState(String element, boolean on)
+void printDeviceState(boolean on)
 {
   display.clearDisplay();
+  display.setCursor(47, 0);
 
-  display.setTextSize(1);
-  if (element == "cube")
-  {
-    display.setCursor(47, 0);
-    display.println(F("Cube :"));
-  }
-
-  else if (element == "ordi")
-  {
-    display.setCursor(47, 0);
-    display.println(F("Ordi :"));
-  }
-
-  else if (element == "fan")
-  {
-    display.setCursor(40, 0);
-    display.println(F("Ventilo :"));
-  }
-
-  else if (element == "armoire")
-  {
-    display.setCursor(42, 0);
-    display.println(F("Armoire :"));
-  }
-
-  else if (element == "multicolor")
-  {
-    display.setCursor(30, 0);
-    display.println(F("Multicolor :"));
-  }
-
-  else if (element == "SoundReact")
-  {
-    display.setCursor(25, 0);
-    display.println(F("Music react :"));
-  }
-
-  else if (element == "tv")
-  {
-    display.setCursor(50, 0);
-    display.println(F("TV :"));
-  }
-
-  display.setTextSize(3);
   if (on == true)
   {
-    display.setCursor(46, 10);
     display.println(F("ON"));
   }
 
   else
   {
-    display.setCursor(37, 10);
     display.println(F("OFF"));
   }
 
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
+  ScreenCurrentOnTime = millis();
 }
 
-void printKeypadMode(String mode)
+void printKeypadMenu(int menu)
 {
   display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(50, 0);
-  display.println(F("Mode :"));
-  display.setTextSize(3);
-  display.setCursor(56, 10);
 
-  if (mode == "A")
+  if (menu == LIGHTS_MENU)
   {
-    display.println(F("A"));
+    display.println(F("Menu lumieres"));
   }
 
-  else if (mode == "B")
+  else if (menu == SOFA_LIGHT_CONTROL_SUBMENU)
   {
-    display.println(F("B"));
+    display.println(F("1. Temperature - 2. Luminosite - 3. Effet"));
   }
 
-  else if (mode == "C")
+  else if (menu == SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
   {
-    display.println(F("C"));
+    display.println(F("Temperature :"));
+    // Afficher rectangle temperature.
   }
 
-  else if (mode == "D")
+  else if (menu == SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU)
   {
-    display.println(F("D"));
+    display.println(F("Luminosite :"));
+    // Afficher rectangle luminosite.
+  }
+
+  else if (menu == SOFA_LIGHT_EFFECT_CONTROL_SUBMENU)
+  {
+    display.println(F("1. Test - 2. Test - 3. Test"));
+  }
+
+  else if (menu == BEDSIDE_LIGHT_CONTROL_SUBMENU)
+  {
+    display.println(F("1. Temperature - 2. Couleur - 3. Luminosite - 4. Effet"));
+  }
+
+  else if (menu == BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
+  {
+    display.println(F("Temperature :"));
+    // Afficher rectangle temperature.
+  }
+
+  else if (menu == BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU)
+  {
+    display.println(F("Couleur :"));
+    // Afficher les 3 rectangles de la couleur.
+  }
+
+  else if (menu == BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU)
+  {
+    display.println(F("Luminosite :"));
+    // Afficher rectangle luminosite.
+  }
+
+  else if (menu == BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU)
+  {
+    display.println(F("1. Test - 2. Test - 3. Test"));
+  }
+
+  else if (menu == RGB_STRIP_CONTROL_SUBMENU)
+  {
+    display.println(F("1. Couleur - 2. Effet"));
+  }
+
+  else if (menu == RGB_STRIP_COLOR_CONTROL_SUBMENU)
+  {
+    display.println(F("Couleur :"));
+    // Afficher les 3 rectangles de la couleur.
+  }
+
+  else if (menu == RGB_STRIP_EFFECT_CONTROL_SUBMENU)
+  {
+    display.println(F("1. Multicolore - 2. Son reaction"));
+  }
+
+  else if (menu == DEVICES_MENU)
+  {
+    display.println(F("Menu peripheriques"));
+  }
+
+  else if (menu == TV_MENU)
+  {
+    display.println(F("Menu television"));
+  }
+
+  else if (menu == CONFIGURATION_MENU)
+  {
+    display.println(F("Menu configuration"));
+  }
+
+  else if (menu == ALARM_CODE_CONFIGURATION_MENU)
+  {
+    display.println(F("Code :"));
+    display.println(alarmCode);
+  }
+
+  else if (menu == ALARM_CONFIGURATION_MENU)
+  {
+    display.println(F("1. Son alarme - 2. Ajouter carte - 3. Suppromer cartes"));
   }
 
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
-}
-
-// Affichage des valeurs pour le menu de configuration.
-void printMicroSensibility()
-{
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println(F("Sensibilite du microphone :"));
-  display.setTextSize(2);
-  display.setCursor(50, 18);
-  display.println(microSensibility);
-  display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
 }
 
 void printMulticolorSpeed()
@@ -286,32 +260,15 @@ void printMulticolorSpeed()
   display.setCursor(50, 18);
   display.println(multicolorSpeed);
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
-}
-
-void printVolumePrecision()
-{
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println(F("Precision du changement de volume :"));
-  display.setTextSize(2);
-  display.setCursor(50, 18);
-  display.println(volumePrecision);
-  display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
+  ScreenCurrentOnTime = millis();
 }
 
 void displaySheduler()
 {
-  if (ScreenCurrentOnTime >> 0)
+  if ((ScreenCurrentOnTime != 0) && ((millis() - ScreenCurrentOnTime) >= 4000))
   {
-    ScreenCurrentOnTime--;
-
-    if (ScreenCurrentOnTime == 0)
-    {
-      display.clearDisplay();
-      display.display();
-    }
+    ScreenCurrentOnTime = 0;
+    display.clearDisplay();
+    display.display();
   }
 }

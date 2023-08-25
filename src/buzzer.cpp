@@ -12,72 +12,26 @@
 
 // Autres fichiers du programme.
 #include <pinDefinitions.hpp>
-#include <pitches.hpp>
+
+void clickSound()
+{
+    TimerFreeTone(PIN_BUZZER, 500, 50);
+}
 
 void yesSound()
 {
-    TimerFreeTone(PIN_BUZZER, NOTE_G5, 500);
+    TimerFreeTone(PIN_BUZZER, 800, 250);
 }
 
 void noSound()
 {
-    TimerFreeTone(PIN_BUZZER, NOTE_D4, 500);
+    TimerFreeTone(PIN_BUZZER, 200, 250);
 }
-
-// Les deux fonctions suivantes sont utilisées pour produire la musique de la sonnette.
-int doorbellMusicNotes[] = {
-    NOTE_E5,
-    8,
-    NOTE_D5,
-    8,
-    NOTE_FS4,
-    4,
-    NOTE_GS4,
-    4,
-    NOTE_CS5,
-    8,
-    NOTE_B4,
-    8,
-    NOTE_D4,
-    4,
-    NOTE_E4,
-    4,
-    NOTE_B4,
-    8,
-    NOTE_A4,
-    8,
-    NOTE_CS4,
-    4,
-    NOTE_E4,
-    4,
-    NOTE_A4,
-    2,
-};
 
 void doorbellMusic()
 {
-
-    int divider = 0;
-    int noteDuration = 0;
-
-    for (unsigned long thisNote = 0; thisNote < (sizeof(doorbellMusicNotes) / sizeof(doorbellMusicNotes[0])); thisNote = thisNote + 2)
-    {
-
-        divider = doorbellMusicNotes[thisNote + 1];
-
-        if (divider > 0)
-        {
-
-            noteDuration = ((60000 * 4) / 180) / divider;
-        }
-
-        else if (divider < 0)
-        {
-
-            noteDuration = ((60000 * 4) / 180) / abs(divider);
-            noteDuration *= 1.5;
-        }
-
-        TimerFreeTone(PIN_BUZZER, doorbellMusicNotes[thisNote], noteDuration * 0.9);
-    }
+    TimerFreeTone(PIN_BUZZER, 200, 250);
+    TimerFreeTone(PIN_BUZZER, 400, 250);
+    TimerFreeTone(PIN_BUZZER, 600, 250);
+    TimerFreeTone(PIN_BUZZER, 800, 250);
 }

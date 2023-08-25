@@ -22,7 +22,11 @@ extern int RLEDValue;
 extern int GLEDValue;
 extern int BLEDValue;
 
+extern boolean LEDCubeState;
 extern boolean multicolorState;
+extern boolean alarmState;
+extern boolean cardToStoreState;
+extern boolean alarmBuzzerState;
 
 void switchDisco(int action);
 void switchLEDCube(int action);
@@ -39,6 +43,7 @@ void volumeSono(int action);
 void switchTV(int action);
 void switchAlarm(int action);
 void alarmSheduler();
-
+void storeCard(uint8_t card[5]);
+void removeCards();
 
 #endif

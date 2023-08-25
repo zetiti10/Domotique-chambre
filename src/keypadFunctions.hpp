@@ -1,6 +1,8 @@
 #ifndef KEYPAD_FUNCTIONS
 #define KEYPAD_FUNCTIONS
 
+#include <Arduino.h>
+
 #define LIGHTS_MENU 1
 
 #define SOFA_LIGHT_CONTROL_SUBMENU 12
@@ -19,16 +21,19 @@
 #define RGB_STRIP_EFFECT_CONTROL_SUBMENU 152
 
 #define DEVICES_MENU 2
+
 #define TV_MENU 3
+
 #define CONFIGURATION_MENU 4
 
+#define ALARM_CODE_CONFIGURATION_MENU 411
+#define ALARM_CONFIGURATION_MENU 41
 
 extern int keypadMenu;
-extern int keypadSubMenu;
-extern int keypadPreviousMenu;
-extern boolean longClick;
+extern String alarmCode;
 
 extern unsigned long pressedKeypadTouchTime;
+extern unsigned long keypadSubMenuTimer;
 
 void keypadButtonPressed(char key, boolean longPress);
 

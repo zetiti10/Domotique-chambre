@@ -20,8 +20,8 @@
 #include <display.hpp>
 #include <main.hpp>
 #include <devices.hpp>
-#include <pitches.hpp>
 #include <TimerFreeTone.h>
+#include <buzzer.hpp>
 
 /////////////////////////////
 // Gestion du module disco //
@@ -37,7 +37,7 @@ void switchDisco(int action)
         if (discoState == true)
         {
             digitalWrite(PIN_DISCO_RELAY, LOW);
-            printDeviceState("disco", false);
+            printDeviceState(false);
             discoState = false;
         }
     }
@@ -47,7 +47,7 @@ void switchDisco(int action)
         if (discoState == false)
         {
             digitalWrite(PIN_DISCO_RELAY, HIGH);
-            printDeviceState("disco", true);
+            printDeviceState(true);
             discoState = true;
         }
     }
@@ -80,7 +80,7 @@ void switchLEDCube(int action)
         if (LEDCubeState == true)
         {
             digitalWrite(PIN_LED_CUBE_RELAY, LOW);
-            printDeviceState("cube", false);
+            printDeviceState(false);
             LEDCubeState = false;
         }
     }
@@ -90,7 +90,7 @@ void switchLEDCube(int action)
         if (LEDCubeState == false)
         {
             digitalWrite(PIN_LED_CUBE_RELAY, HIGH);
-            printDeviceState("cube", true);
+            printDeviceState(true);
             LEDCubeState = true;
         }
     }
@@ -123,7 +123,7 @@ void switchStreet(int action)
         if (streetState == true)
         {
             digitalWrite(PIN_STREET_RELAY, LOW);
-            printDeviceState("street", false);
+            printDeviceState(false);
             streetState = false;
         }
     }
@@ -133,7 +133,7 @@ void switchStreet(int action)
         if (streetState == false)
         {
             digitalWrite(PIN_STREET_RELAY, HIGH);
-            printDeviceState("street", true);
+            printDeviceState(true);
             streetState = true;
         }
     }
@@ -166,7 +166,7 @@ void switchDeskLight(int action)
         if (deskLightState == true)
         {
             digitalWrite(PIN_DESK_LIGHT_RELAY, LOW);
-            printDeviceState("deskLight", false);
+            printDeviceState(false);
             deskLightState = false;
         }
     }
@@ -176,7 +176,7 @@ void switchDeskLight(int action)
         if (deskLightState == false)
         {
             digitalWrite(PIN_DESK_LIGHT_RELAY, HIGH);
-            printDeviceState("deskLight", true);
+            printDeviceState(true);
             deskLightState = true;
         }
     }
@@ -223,7 +223,7 @@ void switchTray(int action)
                 display.display();
                 delay(80);
             }
-            ScreenCurrentOnTime = ScreenOnTime;
+            ScreenCurrentOnTime = millis();
             digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
             digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
             trayState = false;
@@ -244,7 +244,7 @@ void switchTray(int action)
                 display.display();
                 delay(80);
             }
-            ScreenCurrentOnTime = ScreenOnTime;
+            ScreenCurrentOnTime = millis();
             digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
             digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
             trayState = true;
@@ -415,7 +415,7 @@ void switchMulticolor(int action)
         if (multicolorState == true)
         {
             multicolorState = false;
-            printDeviceState("multicolor", false);
+            printDeviceState(false);
             RLEDValue = 0;
             GLEDValue = 0;
             BLEDValue = 0;
@@ -432,7 +432,7 @@ void switchMulticolor(int action)
         {
             switchSoundReact(SWITCH_OFF);
             multicolorState = true;
-            printDeviceState("multicolor", true);
+            printDeviceState(true);
             RLEDValue = 0;
             GLEDValue = 0;
             BLEDValue = 255;
@@ -529,7 +529,7 @@ void switchSoundReact(int action)
         if (soundReactState == true)
         {
             soundReactState = false;
-            printDeviceState("soundReact", false);
+            printDeviceState(false);
             soundReactMax = 0;
             RLEDValue = 0;
             GLEDValue = 0;
@@ -546,7 +546,7 @@ void switchSoundReact(int action)
         {
             switchMulticolor(SWITCH_OFF);
             soundReactState = true;
-            printDeviceState("SoundReact", true);
+            printDeviceState(true);
             randomSeed(PIN_RANDOM_SEED_GENERATOR);
             soundReactLastTime = millis();
             RLEDValue = 0;
@@ -771,7 +771,7 @@ void switchTV(int action)
     {
         if (TVState == true)
         {
-            printDeviceState("tv", false);
+            printDeviceState(false);
             switchDisplay();
             switchSono();
             TVState = false;
@@ -782,7 +782,7 @@ void switchTV(int action)
     {
         if (TVState == false)
         {
-            printDeviceState("tv", true);
+            printDeviceState(true);
             switchDisplay();
             switchSono();
             TVState = false;
@@ -834,6 +834,11 @@ void switchAlarm(int action)
     {
         if (alarmState == false)
         {
+            if (cardToStoreState == true)
+            {
+                return;
+            }
+
             digitalWrite(PIN_DOOR_LED, HIGH);
             printAlarm(1);
             alarmState = true;
@@ -871,7 +876,12 @@ void stopAlarmRinging()
     }
 
     alarmTriggered = false;
-    digitalWrite(PIN_ALARM_RELAY, LOW);
+
+    if (alarmBuzzerState == true)
+    {
+        digitalWrite(PIN_ALARM_RELAY, LOW);
+    }
+
     digitalWrite(PIN_RED_LED, LOW);
     controlRGBStrip(0, 0, 0);
     digitalWrite(PIN_DOOR_LED, LOW);
@@ -882,6 +892,8 @@ void stopAlarmRinging()
     display.display();
 }
 
+boolean alarmBuzzerState = true;
+
 void triggerAlarm()
 {
     if (alarmState == false)
@@ -889,7 +901,11 @@ void triggerAlarm()
         alarmState = true;
     }
 
-    digitalWrite(PIN_ALARM_RELAY, HIGH);
+    if (alarmBuzzerState == true)
+    {
+        digitalWrite(PIN_ALARM_RELAY, HIGH);
+    }
+
     alarmTriggered = true;
     alarmTriggeredLightsCounter = millis();
     alarmAutoTriggerOFFCounter = millis();
@@ -914,6 +930,8 @@ void alarmSheduler()
             {
                 switchAlarm(TOGGLE);
             }
+
+            yesSound();
         }
 
         else
@@ -969,8 +987,16 @@ void alarmSheduler()
     }
 }
 
+boolean cardToStoreState = false;
+
 void storeCard(uint8_t card[5])
 {
+
+    if (checkCard(card) == true)
+    {
+        return;
+    }
+
     int storeLocation = EEPROM.read(0) * 5 + 11;
 
     for (int i = 0; i < 5; i++)

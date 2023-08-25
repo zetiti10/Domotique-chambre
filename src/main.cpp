@@ -26,12 +26,15 @@
 #include <display.hpp>
 #include <devices.hpp>
 #include <ESP.hpp>
+#include <buzzer.hpp>
 
 // Variables globales.
-int microSensibility;
-int microDelay;
-unsigned long IRRemoteCounter;
-boolean wardrobeState = false;
+unsigned long IRRemoteCounter = 0;
+unsigned long doorbellCounter = 0;
+unsigned long airSensorsCounter = 0;
+boolean wardrobeState = true;
+float temperature = 0;
+float humidity = 0;
 
 // Création du clavier pour contrôler le système.
 const byte KEYPAD_ROWS = 4;
@@ -74,8 +77,8 @@ void setup()
   pinMode(PIN_RED_LED, OUTPUT);
   pinMode(PIN_GREEN_LED, OUTPUT);
   pinMode(PIN_BLUE_LED, OUTPUT);
+  pinMode(PIN_SCREEN_SERVO, OUTPUT);
   pinMode(PIN_DOOR_LED, OUTPUT);
-
   pinMode(PIN_WARDROBE_LIGHTS_RELAY, OUTPUT);
   pinMode(PIN_ALARM_RELAY, OUTPUT);
   pinMode(PIN_DISCO_RELAY, OUTPUT);
@@ -88,13 +91,16 @@ void setup()
   pinMode(PIN_MOTOR_TRAY_2, OUTPUT);
 
   // Lancement des communications.
-  Serial1.begin(9600); // Communication avec l'ESP8266-01.
-  IRSensor.enableIRIn();
+  // Serial1.begin(9600); // Communication avec l'ESP8266-01.
   IrSender.begin(PIN_IR_LED);
+  IRSensor.enableIRIn();
   keypad.begin();
   airSensor.begin();
   nfcReader.begin();
   // Serial.begin(115200); // Uniquement pour la résolution de problèmes.
+
+  // Configure le mode du lecteur RFID.
+  nfcReader.SAMConfig();
 
   // Récupération des informations stockées dans la mémoire persistante.
   // Refaire la gestion EEPROMM
@@ -104,6 +110,9 @@ void setup()
   {
     // ERREUR.
   }
+
+  // Faire un système de vérification des composants et un compteur d'erreurs qui s'affiche à la fin du démarrage.
+
   display.clearDisplay();
   display.display();
   display.setTextSize(1.7);
@@ -111,38 +120,66 @@ void setup()
   display.setTextColor(SSD1306_WHITE);
   display.println(F("Systeme demarre."));
   display.display();
-  ScreenCurrentOnTime = ScreenOnTime;
-
-  // Configure le mode du lecteur RFID.
-  nfcReader.SAMConfig();
+  ScreenCurrentOnTime = millis();
 }
 
 void loop()
 {
-  // Lecture des capteurs.
-  boolean bedroomDoorState = digitalRead(PIN_BEDROOM_DOOR_SENSOR);
-  boolean wardrobeDoorState = digitalRead(PIN_WARDROBE_DOOR_SENSOR);
-  boolean doorbellState = digitalRead(PIN_DOORBELL_BUTTON);
-  int microValue = analogRead(PIN_MICROPHONE);
+  // Lecture de la température et de l'humidité toutes les 10 secondes.
+  if ((millis() - airSensorsCounter) >= 10000)
+  {
+    sensors_event_t event;
+    airSensor.temperature().getEvent(&event);
+    if (!isnan(event.temperature))
+    {
+      temperature = event.temperature;
+    }
+
+    airSensor.humidity().getEvent(&event);
+    if (!isnan(event.relative_humidity))
+    {
+      humidity = event.relative_humidity;
+    }
+  }
 
   // Gestion de l'armoire.
+  boolean wardrobeDoorState = digitalRead(PIN_WARDROBE_DOOR_SENSOR);
+
   if (wardrobeState == true)
   {
     if (wardrobeDoorState == HIGH && digitalRead(PIN_WARDROBE_LIGHTS_RELAY) == HIGH)
     {
       digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, LOW);
-      printDeviceState("armoire", false);
+      printDeviceState(false);
     }
 
     else if (wardrobeDoorState == LOW && digitalRead(PIN_WARDROBE_LIGHTS_RELAY) == LOW)
     {
       digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, HIGH);
-      printDeviceState("armoire", true);
+      printDeviceState(true);
     }
+  }
+
+  // Gestion de la sonnette.
+  if (digitalRead(PIN_DOORBELL_BUTTON) == HIGH && alarmState == false && (millis() - doorbellCounter) >= 250)
+  {
+    doorbellMusic();
   }
 
   // Vérification de l'alarme.
   alarmSheduler();
+
+  if(cardToStoreState == true)
+  {
+    uint8_t uid[] = {0, 0, 0, 0, 0};
+    uint8_t uidLength;
+
+    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 1))
+    {
+        storeCard(uid);
+        cardToStoreState = false;
+    }
+  }
 
   // Gestion du mode des rubans de DEL multicolor.
   multicolorScheduler();
@@ -183,6 +220,12 @@ void loop()
     }
   }
 
+  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 10000))
+  {
+    keypadMenu = LIGHTS_MENU;
+    printKeypadMenu(LIGHTS_MENU);
+  }
+
   // Gestion du récepteur infrarouge pour contrôler le système avec la télécommande Google Chromecast.
   if (IRSensor.decode())
   {
@@ -197,7 +240,7 @@ void loop()
         break;
 
       case 4261480199: // Source.
-        if (digitalRead(PIN_LED_CUBE_RELAY) == LOW && multicolorState == false)
+        if (LEDCubeState == LOW && multicolorState == false)
         {
           switchMulticolor(1);
           switchLEDCube(1);
@@ -211,15 +254,15 @@ void loop()
         break;
 
       case 4161210119: // Vol+.
-        volumeSono(1);
+        volumeSono(INCREASE);
         break;
 
       case 4094363399: // Vol-.
-        volumeSono(0);
+        volumeSono(DECREASE);
         break;
 
       case 4027516679: // Mute.
-        volumeSono(2);
+        volumeSono(TOGGLE_MUTE);
         break;
       }
     }

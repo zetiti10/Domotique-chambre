@@ -6,6 +6,8 @@
 extern int ScreenOnTime;
 extern unsigned long ScreenCurrentOnTime;
 
+#define WHITE 1
+
 void printBell();
 void printVolume(int element);
 void printAlarm(int element);

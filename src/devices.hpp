@@ -17,6 +17,7 @@ extern int volumePrecision;
 extern int RGBStripPrecision;
 extern double soundReactSensibility;
 extern unsigned long multicolorSpeed;
+extern int volume;
 
 extern int RLEDValue;
 extern int GLEDValue;

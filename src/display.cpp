@@ -8,7 +8,7 @@
 
 // Autres fichiers du programme.
 #include <main.hpp>
-#include <logos.hpp>
+#include <bitmaps.hpp>
 #include <display.hpp>
 #include <devices.hpp>
 #include <keypadFunctions.hpp>
@@ -24,28 +24,43 @@ void printBell()
   ScreenCurrentOnTime = millis();
 }
 
-// Paramètre :  0 = diminuer le volume - 1 = augmenter le volume - 2 = couper le son.
-void printVolume(int element)
+// Paramètre :  DECREASE = diminuer le volume - INCREASE = augmenter le volume - MUTE = couper le son - UNMUTE = réetablir le son.
+void printVolume(int action)
 {
   display.clearDisplay();
-  display.setCursor(0, 0);
 
-  if (element == 0)
+  if (action == DECREASE)
   {
-    // display.drawBitmap(0, 0, logoVolumeMinus, 128, 32, 1);
-    display.println(F("PLUS"));
+    display.drawBitmap(0, 0, volumeDecreaseBitmap, 128, 64, WHITE);
   }
 
-  else if (element == 1)
+  else if (action == INCREASE)
   {
-    // display.drawBitmap(0, 0, logoVolumePlus, 128, 32, 1);
-    display.println(F("MOINS"));
+    display.drawBitmap(0, 0, volumeIncreaseBitmap, 128, 64, WHITE);
   }
 
-  else if (element == 2)
+  else if (action == MUTE)
   {
-    // display.drawBitmap(0, 0, logoVolumeMute, 128, 32, 1);
-    display.println(F("MUTE"));
+    display.drawBitmap(0, 0, muteBitmap, 128, 64, WHITE);
+  }
+
+  else if (action == UNMUTE)
+  {
+    display.drawBitmap(0, 0, unmuteBitmap, 128, 64, WHITE);
+  }
+
+  if (action == DECREASE || action == INCREASE || action == UNMUTE)
+  {
+    display.drawRect(50, 52, 27, 3, WHITE);
+
+    if (volume > 0)
+    {
+      display.drawLine(51, 53, 51 + volume, 53, WHITE);
+    }
+
+    display.setTextSize(1);
+    display.setCursor(80, 52);
+    display.print(volume);
   }
 
   display.display();
@@ -60,7 +75,7 @@ void printAlarm(int element)
 
   if (element == 0)
   {
-    //display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
+    // display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
     display.println(F("Alarme"));
     display.setTextSize(3);
     display.setCursor(5, 5);
@@ -69,7 +84,7 @@ void printAlarm(int element)
 
   else if (element == 1)
   {
-    //display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
+    // display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
     display.println(F("Alerte"));
     display.setTextSize(3);
     display.setCursor(5, 5);
@@ -78,14 +93,14 @@ void printAlarm(int element)
 
   else if (element == 2)
   {
-    //display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
+    // display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
     display.println(F("Alerte"));
     display.invertDisplay(false);
   }
 
   else if (element == 3)
   {
-    //display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
+    // display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
     display.println(F("Alerte"));
     display.invertDisplay(true);
   }
@@ -98,12 +113,14 @@ void printAlarm(int element)
 void printTemperature()
 {
   display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(25, 0);
-  display.println(F("Temperature :"));
-  display.setTextSize(3);
-  display.setCursor(15, 10);
-  display.println(temperature);
+  display.drawBitmap(0, 0, airBitmap, 128, 64, WHITE);
+  display.setTextSize(2);
+  display.setCursor(25, 10);
+  display.print(temperature);
+  display.write(0xF8);
+  display.setCursor(25, 42);
+  display.print(humidity);
+  display.write(0x25);
   display.display();
   ScreenCurrentOnTime = millis();
 }
@@ -111,22 +128,22 @@ void printTemperature()
 void printLEDState()
 {
   display.clearDisplay();
-  display.setTextSize(1);
+  display.setTextSize(2);
 
-  display.setCursor(23, 0);
-  display.println(F("R"));
-  int rrr = int(map(RLEDValue, 0, 255, 14, 32));
-  display.drawLine(25, 14, 25, rrr, SSD1306_WHITE);
-  display.setCursor(63, 0);
+  display.setCursor(22, 0);
+  display.print("R");
+  int rGauge = int(map(RLEDValue, 0, 255, 14, 64));
+  display.drawLine(25, 14, 25, rGauge, WHITE);
 
-  display.println(F("V"));
-  int ggg = int(map(GLEDValue, 0, 255, 14, 32));
-  display.drawLine(65, 14, 65, ggg, SSD1306_WHITE);
-  display.setCursor(102, 0);
+  display.setCursor(62, 0);
+  display.print("V");
+  int gGauge = int(map(GLEDValue, 0, 255, 14, 64));
+  display.drawLine(65, 14, 65, gGauge, WHITE);
 
-  display.println(F("B"));
-  int bbb = int(map(BLEDValue, 0, 255, 14, 32));
-  display.drawLine(102, 14, 102, bbb, SSD1306_WHITE);
+  display.setCursor(101, 0);
+  display.print("B");
+  int bGauge = int(map(BLEDValue, 0, 255, 14, 64));
+  display.drawLine(102, 14, 102, bGauge, WHITE);
 
   display.display();
   ScreenCurrentOnTime = millis();
@@ -135,16 +152,27 @@ void printLEDState()
 void printDeviceState(boolean on)
 {
   display.clearDisplay();
-  display.setCursor(47, 0);
 
   if (on == true)
   {
-    display.println(F("ON"));
+    for (int i = 28; i <= 100; i++)
+    {
+      display.clearDisplay();
+      display.drawRoundRect(16, 4, 96, 24, 12, WHITE);
+      display.fillCircle(i, 16, 10, WHITE);
+      display.display();
+    }
   }
 
   else
   {
-    display.println(F("OFF"));
+    for (int i = 100; i >= 28; i++)
+    {
+      display.clearDisplay();
+      display.drawRoundRect(16, 4, 96, 24, 12, WHITE);
+      display.fillCircle(i, 16, 10, WHITE);
+      display.display();
+    }
   }
 
   display.display();
@@ -154,16 +182,25 @@ void printDeviceState(boolean on)
 void printKeypadMenu(int menu)
 {
   display.clearDisplay();
-  display.setCursor(0, 0);
+  display.setTextSize(2);
 
   if (menu == LIGHTS_MENU)
   {
-    display.println(F("Menu lumieres"));
+    display.drawBitmap(0, 0, lightsMenuBitmap, 128, 64, WHITE);
+    display.setCursor(24, 55);
+    display.print("Menu : lumieres");
   }
 
   else if (menu == SOFA_LIGHT_CONTROL_SUBMENU)
   {
-    display.println(F("1. Temperature - 2. Luminosite - 3. Effet"));
+    display.setCursor(0, 0);
+    display.print("Lampe canape");
+
+    display.setCursor(0, 10);
+    display.setTextSize(1);
+    display.println("1. Temperature");
+    display.println("2. Luminosite");
+    display.println("3. Effet");
   }
 
   else if (menu == SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
@@ -229,23 +266,30 @@ void printKeypadMenu(int menu)
 
   else if (menu == DEVICES_MENU)
   {
-    display.println(F("Menu peripheriques"));
+    display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
+    display.setCursor(24, 55);
+    display.print("Menu : peripheriques");
   }
 
   else if (menu == TV_MENU)
   {
-    display.println(F("Menu television"));
+    display.drawBitmap(0, 0, TVMenuBitmap, 128, 64, WHITE);
+    display.setCursor(24, 55);
+    display.print("Menu : television");
   }
 
   else if (menu == CONFIGURATION_MENU)
   {
-    display.println(F("Menu configuration"));
+    display.drawBitmap(0, 0, configurationMenuBitmap, 128, 64, WHITE);
+    display.setCursor(24, 55);
+    display.print("Menu : configuration");
   }
 
   else if (menu == ALARM_CODE_CONFIGURATION_MENU)
   {
-    display.println(F("Code :"));
-    display.println(alarmCode);
+    display.setCursor(0, 0);
+    display.print("Code : ");
+    display.print(alarmCode);
   }
 
   else if (menu == ALARM_CONFIGURATION_MENU)

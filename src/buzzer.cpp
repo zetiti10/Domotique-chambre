@@ -15,7 +15,7 @@
 
 void clickSound()
 {
-    TimerFreeTone(PIN_BUZZER, 500, 50);
+    TimerFreeTone(PIN_BUZZER, 750, 25, 8);
 }
 
 void yesSound()

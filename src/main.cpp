@@ -131,7 +131,7 @@ void loop()
   {
     sensors_event_t event;
     airSensor.temperature().getEvent(&event);
-    if (!isnan(event.temperature))
+    if (!isnan(event.temperature))    
     {
       temperature = event.temperature;
     }
@@ -141,6 +141,8 @@ void loop()
     {
       humidity = event.relative_humidity;
     }
+
+    airSensorsCounter = millis();
   }
 
   // Gestion de l'armoire.
@@ -164,22 +166,34 @@ void loop()
   // Gestion de la sonnette.
   if (digitalRead(PIN_DOORBELL_BUTTON) == HIGH && alarmState == false && (millis() - doorbellCounter) >= 250)
   {
+    digitalWrite(PIN_DOOR_LED, HIGH);
     doorbellMusic();
+    digitalWrite(PIN_DOOR_LED, LOW);
   }
 
   // Vérification de l'alarme.
-  alarmSheduler();
-
   if(cardToStoreState == true)
   {
-    uint8_t uid[] = {0, 0, 0, 0, 0};
+    uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };
     uint8_t uidLength;
 
-    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 1))
+    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100))
     {
-        storeCard(uid);
+        if(uidLength == 4)
+        {
+          uint8_t validUid[] = {uid[0], uid[1], uid[2], uid[3]};
+
+          storeCard(validUid);
+        }
         cardToStoreState = false;
     }
+
+    delay(1000);
+  }
+
+  else
+  {
+    alarmSheduler();
   }
 
   // Gestion du mode des rubans de DEL multicolor.
@@ -217,15 +231,13 @@ void loop()
         longPress = true;
       }
 
-      Serial.println("Touche relachée.");
-      Serial.println(longPress);
-
       keypadButtonPressed(e.bit.KEY, longPress);
     }
   }
 
-  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 10000))
+  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 20000))
   {
+    keypadSubMenuTimer = 0;
     keypadMenu = LIGHTS_MENU;
     printKeypadMenu(LIGHTS_MENU);
   }

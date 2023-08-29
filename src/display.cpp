@@ -67,41 +67,20 @@ void printVolume(int action)
   ScreenCurrentOnTime = millis();
 }
 
-// Paramètre :  0 = couper l'alarme - 1 = allumer l'alarme - 2 = l'alarme sonne (normal) - 3 = l'alarme sonne (inversé).
+// Paramètre :  0 = l'alarme sonne (normal) - 1 = l'alarme sonne (inversé).
 void printAlarm(int element)
 {
   display.clearDisplay();
-  display.setCursor(0, 0);
 
   if (element == 0)
   {
-    // display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
-    display.println(F("Alarme"));
-    display.setTextSize(3);
-    display.setCursor(5, 5);
-    display.println(F("OFF"));
+    display.drawBitmap(0, 0, alarmTriggeredBitmap, 128, 64, 1);
+    display.invertDisplay(false);
   }
 
   else if (element == 1)
   {
-    // display.drawBitmap(0, 0, logoAlarm, 128, 32, 1);
-    display.println(F("Alerte"));
-    display.setTextSize(3);
-    display.setCursor(5, 5);
-    display.println(F("ON"));
-  }
-
-  else if (element == 2)
-  {
-    // display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
-    display.println(F("Alerte"));
-    display.invertDisplay(false);
-  }
-
-  else if (element == 3)
-  {
-    // display.drawBitmap(0, 0, logoAlarmTriggered, 128, 32, 1);
-    display.println(F("Alerte"));
+    display.drawBitmap(0, 0, alarmTriggeredBitmap, 128, 64, 1);
     display.invertDisplay(true);
   }
 
@@ -110,15 +89,16 @@ void printAlarm(int element)
 }
 
 // Affichage de diverses informations.
-void printTemperature()
+void printAir()
 {
   display.clearDisplay();
   display.drawBitmap(0, 0, airBitmap, 128, 64, WHITE);
   display.setTextSize(2);
-  display.setCursor(25, 10);
+  display.setCursor(40, 42);
   display.print(temperature);
   display.write(0xF8);
-  display.setCursor(25, 42);
+  display.print("C");
+  display.setCursor(40, 10);
   display.print(humidity);
   display.write(0x25);
   display.display();
@@ -155,39 +135,39 @@ void printDeviceState(boolean on)
 
   if (on == true)
   {
-    for (int i = 28; i <= 100; i++)
+    for (int i = 51; i < 75; i += 4)
     {
       display.clearDisplay();
-      display.drawRoundRect(16, 4, 96, 24, 12, WHITE);
-      display.fillCircle(i, 16, 10, WHITE);
+      display.drawRoundRect(41, 14, 46, 24, 12, WHITE);
+      display.fillCircle(i, 26, 8, WHITE);
       display.display();
     }
   }
 
   else
   {
-    for (int i = 100; i >= 28; i++)
+    for (int i = 75; i > 51; i -= 4)
     {
       display.clearDisplay();
-      display.drawRoundRect(16, 4, 96, 24, 12, WHITE);
-      display.fillCircle(i, 16, 10, WHITE);
+      display.drawRoundRect(41, 14, 46, 24, 12, WHITE);
+      display.drawCircle(i, 26, 8, WHITE);
       display.display();
     }
   }
 
-  display.display();
   ScreenCurrentOnTime = millis();
 }
 
 void printKeypadMenu(int menu)
 {
   display.clearDisplay();
-  display.setTextSize(2);
+  display.setTextSize(1);
+  display.setCursor(0, 0);
 
   if (menu == LIGHTS_MENU)
   {
     display.drawBitmap(0, 0, lightsMenuBitmap, 128, 64, WHITE);
-    display.setCursor(24, 55);
+    display.setCursor(20, 55);
     display.print("Menu : lumieres");
   }
 
@@ -196,7 +176,7 @@ void printKeypadMenu(int menu)
     display.setCursor(0, 0);
     display.print("Lampe canape");
 
-    display.setCursor(0, 10);
+    display.setCursor(0, 15);
     display.setTextSize(1);
     display.println("1. Temperature");
     display.println("2. Luminosite");
@@ -205,58 +185,71 @@ void printKeypadMenu(int menu)
 
   else if (menu == SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
   {
-    display.println(F("Temperature :"));
+    display.println(F("Temperature : PAS CONFIGURE"));
     // Afficher rectangle temperature.
   }
 
   else if (menu == SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU)
   {
-    display.println(F("Luminosite :"));
+    display.println(F("Luminosite : PAS CONFIGURE"));
     // Afficher rectangle luminosite.
   }
 
   else if (menu == SOFA_LIGHT_EFFECT_CONTROL_SUBMENU)
   {
-    display.println(F("1. Test - 2. Test - 3. Test"));
+    display.println(F("1. Test - 2. Test - 3. Test PAS CONFIGURE"));
   }
 
   else if (menu == BEDSIDE_LIGHT_CONTROL_SUBMENU)
   {
-    display.println(F("1. Temperature - 2. Couleur - 3. Luminosite - 4. Effet"));
+    display.setCursor(0, 0);
+    display.print("Lampe de chevet");
+
+    display.setCursor(0, 15);
+    display.setTextSize(1);
+    display.println("1. Temperature");
+    display.println("2. Couleur");
+    display.println("3. Luminosite");
+    display.println("4. Effet");
   }
 
   else if (menu == BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU)
   {
-    display.println(F("Temperature :"));
+    display.println(F("Temperature : PAS CONFIGURE"));
     // Afficher rectangle temperature.
   }
 
   else if (menu == BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU)
   {
-    display.println(F("Couleur :"));
+    display.println(F("Couleur : PAS CONFIGURE"));
     // Afficher les 3 rectangles de la couleur.
   }
 
   else if (menu == BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU)
   {
-    display.println(F("Luminosite :"));
+    display.println(F("Luminosite : PAS CONFIGURE"));
     // Afficher rectangle luminosite.
   }
 
   else if (menu == BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU)
   {
-    display.println(F("1. Test - 2. Test - 3. Test"));
+    display.println(F("1. Test - 2. Test - 3. Test PAS CONFIGURE"));
   }
 
   else if (menu == RGB_STRIP_CONTROL_SUBMENU)
   {
-    display.println(F("1. Couleur - 2. Effet"));
+    display.setCursor(0, 0);
+    display.print("Rubans de DEL");
+
+    display.setCursor(0, 15);
+    display.setTextSize(1);
+    display.println("1. Couleur");
+    display.println("2. Effet");
   }
 
   else if (menu == RGB_STRIP_COLOR_CONTROL_SUBMENU)
   {
-    display.println(F("Couleur :"));
-    // Afficher les 3 rectangles de la couleur.
+    printLEDState();
   }
 
   else if (menu == RGB_STRIP_EFFECT_CONTROL_SUBMENU)
@@ -267,34 +260,34 @@ void printKeypadMenu(int menu)
   else if (menu == DEVICES_MENU)
   {
     display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
-    display.setCursor(24, 55);
+    display.setCursor(12, 55);
     display.print("Menu : peripheriques");
   }
 
   else if (menu == TV_MENU)
   {
     display.drawBitmap(0, 0, TVMenuBitmap, 128, 64, WHITE);
-    display.setCursor(24, 55);
+    display.setCursor(18, 55);
     display.print("Menu : television");
   }
 
   else if (menu == CONFIGURATION_MENU)
   {
     display.drawBitmap(0, 0, configurationMenuBitmap, 128, 64, WHITE);
-    display.setCursor(24, 55);
+    display.setCursor(15, 55);
     display.print("Menu : configuration");
   }
 
   else if (menu == ALARM_CODE_CONFIGURATION_MENU)
   {
     display.setCursor(0, 0);
-    display.print("Code : ");
+    display.print("Mot de passe");
     display.print(alarmCode);
   }
 
   else if (menu == ALARM_CONFIGURATION_MENU)
   {
-    display.println(F("1. Son alarme - 2. Ajouter carte - 3. Suppromer cartes"));
+    display.println(F("1. Son alarme - 2. Ajouter carte - 3. Supprimer cartes"));
   }
 
   display.display();
@@ -306,9 +299,7 @@ void printMulticolorSpeed()
   display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.println(F("Vitesse de l'animation multicolore :"));
-  display.setTextSize(2);
-  display.setCursor(50, 18);
+  display.print("Vitesse de l'animation multicolore : ");
   display.println(multicolorSpeed);
   display.display();
   ScreenCurrentOnTime = millis();
@@ -316,7 +307,7 @@ void printMulticolorSpeed()
 
 void displaySheduler()
 {
-  if ((ScreenCurrentOnTime != 0) && ((millis() - ScreenCurrentOnTime) >= 4000))
+  if ((ScreenCurrentOnTime != 0) && ((millis() - ScreenCurrentOnTime) >= 8000))
   {
     ScreenCurrentOnTime = 0;
     display.clearDisplay();

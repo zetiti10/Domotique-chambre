@@ -355,6 +355,12 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
+      Serial.println("RLEDValue + RGBStripPrecision");
+      Serial.print(RLEDValue);
+      Serial.print(" + ");
+      Serial.print(RGBStripPrecision);
+      Serial.print(" = ");
+      Serial.println(RLEDValue + RGBStripPrecision);
       controlRGBStrip(RLEDValue + RGBStripPrecision, GLEDValue, BLEDValue);
       break;
 
@@ -387,6 +393,8 @@ void keypadButtonPressed(char key, boolean longPress)
     default:
       break;
     }
+
+    printLEDState();
   }
 
   else if (keypadMenu == RGB_STRIP_EFFECT_CONTROL_SUBMENU)
@@ -455,6 +463,10 @@ void keypadButtonPressed(char key, boolean longPress)
 
     case '4':
       switchTray(TOGGLE);
+      break;
+
+    case '5':
+      printAir();
       break;
 
     case 'C':
@@ -542,7 +554,7 @@ void keypadButtonPressed(char key, boolean longPress)
         alarmCode += key;
       }
 
-      if (alarmCode.length() == 3)
+      if (alarmCode.length() == 4)
       {
         if (alarmCode == "2023")
         {

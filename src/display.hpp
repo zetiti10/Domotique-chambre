@@ -6,14 +6,12 @@
 extern int ScreenOnTime;
 extern unsigned long ScreenCurrentOnTime;
 
-#define WHITE 1
-
 void printBell();
 void printVolume(int element);
 void printAlarm(int element);
 void printAllOFF();
 void printPowerSupplyONTime();
-void printTemperature();
+void printAir();
 void printLEDState();
 void printDeviceState(boolean on);
 void printKeypadMenu(int menu);

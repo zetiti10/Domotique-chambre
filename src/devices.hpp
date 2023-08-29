@@ -19,10 +19,6 @@ extern double soundReactSensibility;
 extern unsigned long multicolorSpeed;
 extern int volume;
 
-extern int RLEDValue;
-extern int GLEDValue;
-extern int BLEDValue;
-
 extern boolean LEDCubeState;
 extern boolean multicolorState;
 extern boolean alarmState;
@@ -34,6 +30,11 @@ void switchLEDCube(int action);
 void switchStreet(int action);
 void switchDeskLight(int action);
 void switchTray(int action);
+
+extern int RLEDValue;
+extern int GLEDValue;
+extern int BLEDValue;
+
 void switchRGBStrip(int action);
 void controlRGBStrip(int r, int g, int b);
 void switchMulticolor(int action);
@@ -44,7 +45,7 @@ void volumeSono(int action);
 void switchTV(int action);
 void switchAlarm(int action);
 void alarmSheduler();
-void storeCard(uint8_t card[5]);
+void storeCard(uint8_t card[4]);
 void removeCards();
 
 #endif

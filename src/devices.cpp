@@ -383,26 +383,38 @@ void controlRGBStrip(int r, int g, int b)
     }
 
     if (r < 0)
+    {
         r = 0;
+    }
 
     if (r > 255)
+    {
         r = 255;
+    }
 
     if (g < 0)
+    {
         g = 0;
+    }
 
     if (g > 255)
+    {
         g = 255;
+    }
 
     if (b < 0)
+    {
         b = 0;
+    }
 
     if (b > 255)
+    {
         b = 255;
+    }
 
     RLEDValue = r;
-    RLEDValue = g;
-    RLEDValue = b;
+    GLEDValue = g;
+    BLEDValue = b;
 
     analogWrite(PIN_RED_LED, RLEDValue);
     analogWrite(PIN_GREEN_LED, GLEDValue);
@@ -813,31 +825,6 @@ boolean alarmTriggered = false;
 unsigned long alarmAutoTriggerOFFCounter = 0;
 unsigned long alarmTriggeredLightsCounter = 0;
 
-// Fonction qui arrête de faire sonner l'alarme proprement.
-void stopAlarmRinging()
-{
-    if (alarmTriggered == false)
-    {
-        return;
-    }
-
-    alarmTriggered = false;
-
-    if (alarmBuzzerState == true)
-    {
-        digitalWrite(PIN_ALARM_RELAY, LOW);
-    }
-
-    digitalWrite(PIN_RED_LED, LOW);
-    controlRGBStrip(0, 0, 0);
-    digitalWrite(PIN_DOOR_LED, LOW);
-    printAlarm(3);
-
-    display.invertDisplay(false);
-    display.clearDisplay();
-    display.display();
-}
-
 // Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état - STOP_RINGING = arrêter la sonnerie.
 void switchAlarm(int action)
 {
@@ -847,11 +834,11 @@ void switchAlarm(int action)
         {
             if (alarmTriggered == true)
             {
-                stopAlarmRinging();
+                switchAlarm(STOP_RINGING);
             }
 
             digitalWrite(PIN_DOOR_LED, LOW);
-            printAlarm(0);
+            printDeviceState(false);
             alarmState = false;
         }
     }
@@ -866,7 +853,7 @@ void switchAlarm(int action)
             }
 
             digitalWrite(PIN_DOOR_LED, HIGH);
-            printAlarm(1);
+            printDeviceState(true);
             alarmState = true;
         }
     }
@@ -884,16 +871,40 @@ void switchAlarm(int action)
         }
     }
 
-    else
+    else if (action == STOP_RINGING)
     {
-        if (alarmTriggered == true)
+        if (alarmTriggered == false)
         {
-            stopAlarmRinging();
+            return;
         }
+
+        alarmTriggered = false;
+
+        if (alarmBuzzerState == true)
+        {
+            digitalWrite(PIN_ALARM_RELAY, LOW);
+        }
+
+        if (alarmState == false)
+        {
+            digitalWrite(PIN_DOOR_LED, LOW);
+        }
+
+        else
+        {
+            digitalWrite(PIN_DOOR_LED, HIGH);
+        }
+
+        controlRGBStrip(0, 0, 0);
+        printAlarm(3);
+
+        display.invertDisplay(false);
+        display.clearDisplay();
+        display.display();
     }
 }
 
-boolean alarmBuzzerState = true;
+boolean alarmBuzzerState = false;
 
 void triggerAlarm()
 {
@@ -912,13 +923,13 @@ void triggerAlarm()
     alarmAutoTriggerOFFCounter = millis();
 }
 
-boolean checkCard(uint8_t card[5])
+boolean checkCard(uint8_t card[4])
 {
     int storedCardsNumber = EEPROM.read(0);
 
     for (int i = 0; i < storedCardsNumber; i++)
     {
-        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3] && EEPROM.read(i * 5 + 15) == card[4])
+        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3])
         {
             return true;
         }
@@ -933,13 +944,13 @@ void alarmSheduler()
     uint8_t uid[] = {0, 0, 0, 0, 0};
     uint8_t uidLength;
 
-    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 1))
+    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100))
     {
         if (checkCard(uid) == true)
         {
             if (alarmTriggered == true)
             {
-                stopAlarmRinging();
+                switchAlarm(STOP_RINGING);
             }
 
             else
@@ -948,11 +959,6 @@ void alarmSheduler()
             }
 
             yesSound();
-        }
-
-        else
-        {
-            triggerAlarm();
         }
     }
 
@@ -975,7 +981,7 @@ void alarmSheduler()
         {
             if ((millis() - alarmAutoTriggerOFFCounter) >= 10000)
             {
-                stopAlarmRinging();
+                switchAlarm(STOP_RINGING);
             }
         }
 
@@ -990,7 +996,7 @@ void alarmSheduler()
             alarmTriggeredLightsCounter = alarmTriggeredLightsCounter - 100;
             controlRGBStrip(255, 0, 0);
             digitalWrite(PIN_DOOR_LED, HIGH);
-            printAlarm(2);
+            printAlarm(0);
         }
 
         if ((millis() - alarmTriggeredLightsCounter) >= 200 && (millis() - alarmTriggeredLightsCounter) >= 300)
@@ -998,16 +1004,15 @@ void alarmSheduler()
             alarmTriggeredLightsCounter = millis();
             controlRGBStrip(0, 0, 0);
             digitalWrite(PIN_DOOR_LED, LOW);
-            printAlarm(3);
+            printAlarm(1);
         }
     }
 }
 
 boolean cardToStoreState = false;
 
-void storeCard(uint8_t card[5])
+void storeCard(uint8_t card[4])
 {
-
     if (checkCard(card) == true)
     {
         return;
@@ -1015,7 +1020,7 @@ void storeCard(uint8_t card[5])
 
     int storeLocation = EEPROM.read(0) * 5 + 11;
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 4; i++)
     {
         EEPROM.write(storeLocation + i, card[i]);
     }

@@ -4,6 +4,8 @@
 #include <Adafruit_SSD1306.h>
 #include <PN532.h>
 
+extern boolean debugMode;
+
 extern float temperature;
 extern float humidity;
 

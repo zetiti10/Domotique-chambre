@@ -35,6 +35,7 @@ unsigned long airSensorsCounter = 0;
 boolean wardrobeState = true;
 float temperature = 0;
 float humidity = 0;
+boolean debugMode = false;
 
 // Création du clavier pour contrôler le système.
 const byte KEYPAD_ROWS = 4;
@@ -64,6 +65,18 @@ PN532 nfcReader(pn532hsu);
 
 void setup()
 {
+
+  // Lancement mode de résolution des problèmes.
+  Serial.begin(115200);
+  if (Serial)
+  {
+    debugMode = true;
+    Serial.println("[INFO] [SETUP] Mode de résolution de problèmes activé.");
+    Serial.println("[INFO] [SETUP] Début de l'initialisation du système.");
+  }
+
+  int errorCounter = 0;
+
   // Définition des modes des broches des capteurs.
   pinMode(PIN_WARDROBE_DOOR_SENSOR, INPUT_PULLUP);
   pinMode(PIN_DOORBELL_BUTTON, INPUT);
@@ -90,16 +103,53 @@ void setup()
   pinMode(PIN_MOTOR_TRAY_1, OUTPUT);
   pinMode(PIN_MOTOR_TRAY_2, OUTPUT);
 
-  // Lancement des communications.
-  // Serial1.begin(9600); // Communication avec l'ESP8266-01.
+  if (debugMode)
+  {
+    Serial.println("[INFO] [SETUP] Broches de l'Arduino initialisés.");
+  }
+
+  // Communication avec l'ESP8266-01.
+  // Serial1.begin(9600);
+  if (!Serial1)
+  {
+    errorCounter++;
+
+    if (debugMode)
+    {
+      Serial.println("[ERREUR] [SETUP] La communication avec l'ESP8266-01 n'a pas pu être établie. La connexion à Home Assistant n'est pas effectuée.");
+    }
+  }
+
   IrSender.begin(PIN_IR_LED);
   IRSensor.enableIRIn();
-  keypad.begin();
-  airSensor.begin();
-  nfcReader.begin();
-  Serial.begin(115200); // Uniquement pour la résolution de problèmes.
 
-  // Configure le mode du lecteur RFID.
+  keypad.begin();
+
+  airSensor.begin();
+  sensors_event_t event;
+  airSensor.temperature().getEvent(&event);
+  if (!isnan(event.temperature))
+  {
+    temperature = event.temperature;
+
+    airSensor.humidity().getEvent(&event);
+    if (!isnan(event.relative_humidity))
+    {
+      humidity = event.relative_humidity;
+    }
+  }
+
+  else
+  {
+    errorCounter++;
+
+    if (debugMode)
+    {
+      Serial.println("[ERREUR] [SETUP] La communication avec le boîtier des capteurs");
+    }
+  }
+
+  nfcReader.begin();
   nfcReader.SAMConfig();
 
   // Récupération des informations stockées dans la mémoire persistante.
@@ -108,20 +158,26 @@ void setup()
   // Démarrage de l'écran OLED.
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
   {
-    // ERREUR.
+    errorCounter++;
+
+    if (debugMode)
+    {
+      Serial.println("[ERREUR] [SETUP] La communication avec l'écran n'a pas pu être établie. Aucun affichage ne sera effectué.");
+    }
   }
 
-  // Faire un système de vérification des composants et un compteur d'erreurs qui s'affiche à la fin du démarrage.
-
-  display.clearDisplay();
-  display.cp437(true);
-  display.display();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.setTextColor(SSD1306_WHITE);
-  display.println(F("Systeme demarre."));
-  display.display();
-  ScreenCurrentOnTime = millis();
+  else
+  {
+    display.clearDisplay();
+    display.cp437(true);
+    display.display();
+    display.setTextSize(1);
+    display.setCursor(0, 0);
+    display.setTextColor(SSD1306_WHITE);
+    display.println(F("Systeme demarre."));
+    display.display();
+    ScreenCurrentOnTime = millis();
+  }
 }
 
 void loop()
@@ -131,7 +187,7 @@ void loop()
   {
     sensors_event_t event;
     airSensor.temperature().getEvent(&event);
-    if (!isnan(event.temperature))    
+    if (!isnan(event.temperature))
     {
       temperature = event.temperature;
     }
@@ -172,20 +228,20 @@ void loop()
   }
 
   // Vérification de l'alarme.
-  if(cardToStoreState == true)
+  if (cardToStoreState == true)
   {
-    uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };
+    uint8_t uid[] = {0, 0, 0, 0, 0, 0, 0};
     uint8_t uidLength;
 
     if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100))
     {
-        if(uidLength == 4)
-        {
-          uint8_t validUid[] = {uid[0], uid[1], uid[2], uid[3]};
+      if (uidLength == 4)
+      {
+        uint8_t validUid[] = {uid[0], uid[1], uid[2], uid[3]};
 
-          storeCard(validUid);
-        }
-        cardToStoreState = false;
+        storeCard(validUid);
+      }
+      cardToStoreState = false;
     }
 
     delay(1000);

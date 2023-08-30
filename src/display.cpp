@@ -24,6 +24,20 @@ void printBell()
   ScreenCurrentOnTime = millis();
 }
 
+// Affichage d'un message à l'écran.
+void printMessage(String title, String message)
+{
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextSize(2);
+  display.println(title);
+  display.setCursor(0, 18);
+  display.setTextSize(1);
+  display.println(message);
+  display.display();
+  ScreenCurrentOnTime = millis();
+}
+
 // Paramètre :  DECREASE = diminuer le volume - INCREASE = augmenter le volume - MUTE = couper le son - UNMUTE = réetablir le son.
 void printVolume(int action)
 {
@@ -260,29 +274,28 @@ void printKeypadMenu(int menu)
   else if (menu == DEVICES_MENU)
   {
     display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
-    display.setCursor(12, 55);
+    display.setCursor(4, 55);
     display.print("Menu : peripheriques");
   }
 
   else if (menu == TV_MENU)
   {
     display.drawBitmap(0, 0, TVMenuBitmap, 128, 64, WHITE);
-    display.setCursor(18, 55);
+    display.setCursor(15, 55);
     display.print("Menu : television");
   }
 
   else if (menu == CONFIGURATION_MENU)
   {
     display.drawBitmap(0, 0, configurationMenuBitmap, 128, 64, WHITE);
-    display.setCursor(15, 55);
+    display.setCursor(5, 55);
     display.print("Menu : configuration");
   }
 
   else if (menu == ALARM_CODE_CONFIGURATION_MENU)
   {
     display.setCursor(0, 0);
-    display.print("Mot de passe");
-    display.print(alarmCode);
+    display.print("Entrer le mot de passe.");
   }
 
   else if (menu == ALARM_CONFIGURATION_MENU)

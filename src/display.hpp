@@ -7,6 +7,7 @@ extern int ScreenOnTime;
 extern unsigned long ScreenCurrentOnTime;
 
 void printBell();
+void printMessage(String title, String message);
 void printVolume(int element);
 void printAlarm(int element);
 void printAllOFF();

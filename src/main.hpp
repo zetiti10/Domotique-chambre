@@ -6,6 +6,8 @@
 
 extern boolean debugMode;
 
+extern unsigned long cardCounter;
+
 extern float temperature;
 extern float humidity;
 

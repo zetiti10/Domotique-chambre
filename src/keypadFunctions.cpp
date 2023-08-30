@@ -21,7 +21,6 @@
 int keypadMenu = LIGHTS_MENU;
 
 unsigned long pressedKeypadTouchTime = 0;
-
 unsigned long keypadSubMenuTimer = 0;
 
 String alarmCode = "b";
@@ -355,33 +354,39 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      Serial.println("RLEDValue + RGBStripPrecision");
-      Serial.print(RLEDValue);
-      Serial.print(" + ");
-      Serial.print(RGBStripPrecision);
-      Serial.print(" = ");
-      Serial.println(RLEDValue + RGBStripPrecision);
       controlRGBStrip(RLEDValue + RGBStripPrecision, GLEDValue, BLEDValue);
+      printLEDState();
+      keypadSubMenuTimer = millis();
       break;
 
     case '2':
       controlRGBStrip(RLEDValue, GLEDValue + RGBStripPrecision, BLEDValue);
+      printLEDState();
+      keypadSubMenuTimer = millis();
       break;
 
     case '3':
       controlRGBStrip(RLEDValue, GLEDValue, BLEDValue + RGBStripPrecision);
+      printLEDState();
+      keypadSubMenuTimer = millis();
       break;
 
     case '4':
       controlRGBStrip(RLEDValue - RGBStripPrecision, GLEDValue, BLEDValue);
+      printLEDState();
+      keypadSubMenuTimer = millis();
       break;
 
     case '5':
       controlRGBStrip(RLEDValue, GLEDValue - RGBStripPrecision, BLEDValue);
+      printLEDState();
+      keypadSubMenuTimer = millis();
       break;
 
     case '6':
       controlRGBStrip(RLEDValue, GLEDValue, BLEDValue - RGBStripPrecision);
+      printLEDState();
+      keypadSubMenuTimer = millis();
       break;
 
     case 'B':
@@ -393,8 +398,6 @@ void keypadButtonPressed(char key, boolean longPress)
     default:
       break;
     }
-
-    printLEDState();
   }
 
   else if (keypadMenu == RGB_STRIP_EFFECT_CONTROL_SUBMENU)
@@ -403,14 +406,18 @@ void keypadButtonPressed(char key, boolean longPress)
     {
     case '1':
       switchMulticolor(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '2':
       switchSoundReact(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '4':
       multicolorSpeed++;
+      printMulticolorSpeed();
+      keypadSubMenuTimer = millis();
       break;
 
     case '5':
@@ -418,6 +425,7 @@ void keypadButtonPressed(char key, boolean longPress)
       {
         soundReactSensibility = soundReactSensibility + 0.05;
       }
+      keypadSubMenuTimer = millis();
       break;
 
     case '7':
@@ -425,6 +433,8 @@ void keypadButtonPressed(char key, boolean longPress)
       {
         multicolorSpeed = multicolorSpeed - 1;
       }
+      printMulticolorSpeed();
+      keypadSubMenuTimer = millis();
       break;
 
     case '8':
@@ -432,6 +442,7 @@ void keypadButtonPressed(char key, boolean longPress)
       {
         soundReactSensibility = soundReactSensibility - 0.05;
       }
+      keypadSubMenuTimer = millis();
       break;
 
     case 'B':
@@ -451,22 +462,27 @@ void keypadButtonPressed(char key, boolean longPress)
     {
     case '1':
       switchLEDCube(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '2':
       switchStreet(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '3':
       switchDisco(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '4':
       switchTray(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '5':
       printAir();
+      keypadSubMenuTimer = millis();
       break;
 
     case 'C':
@@ -477,6 +493,7 @@ void keypadButtonPressed(char key, boolean longPress)
     case 'D':
       keypadMenu = TV_MENU;
       printKeypadMenu(TV_MENU);
+      keypadSubMenuTimer = millis();
       break;
 
     default:
@@ -490,28 +507,34 @@ void keypadButtonPressed(char key, boolean longPress)
     {
     case '1':
       switchTV(TOGGLE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '4':
       volumeSono(DECREASE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '5':
       volumeSono(TOGGLE_MUTE);
+      keypadSubMenuTimer = millis();
       break;
 
     case '6':
       volumeSono(INCREASE);
+      keypadSubMenuTimer = millis();
       break;
 
     case 'C':
       keypadMenu = DEVICES_MENU;
       printKeypadMenu(DEVICES_MENU);
+      keypadSubMenuTimer = millis();
       break;
 
     case 'D':
       keypadMenu = CONFIGURATION_MENU;
       printKeypadMenu(CONFIGURATION_MENU);
+      keypadSubMenuTimer = millis();
       break;
 
     default:
@@ -532,6 +555,7 @@ void keypadButtonPressed(char key, boolean longPress)
     case 'C':
       keypadMenu = TV_MENU;
       printKeypadMenu(TV_MENU);
+      keypadSubMenuTimer = millis();
       break;
 
     default:
@@ -582,13 +606,13 @@ void keypadButtonPressed(char key, boolean longPress)
     case 'B':
       keypadMenu = CONFIGURATION_MENU;
       printKeypadMenu(CONFIGURATION_MENU);
+
+      alarmCode = "b";
       break;
 
     default:
       break;
     }
-
-    alarmCode = "b";
   }
 
   else if (keypadMenu == ALARM_CONFIGURATION_MENU)
@@ -614,21 +638,28 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case '2':
-      if (alarmState == false)
+      if (alarmState == true)
       {
-        if (cardToStoreState == false)
-        {
-          cardToStoreState = true;
-        }
+        return;
+      }
 
-        else
-        {
-          cardToStoreState = false;
-        }
+      if (cardToStoreState == false)
+      {
+        cardToStoreState = true;
+      }
+
+      else
+      {
+        cardToStoreState = false;
       }
       break;
 
     case '3':
+      if (alarmState == true)
+      {
+        return;
+      }
+
       removeCards();
       break;
 

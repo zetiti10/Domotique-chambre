@@ -208,20 +208,18 @@ void switchTray(int action)
     {
         if (trayState == true)
         {
-            digitalWrite(PIN_MOTOR_TRAY_1, LOW);
-            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
-            for (int i = 0; i < 11; i++)
+            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
+            digitalWrite(PIN_MOTOR_TRAY_2, LOW);
+            display.fillRoundRect(5, -10, 118, 20, 5, WHITE);
+            for (int i = 0; i < 40; i++)
             {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
+                display.drawLine(28, 11 + i, 100, 11 + i, WHITE);
             }
             display.display();
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 40; i++)
             {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 22 - i, 83, 22 - i, SSD1306_BLACK);
+                display.drawLine(28, 50 - i, 100, 50 - i, BLACK);
                 display.display();
-                delay(80);
             }
             ScreenCurrentOnTime = millis();
             digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
@@ -234,15 +232,14 @@ void switchTray(int action)
     {
         if (trayState == false)
         {
-            digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
-            digitalWrite(PIN_MOTOR_TRAY_2, LOW);
+            digitalWrite(PIN_MOTOR_TRAY_1, LOW);
+            digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
             display.clearDisplay();
-            for (int i = 0; i < 11; i++)
+            display.fillRoundRect(5, -10, 118, 20, 5, WHITE);
+            for (int i = 0; i < 40; i++)
             {
-                display.drawLine(30, 10, 98, 10, SSD1306_WHITE);
-                display.drawLine(45, 10 + i, 83, 10 + i, SSD1306_WHITE);
+                display.drawLine(28, 11 + i, 100, 11 + i, WHITE);
                 display.display();
-                delay(80);
             }
             ScreenCurrentOnTime = millis();
             digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
@@ -270,6 +267,7 @@ void switchTray(int action)
 boolean soundReactState = false;
 int soundReactMax = 0;
 double soundReactSensibility = 0.75;
+unsigned long soundReactLastTimeColorChanged = 0;
 unsigned long soundReactLastTime = 0;
 
 boolean multicolorState = false;
@@ -318,6 +316,8 @@ void switchRGBStrip(int action)
             analogWrite(PIN_BLUE_LED, BLEDValue);
 
             RGBStripState = false;
+
+            printDeviceState(false);
         }
     }
 
@@ -326,8 +326,8 @@ void switchRGBStrip(int action)
         if (RGBStripState == false)
         {
             RLEDValue = RLEDOFFValue;
-            RLEDValue = RLEDOFFValue;
-            RLEDValue = RLEDOFFValue;
+            GLEDValue = GLEDOFFValue;
+            BLEDValue = BLEDOFFValue;
 
             RLEDOFFValue = 0;
             GLEDOFFValue = 0;
@@ -338,6 +338,8 @@ void switchRGBStrip(int action)
             analogWrite(PIN_BLUE_LED, BLEDValue);
 
             RGBStripState = true;
+
+            printDeviceState(true);
         }
     }
 
@@ -433,7 +435,6 @@ void switchMulticolor(int action)
         if (multicolorState == true)
         {
             multicolorState = false;
-            printDeviceState(false);
             RLEDValue = 0;
             GLEDValue = 0;
             BLEDValue = 0;
@@ -441,6 +442,8 @@ void switchMulticolor(int action)
             analogWrite(PIN_GREEN_LED, GLEDValue);
             analogWrite(PIN_BLUE_LED, BLEDValue);
             multicolorStep = 0;
+
+            printDeviceState(false);
         }
     }
 
@@ -450,7 +453,6 @@ void switchMulticolor(int action)
         {
             switchSoundReact(SWITCH_OFF);
             multicolorState = true;
-            printDeviceState(true);
             RLEDValue = 0;
             GLEDValue = 0;
             BLEDValue = 255;
@@ -458,6 +460,8 @@ void switchMulticolor(int action)
             analogWrite(PIN_GREEN_LED, GLEDValue);
             analogWrite(PIN_BLUE_LED, BLEDValue);
             multicolorLastTime = millis();
+
+            printDeviceState(true);
         }
     }
 
@@ -491,8 +495,8 @@ void multicolorScheduler()
 
         if (multicolorStep == 0)
         {
-            RLEDValue++;
-            BLEDValue--;
+            RLEDValue += 5;
+            BLEDValue -= 5;
             analogWrite(PIN_RED_LED, RLEDValue);
             analogWrite(PIN_BLUE_LED, BLEDValue);
 
@@ -504,8 +508,8 @@ void multicolorScheduler()
 
         else if (multicolorStep == 1)
         {
-            GLEDValue++;
-            RLEDValue--;
+            GLEDValue += 5;
+            RLEDValue -= 5;
             analogWrite(PIN_GREEN_LED, GLEDValue);
             analogWrite(PIN_RED_LED, RLEDValue);
 
@@ -517,8 +521,8 @@ void multicolorScheduler()
 
         else if (multicolorStep == 2)
         {
-            BLEDValue++;
-            GLEDValue--;
+            BLEDValue += 5;
+            GLEDValue -= 5;
             analogWrite(PIN_BLUE_LED, BLEDValue);
             analogWrite(PIN_GREEN_LED, GLEDValue);
 
@@ -542,7 +546,6 @@ void switchSoundReact(int action)
         if (soundReactState == true)
         {
             soundReactState = false;
-            printDeviceState(false);
             soundReactMax = 0;
             RLEDValue = 0;
             GLEDValue = 0;
@@ -550,6 +553,8 @@ void switchSoundReact(int action)
             analogWrite(PIN_RED_LED, RLEDValue);
             analogWrite(PIN_GREEN_LED, GLEDValue);
             analogWrite(PIN_BLUE_LED, BLEDValue);
+
+            printDeviceState(false);
         }
     }
 
@@ -559,7 +564,6 @@ void switchSoundReact(int action)
         {
             switchMulticolor(SWITCH_OFF);
             soundReactState = true;
-            printDeviceState(true);
             randomSeed(PIN_RANDOM_SEED_GENERATOR);
             soundReactLastTime = millis();
             RLEDValue = 0;
@@ -568,6 +572,8 @@ void switchSoundReact(int action)
             analogWrite(PIN_RED_LED, RLEDValue);
             analogWrite(PIN_GREEN_LED, GLEDValue);
             analogWrite(PIN_BLUE_LED, BLEDValue);
+
+            printDeviceState(true);
         }
     }
 
@@ -593,9 +599,13 @@ void soundReactScheduler()
         return;
     }
 
+    // On manipule la valeur envoyée par le microphone pour obtenir une valeur de 0 à +x.
     int sound = analogRead(PIN_MICROPHONE);
-    sound = abs(sound);
     sound = sound - 287;
+    sound = abs(sound);
+
+    Serial.print(sound);
+    Serial.print(",");
 
     boolean soundReactMaxChanged = false;
 
@@ -605,17 +615,23 @@ void soundReactScheduler()
         soundReactMaxChanged = true;
     }
 
+    Serial.print(soundReactMax);
+    Serial.print(",");
+
+    Serial.println((soundReactSensibility * soundReactMax));
+
     unsigned long actualTime = millis();
 
-    if ((actualTime - soundReactLastTime) >= 100)
-    {
-        if (soundReactMaxChanged == false)
-        {
-            soundReactMax--;
-        }
+    boolean colorChanged = false;
 
+    if ((actualTime - soundReactLastTimeColorChanged) >= 200)
+    {
         if (sound >= (soundReactSensibility * soundReactMax))
         {
+            colorChanged = true;
+
+            soundReactLastTimeColorChanged = actualTime;
+
             int eliminatedColor = random(2);
             int firstColor = random(255);
             int secondColor = random(255);
@@ -643,21 +659,46 @@ void soundReactScheduler()
         }
     }
 
-    else
+    if ((actualTime - soundReactLastTime) >= 300)
     {
-        if (RLEDValue > 0)
+        soundReactLastTime = actualTime;
+
+        if (soundReactMaxChanged == false)
         {
-            RLEDValue--;
+            soundReactMax--;
         }
 
-        if (GLEDValue > 0)
+        if (colorChanged == false)
         {
-            GLEDValue--;
-        }
+            if ((RLEDValue - 5) >= 0)
+            {
+                RLEDValue -= 5;
+            }
 
-        if (BLEDValue > 0)
-        {
-            BLEDValue--;
+            else
+            {
+                RLEDValue = 0;
+            }
+
+            if ((GLEDValue - 5) >= 0)
+            {
+                GLEDValue -= 5;
+            }
+
+            else
+            {
+                GLEDValue = 0;
+            }
+
+            if ((BLEDValue - 5) >= 0)
+            {
+                BLEDValue -= 5;
+            }
+
+            else
+            {
+                BLEDValue = 0;
+            }
         }
     }
 
@@ -715,7 +756,7 @@ void volumeSono(int action)
         {
             if (volumeMuted == true)
             {
-                printVolume(MUTE);
+                printVolume(UNMUTE);
                 IrSender.sendNEC(0x44C1, 0x77, 3);
                 volumeMuted = false;
             }
@@ -798,7 +839,7 @@ void switchTV(int action)
             printDeviceState(true);
             switchDisplay();
             switchSono();
-            TVState = false;
+            TVState = true;
         }
     }
 
@@ -853,6 +894,7 @@ void switchAlarm(int action)
             }
 
             digitalWrite(PIN_DOOR_LED, HIGH);
+            switchRGBStrip(SWITCH_OFF);
             printDeviceState(true);
             alarmState = true;
         }
@@ -941,24 +983,27 @@ boolean checkCard(uint8_t card[4])
 // Boucle qui s'exécute lorsque l'alarme sonne. Elle permet de l'éteindre après un certain temps si la porte est refermée. De plus, cette boucle gère le clignottement des rubans de DELs en rouge.
 void alarmSheduler()
 {
-    uint8_t uid[] = {0, 0, 0, 0, 0};
-    uint8_t uidLength;
-
-    if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100))
+    if ((millis() - cardCounter) >= 2000)
     {
-        if (checkCard(uid) == true)
+        uint8_t uid[] = {0, 0, 0, 0, 0};
+        uint8_t uidLength;
+
+        if (nfcReader.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100))
         {
-            if (alarmTriggered == true)
+            if (checkCard(uid) == true)
             {
-                switchAlarm(STOP_RINGING);
-            }
+                if (alarmTriggered == true)
+                {
+                    switchAlarm(STOP_RINGING);
+                }
 
-            else
-            {
-                switchAlarm(TOGGLE);
-            }
+                else
+                {
+                    switchAlarm(TOGGLE);
+                }
 
-            yesSound();
+                yesSound();
+            }
         }
     }
 
@@ -991,18 +1036,28 @@ void alarmSheduler()
         }
 
         // On fait clignoter la chambre.
-        if ((millis() - alarmTriggeredLightsCounter) >= 200 && (millis() - alarmTriggeredLightsCounter) >= 300)
+        if ((millis() - alarmTriggeredLightsCounter) >= 200 && (millis() - alarmTriggeredLightsCounter) <= 300)
         {
-            alarmTriggeredLightsCounter = alarmTriggeredLightsCounter - 100;
-            controlRGBStrip(255, 0, 0);
+            alarmTriggeredLightsCounter += 100;
+            RLEDValue = 255;
+            GLEDValue = 0;
+            BLEDValue = 0;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
             digitalWrite(PIN_DOOR_LED, HIGH);
             printAlarm(0);
         }
 
-        if ((millis() - alarmTriggeredLightsCounter) >= 200 && (millis() - alarmTriggeredLightsCounter) >= 300)
+        if ((millis() - alarmTriggeredLightsCounter) >= 400)
         {
             alarmTriggeredLightsCounter = millis();
-            controlRGBStrip(0, 0, 0);
+            RLEDValue = 0;
+            GLEDValue = 0;
+            BLEDValue = 0;
+            analogWrite(PIN_RED_LED, RLEDValue);
+            analogWrite(PIN_GREEN_LED, GLEDValue);
+            analogWrite(PIN_BLUE_LED, BLEDValue);
             digitalWrite(PIN_DOOR_LED, LOW);
             printAlarm(1);
         }
@@ -1015,6 +1070,8 @@ void storeCard(uint8_t card[4])
 {
     if (checkCard(card) == true)
     {
+        noSound();
+        printMessage("ERREUR", "Cette carte a deja ete enregistree.");
         return;
     }
 
@@ -1026,6 +1083,9 @@ void storeCard(uint8_t card[4])
     }
 
     EEPROM.write(0, EEPROM.read(0) + 1);
+
+    yesSound();
+    printMessage("INFO", "La carte a ete enregistree avec succes.");
 }
 
 void removeCards()
@@ -1041,4 +1101,7 @@ void removeCards()
             EEPROM.write(storeLocation + j, 0);
         }
     }
+
+    yesSound();
+    printMessage("INFO", "Les cartes ont ete supprimees avec succes.");
 }

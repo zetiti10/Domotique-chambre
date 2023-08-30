@@ -27,11 +27,13 @@
 #include <devices.hpp>
 #include <ESP.hpp>
 #include <buzzer.hpp>
+#include <bitmaps.hpp>
 
 // Variables globales.
 unsigned long IRRemoteCounter = 0;
 unsigned long doorbellCounter = 0;
 unsigned long airSensorsCounter = 0;
+unsigned long cardCounter = 0;
 boolean wardrobeState = true;
 float temperature = 0;
 float humidity = 0;
@@ -65,9 +67,8 @@ PN532 nfcReader(pn532hsu);
 
 void setup()
 {
-
   // Lancement mode de résolution des problèmes.
-  Serial.begin(115200);
+  //Serial.begin(115200);
   if (Serial)
   {
     debugMode = true;
@@ -75,6 +76,7 @@ void setup()
     Serial.println("[INFO] [SETUP] Début de l'initialisation du système.");
   }
 
+  // Compteur permettant d'afficher le nombre d'erreurs à l'écran.
   int errorCounter = 0;
 
   // Définition des modes des broches des capteurs.
@@ -105,12 +107,12 @@ void setup()
 
   if (debugMode)
   {
-    Serial.println("[INFO] [SETUP] Broches de l'Arduino initialisés.");
+    Serial.println("[INFO] [SETUP] Broches de l'Arduino initialisése.");
   }
 
   // Communication avec l'ESP8266-01.
-  // Serial1.begin(9600);
-  if (!Serial1)
+  Serial1.begin(9600);
+  if (!Serial1) // Ne fonctionne pas. Il faudra trouver autre chose.
   {
     errorCounter++;
 
@@ -125,6 +127,7 @@ void setup()
 
   keypad.begin();
 
+  // Communication avec le capteur de température et d'humidité.
   airSensor.begin();
   sensors_event_t event;
   airSensor.temperature().getEvent(&event);
@@ -145,12 +148,28 @@ void setup()
 
     if (debugMode)
     {
-      Serial.println("[ERREUR] [SETUP] La communication avec le boîtier des capteurs");
+      Serial.println("[ERREUR] [SETUP] La communication avec le capteur de température et d'humidité n'a pas pu être établie. Il est possible que le boîtier des capteurs ne soit pas opérationnel.");
     }
   }
 
+  // Communication avec le lecteur NFC.
   nfcReader.begin();
   nfcReader.SAMConfig();
+  uint32_t versiondata = nfcReader.getFirmwareVersion();
+  if (!versiondata)
+  {
+    errorCounter++;
+
+    if (debugMode)
+    {
+      Serial.println("[ERREUR] [SETUP] La communication avec le lecteur NFC n'a pas pu être établie. Il est possible que le boîtier de la porte ne soit pas opérationnel.");
+    }
+  }
+
+  if (debugMode)
+  {
+    Serial.println("[INFO] [SETUP] Les communications avec les divers périphériques ont été établies.");
+  }
 
   // Récupération des informations stockées dans la mémoire persistante.
   // Refaire la gestion EEPROMM
@@ -170,14 +189,51 @@ void setup()
   {
     display.clearDisplay();
     display.cp437(true);
-    display.display();
-    display.setTextSize(1);
-    display.setCursor(0, 0);
-    display.setTextColor(SSD1306_WHITE);
-    display.println(F("Systeme demarre."));
-    display.display();
-    ScreenCurrentOnTime = millis();
+    display.setTextColor(WHITE);
+
+    if (errorCounter == 0)
+    {
+      display.setTextSize(2);
+      display.setCursor(0, 0);
+      display.println("Systeme demarre sans erreur.");
+      display.display();
+      ScreenCurrentOnTime = millis();
+    }
+
+    else
+    {
+      display.drawBitmap(0, 0, errorBitmap, 128, 64, WHITE);
+      display.setTextSize(1);
+      display.setCursor(24, 52);
+      display.print(errorCounter);
+      display.print(" erreurs detectee(s).");
+      display.display();
+      ScreenCurrentOnTime = millis();
+      noSound();
+    }
+
+    if (debugMode)
+    {
+      Serial.println("[INFO] [SETUP] La communication avec l'écran a été établie.");
+    }
   }
+
+  if (debugMode)
+  {
+    float elapsedTime = millis() / 1000;
+    Serial.print("[INFO] [SETUP] L'initialisation du système de domotique a été effectuée en ");
+    Serial.print(elapsedTime);
+    Serial.print(" seconde(s) et a détecté ");
+    Serial.print(errorCounter);
+    Serial.println(" erreur(s).");
+  }
+
+  Serial.begin(115200);
+  Serial.print("Son");
+  Serial.print(",");
+  Serial.print("Son_max");
+  Serial.print(",");
+  Serial.println("Son_pallier");
 }
 
 void loop()
@@ -190,12 +246,17 @@ void loop()
     if (!isnan(event.temperature))
     {
       temperature = event.temperature;
+
+      airSensor.humidity().getEvent(&event);
+      if (!isnan(event.relative_humidity))
+      {
+        humidity = event.relative_humidity;
+      }
     }
 
-    airSensor.humidity().getEvent(&event);
-    if (!isnan(event.relative_humidity))
+    else if (debugMode)
     {
-      humidity = event.relative_humidity;
+      Serial.println("[ERREUR] [LOOP] Une erreur est survenue lors de la communication avec le capteur de température et de d'humidité. Il est possible que le boîtier des capteurs ne soit pas opérationnel.");
     }
 
     airSensorsCounter = millis();
@@ -227,7 +288,7 @@ void loop()
     digitalWrite(PIN_DOOR_LED, LOW);
   }
 
-  // Vérification de l'alarme.
+  // Gestion de l'alarme.
   if (cardToStoreState == true)
   {
     uint8_t uid[] = {0, 0, 0, 0, 0, 0, 0};
@@ -241,10 +302,11 @@ void loop()
 
         storeCard(validUid);
       }
+
       cardToStoreState = false;
     }
 
-    delay(1000);
+    cardCounter = millis();
   }
 
   else
@@ -291,11 +353,20 @@ void loop()
     }
   }
 
-  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 20000))
+  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 60000))
   {
     keypadSubMenuTimer = 0;
-    keypadMenu = LIGHTS_MENU;
-    printKeypadMenu(LIGHTS_MENU);
+
+    if (keypadMenu == ALARM_CODE_CONFIGURATION_MENU)
+    {
+      alarmCode = "b";
+    }
+
+    else if (keypadMenu != LIGHTS_MENU)
+    {
+      keypadMenu = LIGHTS_MENU;
+      printKeypadMenu(LIGHTS_MENU);
+    }
   }
 
   // Gestion du récepteur infrarouge pour contrôler le système avec la télécommande Google Chromecast.
@@ -307,21 +378,25 @@ void loop()
 
       switch (IRSensor.decodedIRData.decodedRawData)
       {
+        yesSound();
+
       case 4244768519: // ON/OFF.
-        switchTV(2);
+        switchTV(TOGGLE);
         break;
 
       case 4261480199: // Source.
         if (LEDCubeState == LOW && multicolorState == false)
         {
-          switchMulticolor(1);
-          switchLEDCube(1);
+          switchMulticolor(SWITCH_ON);
+          digitalWrite(PIN_LED_CUBE_RELAY, HIGH);
+          LEDCubeState = true;
         }
 
         else
         {
-          switchMulticolor(0);
-          switchLEDCube(0);
+          switchMulticolor(SWITCH_OFF);
+          digitalWrite(PIN_LED_CUBE_RELAY, LOW);
+          LEDCubeState = false;
         }
         break;
 

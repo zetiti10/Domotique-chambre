@@ -34,10 +34,12 @@ unsigned long IRRemoteCounter = 0;
 unsigned long doorbellCounter = 0;
 unsigned long airSensorsCounter = 0;
 unsigned long cardCounter = 0;
-boolean wardrobeState = true;
+unsigned long wardrobeCounter = 0;
+
+boolean wardrobeState = false;
+boolean debugMode = false;
 float temperature = 0;
 float humidity = 0;
-boolean debugMode = false;
 
 // Création du clavier pour contrôler le système.
 const byte KEYPAD_ROWS = 4;
@@ -68,7 +70,7 @@ PN532 nfcReader(pn532hsu);
 void setup()
 {
   // Lancement mode de résolution des problèmes.
-  //Serial.begin(115200);
+  Serial.begin(115200);
   if (Serial)
   {
     debugMode = true;
@@ -94,6 +96,7 @@ void setup()
   pinMode(PIN_BLUE_LED, OUTPUT);
   pinMode(PIN_SCREEN_SERVO, OUTPUT);
   pinMode(PIN_DOOR_LED, OUTPUT);
+  pinMode(PIN_TRAY_MOTOR_SPEED, OUTPUT);
   pinMode(PIN_WARDROBE_LIGHTS_RELAY, OUTPUT);
   pinMode(PIN_ALARM_RELAY, OUTPUT);
   pinMode(PIN_DISCO_RELAY, OUTPUT);
@@ -172,7 +175,10 @@ void setup()
   }
 
   // Récupération des informations stockées dans la mémoire persistante.
-  // Refaire la gestion EEPROMM
+  alarmBuzzerState = EEPROM.read(ALARM_BUZZER_STATE_STORAGE_LOCATION);
+  volume = EEPROM.read(VOLUME_STORAGE_LOCATION);
+  multicolorSpeed = EEPROM.read(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION);
+  soundReactSensibility = EEPROM.read(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION);
 
   // Démarrage de l'écran OLED.
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
@@ -262,30 +268,41 @@ void loop()
     airSensorsCounter = millis();
   }
 
-  // Gestion de l'armoire.
+  // Gestion de l'armoire. D'éviter un problème dû au INPUT_PULLUP, l'armoire ne s'allume qu'après un certain temps.
   boolean wardrobeDoorState = digitalRead(PIN_WARDROBE_DOOR_SENSOR);
-
-  if (wardrobeState == true)
+  if (wardrobeDoorState == HIGH && wardrobeState == true)
   {
-    if (wardrobeDoorState == HIGH && digitalRead(PIN_WARDROBE_LIGHTS_RELAY) == HIGH)
+    digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, LOW);
+    displayDeviceState(false);
+  }
+
+  else if (wardrobeDoorState == LOW && wardrobeState == false)
+  {
+    if (wardrobeCounter == 0)
     {
-      digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, LOW);
-      printDeviceState(false);
+      wardrobeCounter = millis();
     }
 
-    else if (wardrobeDoorState == LOW && digitalRead(PIN_WARDROBE_LIGHTS_RELAY) == LOW)
+    else if ((millis() - wardrobeCounter) >= 50)
     {
       digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, HIGH);
-      printDeviceState(true);
+      displayDeviceState(true);
     }
+  }
+
+  else if (wardrobeDoorState == HIGH && wardrobeCounter != 0)
+  {
+    wardrobeCounter = 0;
   }
 
   // Gestion de la sonnette.
   if (digitalRead(PIN_DOORBELL_BUTTON) == HIGH && alarmState == false && (millis() - doorbellCounter) >= 250)
   {
+    displayBell();
     digitalWrite(PIN_DOOR_LED, HIGH);
     doorbellMusic();
     digitalWrite(PIN_DOOR_LED, LOW);
+    doorbellCounter = millis();
   }
 
   // Gestion de l'alarme.
@@ -357,7 +374,7 @@ void loop()
   {
     keypadSubMenuTimer = 0;
 
-    if (keypadMenu == ALARM_CODE_CONFIGURATION_MENU)
+    if (keypadMenu == ALARM_CODE_CONFIGURATION_SUBMENU)
     {
       alarmCode = "b";
     }
@@ -365,7 +382,7 @@ void loop()
     else if (keypadMenu != LIGHTS_MENU)
     {
       keypadMenu = LIGHTS_MENU;
-      printKeypadMenu(LIGHTS_MENU);
+      displayKeypadMenu();
     }
   }
 
@@ -378,38 +395,37 @@ void loop()
 
       switch (IRSensor.decodedIRData.decodedRawData)
       {
-        yesSound();
 
       case 4244768519: // ON/OFF.
-        switchTV(TOGGLE);
+        switchTV(TOGGLE, true);
         break;
 
       case 4261480199: // Source.
         if (LEDCubeState == LOW && multicolorState == false)
         {
-          switchMulticolor(SWITCH_ON);
-          digitalWrite(PIN_LED_CUBE_RELAY, HIGH);
-          LEDCubeState = true;
+          switchMulticolor(SWITCH_ON, false);
+          switchLEDCube(SWITCH_ON, false);
+          displayDeviceState(true);
         }
 
         else
         {
-          switchMulticolor(SWITCH_OFF);
-          digitalWrite(PIN_LED_CUBE_RELAY, LOW);
-          LEDCubeState = false;
+          switchMulticolor(SWITCH_OFF, false);
+          switchLEDCube(SWITCH_OFF, false);
+          displayDeviceState(false);
         }
         break;
 
       case 4161210119: // Vol+.
-        volumeSono(INCREASE);
+        volumeSono(INCREASE, true);
         break;
 
       case 4094363399: // Vol-.
-        volumeSono(DECREASE);
+        volumeSono(DECREASE, true);
         break;
 
       case 4027516679: // Mute.
-        volumeSono(TOGGLE_MUTE);
+        volumeSono(TOGGLE_MUTE, true);
         break;
       }
     }

@@ -15,7 +15,7 @@
 
 void clickSound()
 {
-    TimerFreeTone(PIN_BUZZER, 750, 25, 8);
+    TimerFreeTone(PIN_BUZZER, 1000, 25, 8);
 }
 
 void yesSound()
@@ -30,8 +30,8 @@ void noSound()
 
 void doorbellMusic()
 {
-    TimerFreeTone(PIN_BUZZER, 200, 250);
-    TimerFreeTone(PIN_BUZZER, 400, 250);
-    TimerFreeTone(PIN_BUZZER, 600, 250);
-    TimerFreeTone(PIN_BUZZER, 800, 250);
+    TimerFreeTone(PIN_BUZZER, 200, 50);
+    TimerFreeTone(PIN_BUZZER, 400, 100);
+    TimerFreeTone(PIN_BUZZER, 600, 150);
+    TimerFreeTone(PIN_BUZZER, 800, 200);
 }

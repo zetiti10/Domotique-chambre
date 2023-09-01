@@ -7,7 +7,7 @@
  */
 
 // Ajout des bibilothèques au programme.
-#include <Arduino.h>
+/*#include <Arduino.h>
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
@@ -363,4 +363,4 @@ void receivedData()
     analogWrite(PIN_BLUE_LED, bv);
     BLEDValue = bv;
   }
-}
+}*/

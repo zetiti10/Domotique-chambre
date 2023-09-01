@@ -13,37 +13,45 @@
 #define STOP_RINGING 3
 #define TOGGLE_MUTE 4
 
-extern int volumePrecision;
-extern int RGBStripPrecision;
-extern double soundReactSensibility;
-extern unsigned long multicolorSpeed;
-extern int volume;
-
+extern boolean discoState;
 extern boolean LEDCubeState;
+extern boolean streetState;
+extern boolean deskLightState;
+extern boolean trayState;
+extern boolean RGBStripState;
+extern boolean soundReactState;
 extern boolean multicolorState;
+extern boolean TVState;
 extern boolean alarmState;
-extern boolean cardToStoreState;
-extern boolean alarmBuzzerState;
 
-void switchDisco(int action);
-void switchLEDCube(int action);
-void switchStreet(int action);
-void switchDeskLight(int action);
-void switchTray(int action);
+extern double soundReactSensibility;
+
+extern unsigned long multicolorSpeed;
 
 extern int RLEDValue;
 extern int GLEDValue;
 extern int BLEDValue;
+extern int RGBStripPrecision;
 
-void switchRGBStrip(int action);
+extern int volume;
+
+extern boolean alarmBuzzerState;
+extern boolean cardToStoreState;
+
+void switchDisco(int action, boolean displayState);
+void switchLEDCube(int action, boolean displayState);
+void switchStreet(int action, boolean displayState);
+void switchDeskLight(int action, boolean displayState);
+void switchTray(int action, boolean displayState);
+void switchRGBStrip(int action, boolean displayState);
 void controlRGBStrip(int r, int g, int b);
-void switchMulticolor(int action);
+void switchMulticolor(int action, boolean displayState);
 void multicolorScheduler();
-void switchSoundReact(int action);
+void switchSoundReact(int action, boolean displayState);
 void soundReactScheduler();
-void volumeSono(int action);
-void switchTV(int action);
-void switchAlarm(int action);
+void volumeSono(int action, boolean displayState);
+void switchTV(int action, boolean displayState);
+void switchAlarm(int action, boolean displayState);
 void alarmSheduler();
 void storeCard(uint8_t card[4]);
 void removeCards();

@@ -3,22 +3,18 @@
 
 #include <Arduino.h>
 
-extern int ScreenOnTime;
 extern unsigned long ScreenCurrentOnTime;
 
-void printBell();
-void printMessage(String title, String message);
-void printVolume(int element);
-void printAlarm(int element);
-void printAllOFF();
-void printPowerSupplyONTime();
-void printAir();
-void printLEDState();
-void printDeviceState(boolean on);
-void printKeypadMenu(int menu);
-void printMicroSensibility();
-void printMulticolorSpeed();
-void printVolumePrecision();
+void displayBell();
+void displayMessage(String title, String message);
+void displayVolume(int element);
+void displayAlarmTriggered(int element);
+void displayAirValues();
+void displayLEDState();
+void displayDeviceState(boolean on);
+void displayKeypadMenu();
+void displayMulticolorSpeed();
+void displaySoundReactSensibility();
 void displaySheduler();
 
 #endif

@@ -25,22 +25,34 @@ unsigned long keypadSubMenuTimer = 0;
 
 String alarmCode = "b";
 
+void setKeypadMenu(int menu)
+{
+  if (keypadMenu == menu)
+    return;
+
+  keypadMenu = menu;
+  displayKeypadMenu();
+
+  if (keypadMenu == LIGHTS_MENU || keypadMenu == DEVICES_MENU || keypadMenu == TV_MENU || keypadMenu == CONFIGURATION_MENU)
+    keypadSubMenuTimer = 0;
+
+  else
+    keypadSubMenuTimer = millis();
+}
+
 void keypadButtonPressed(char key, boolean longPress)
 {
-
-  clickSound();
-
   if (key == 'A')
   {
-    if (keypadMenu == ALARM_CODE_CONFIGURATION_MENU)
-    {
+    if (keypadMenu == ALARM_CODE_CONFIGURATION_SUBMENU)
       alarmCode = "b";
-    }
 
-    keypadMenu = LIGHTS_MENU;
-    printKeypadMenu(LIGHTS_MENU);
+    setKeypadMenu(LIGHTS_MENU);
     return;
   }
+
+  if (keypadMenu != LIGHTS_MENU && keypadMenu != DEVICES_MENU && keypadMenu != TV_MENU && keypadMenu != CONFIGURATION_MENU)
+    keypadSubMenuTimer = millis();
 
   if (keypadMenu == LIGHTS_MENU)
   {
@@ -51,56 +63,42 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case '2':
-      if (longPress == false)
+      if (!longPress)
       {
         // Basculer lumière canapé et afficher à l'écran.
       }
 
       else
-      {
-        keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
-        printKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
-        keypadSubMenuTimer = millis();
-      }
+        setKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
 
       break;
 
     case '3':
-      if (longPress == false)
+      if (!longPress)
       {
         // Basculer lampe de chevet et afficher à l'écran.
       }
 
       else
-      {
-        keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
-        printKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
-        keypadSubMenuTimer = millis();
-      }
+        setKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
 
       break;
 
     case '4':
-      // Basculer lampe de bureau et afficher à l'écran.
+      switchDeskLight(TOGGLE, true);
       break;
 
     case '5':
-      if (longPress == false)
-      {
-        switchRGBStrip(TOGGLE);
-      }
+      if (!longPress)
+        switchRGBStrip(TOGGLE, true);
 
       else
-      {
-        keypadMenu = RGB_STRIP_CONTROL_SUBMENU;
-        printKeypadMenu(RGB_STRIP_CONTROL_SUBMENU);
-        keypadSubMenuTimer = millis();
-      }
+        setKeypadMenu(RGB_STRIP_CONTROL_SUBMENU);
+
       break;
 
     case 'D':
-      keypadMenu = DEVICES_MENU;
-      printKeypadMenu(DEVICES_MENU);
+      setKeypadMenu(DEVICES_MENU);
       break;
 
     default:
@@ -113,26 +111,19 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      keypadMenu = SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU;
-      printKeypadMenu(SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU);
       break;
 
     case '2':
-      keypadMenu = SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU;
-      printKeypadMenu(SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU);
       break;
 
     case '3':
-      keypadMenu = SOFA_LIGHT_EFFECT_CONTROL_SUBMENU;
-      printKeypadMenu(SOFA_LIGHT_EFFECT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(SOFA_LIGHT_EFFECT_CONTROL_SUBMENU);
       break;
 
     case 'B':
-      keypadMenu = LIGHTS_MENU;
-      printKeypadMenu(LIGHTS_MENU);
+      setKeypadMenu(LIGHTS_MENU);
       break;
 
     default:
@@ -153,9 +144,7 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case 'B':
-      keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -176,9 +165,7 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case 'B':
-      keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -190,10 +177,16 @@ void keypadButtonPressed(char key, boolean longPress)
   {
     switch (key)
     {
+    case '1':
+      // Effet 1.
+      break;
+
+    case '2':
+      // Effet 2.
+      break;
+
     case 'B':
-      keypadMenu = SOFA_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(SOFA_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -206,32 +199,23 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      keypadMenu = BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU);
       break;
 
     case '2':
-      keypadMenu = BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU);
       break;
 
     case '3':
-      keypadMenu = BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU);
       break;
 
     case '4':
-      keypadMenu = BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU);
       break;
 
     case 'B':
-      keypadMenu = LIGHTS_MENU;
-      printKeypadMenu(LIGHTS_MENU);
+      setKeypadMenu(LIGHTS_MENU);
       break;
 
     default:
@@ -252,9 +236,7 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case 'B':
-      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -275,9 +257,7 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case 'B':
-      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -298,9 +278,7 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case 'B':
-      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -312,10 +290,16 @@ void keypadButtonPressed(char key, boolean longPress)
   {
     switch (key)
     {
+    case '1':
+      // Effet 1.
+      break;
+
+    case '2':
+      // Effet 2.
+      break;
+
     case 'B':
-      keypadMenu = BEDSIDE_LIGHT_CONTROL_SUBMENU;
-      printKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(BEDSIDE_LIGHT_CONTROL_SUBMENU);
       break;
 
     default:
@@ -328,20 +312,15 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      keypadMenu = RGB_STRIP_COLOR_CONTROL_SUBMENU;
-      printKeypadMenu(RGB_STRIP_COLOR_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(RGB_STRIP_COLOR_CONTROL_SUBMENU);
       break;
 
     case '2':
-      keypadMenu = RGB_STRIP_EFFECT_CONTROL_SUBMENU;
-      printKeypadMenu(RGB_STRIP_EFFECT_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(RGB_STRIP_EFFECT_CONTROL_SUBMENU);
       break;
 
     case 'B':
-      keypadMenu = LIGHTS_MENU;
-      printKeypadMenu(LIGHTS_MENU);
+      setKeypadMenu(LIGHTS_MENU);
       break;
 
     default:
@@ -355,44 +334,36 @@ void keypadButtonPressed(char key, boolean longPress)
     {
     case '1':
       controlRGBStrip(RLEDValue + RGBStripPrecision, GLEDValue, BLEDValue);
-      printLEDState();
-      keypadSubMenuTimer = millis();
+      displayLEDState();
       break;
 
     case '2':
       controlRGBStrip(RLEDValue, GLEDValue + RGBStripPrecision, BLEDValue);
-      printLEDState();
-      keypadSubMenuTimer = millis();
+      displayLEDState();
       break;
 
     case '3':
       controlRGBStrip(RLEDValue, GLEDValue, BLEDValue + RGBStripPrecision);
-      printLEDState();
-      keypadSubMenuTimer = millis();
+      displayLEDState();
       break;
 
     case '4':
       controlRGBStrip(RLEDValue - RGBStripPrecision, GLEDValue, BLEDValue);
-      printLEDState();
-      keypadSubMenuTimer = millis();
+      displayLEDState();
       break;
 
     case '5':
       controlRGBStrip(RLEDValue, GLEDValue - RGBStripPrecision, BLEDValue);
-      printLEDState();
-      keypadSubMenuTimer = millis();
+      displayLEDState();
       break;
 
     case '6':
       controlRGBStrip(RLEDValue, GLEDValue, BLEDValue - RGBStripPrecision);
-      printLEDState();
-      keypadSubMenuTimer = millis();
+      displayLEDState();
       break;
 
     case 'B':
-      keypadMenu = RGB_STRIP_CONTROL_SUBMENU;
-      printKeypadMenu(RGB_STRIP_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(RGB_STRIP_CONTROL_SUBMENU);
       break;
 
     default:
@@ -405,50 +376,45 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      switchMulticolor(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchMulticolor(TOGGLE, true);
       break;
 
     case '2':
-      switchSoundReact(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchSoundReact(TOGGLE, true);
       break;
 
     case '4':
       multicolorSpeed++;
-      printMulticolorSpeed();
-      keypadSubMenuTimer = millis();
+      displayMulticolorSpeed();
+      EEPROM.write(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case '5':
       if (soundReactSensibility <= 0.95)
-      {
         soundReactSensibility = soundReactSensibility + 0.05;
-      }
-      keypadSubMenuTimer = millis();
+
+      displaySoundReactSensibility();
+      EEPROM.write(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case '7':
       if (multicolorSpeed >= 1)
-      {
         multicolorSpeed = multicolorSpeed - 1;
-      }
-      printMulticolorSpeed();
-      keypadSubMenuTimer = millis();
+
+      displayMulticolorSpeed();
+      EEPROM.write(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case '8':
       if (soundReactSensibility >= 0.05)
-      {
         soundReactSensibility = soundReactSensibility - 0.05;
-      }
-      keypadSubMenuTimer = millis();
+
+      displaySoundReactSensibility();
+      EEPROM.write(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case 'B':
-      keypadMenu = RGB_STRIP_CONTROL_SUBMENU;
-      printKeypadMenu(RGB_STRIP_CONTROL_SUBMENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(RGB_STRIP_CONTROL_SUBMENU);
       break;
 
     default:
@@ -461,39 +427,31 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      switchLEDCube(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchLEDCube(TOGGLE, true);
       break;
 
     case '2':
-      switchStreet(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchStreet(TOGGLE, true);
       break;
 
     case '3':
-      switchDisco(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchDisco(TOGGLE, true);
       break;
 
     case '4':
-      switchTray(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchTray(TOGGLE, true);
       break;
 
     case '5':
-      printAir();
-      keypadSubMenuTimer = millis();
+      displayAirValues();
       break;
 
     case 'C':
-      keypadMenu = LIGHTS_MENU;
-      printKeypadMenu(LIGHTS_MENU);
+      setKeypadMenu(LIGHTS_MENU);
       break;
 
     case 'D':
-      keypadMenu = TV_MENU;
-      printKeypadMenu(TV_MENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(TV_MENU);
       break;
 
     default:
@@ -506,35 +464,27 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      switchTV(TOGGLE);
-      keypadSubMenuTimer = millis();
+      switchTV(TOGGLE, true);
       break;
 
     case '4':
-      volumeSono(DECREASE);
-      keypadSubMenuTimer = millis();
+      volumeSono(DECREASE, true);
       break;
 
     case '5':
-      volumeSono(TOGGLE_MUTE);
-      keypadSubMenuTimer = millis();
+      volumeSono(TOGGLE_MUTE, true);
       break;
 
     case '6':
-      volumeSono(INCREASE);
-      keypadSubMenuTimer = millis();
+      volumeSono(INCREASE, true);
       break;
 
     case 'C':
-      keypadMenu = DEVICES_MENU;
-      printKeypadMenu(DEVICES_MENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(DEVICES_MENU);
       break;
 
     case 'D':
-      keypadMenu = CONFIGURATION_MENU;
-      printKeypadMenu(CONFIGURATION_MENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(CONFIGURATION_MENU);
       break;
 
     default:
@@ -547,15 +497,11 @@ void keypadButtonPressed(char key, boolean longPress)
     switch (key)
     {
     case '1':
-      keypadMenu = ALARM_CODE_CONFIGURATION_MENU;
-      printKeypadMenu(ALARM_CODE_CONFIGURATION_MENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(ALARM_CODE_CONFIGURATION_SUBMENU);
       break;
 
     case 'C':
-      keypadMenu = TV_MENU;
-      printKeypadMenu(TV_MENU);
-      keypadSubMenuTimer = millis();
+      setKeypadMenu(TV_MENU);
       break;
 
     default:
@@ -563,35 +509,26 @@ void keypadButtonPressed(char key, boolean longPress)
     }
   }
 
-  else if (keypadMenu == ALARM_CODE_CONFIGURATION_MENU)
+  else if (keypadMenu == ALARM_CODE_CONFIGURATION_SUBMENU)
   {
 
     if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9' || key == '0')
     {
       if (alarmCode == "b")
-      {
         alarmCode = key;
-      }
 
       else
-      {
         alarmCode += key;
-      }
 
       if (alarmCode.length() == 4)
       {
         if (alarmCode == "2023")
-        {
-          keypadMenu = ALARM_CONFIGURATION_MENU;
-          printKeypadMenu(ALARM_CONFIGURATION_MENU);
-          keypadSubMenuTimer = millis();
-        }
+          setKeypadMenu(ALARM_CONFIGURATION_SUBMENU);
 
         else
         {
-          // Refus.
-          keypadMenu = CONFIGURATION_MENU;
-          printKeypadMenu(CONFIGURATION_MENU);
+          setKeypadMenu(CONFIGURATION_MENU);
+          displayMessage("ERREUR", "Mot de passe incorrect.");
         }
 
         alarmCode = "b";
@@ -600,67 +537,55 @@ void keypadButtonPressed(char key, boolean longPress)
       return;
     }
 
-    switch (key)
+    if (key == 'b')
     {
-
-    case 'B':
-      keypadMenu = CONFIGURATION_MENU;
-      printKeypadMenu(CONFIGURATION_MENU);
-
+      setKeypadMenu(CONFIGURATION_MENU);
       alarmCode = "b";
-      break;
-
-    default:
-      break;
     }
   }
 
-  else if (keypadMenu == ALARM_CONFIGURATION_MENU)
+  else if (keypadMenu == ALARM_CONFIGURATION_SUBMENU)
   {
     switch (key)
     {
     case '1':
       if (alarmState == true)
-      {
         return;
-      }
 
       if (alarmBuzzerState == false)
       {
         alarmBuzzerState = true;
+        EEPROM.write(ALARM_BUZZER_STATE_STORAGE_LOCATION, alarmBuzzerState);
       }
 
       else
       {
         alarmBuzzerState = false;
+        EEPROM.write(ALARM_BUZZER_STATE_STORAGE_LOCATION, alarmBuzzerState);
       }
 
       break;
 
     case '2':
       if (alarmState == true)
-      {
         return;
-      }
 
       if (cardToStoreState == false)
-      {
         cardToStoreState = true;
-      }
 
       else
-      {
         cardToStoreState = false;
-      }
       break;
 
     case '3':
       if (alarmState == true)
-      {
         return;
-      }
 
       removeCards();
+      break;
+
+    case 'b':
+      setKeypadMenu(CONFIGURATION_MENU);
       break;
 
     default:

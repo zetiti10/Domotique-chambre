@@ -26,14 +26,15 @@
 
 #define CONFIGURATION_MENU 4
 
-#define ALARM_CODE_CONFIGURATION_MENU 411
-#define ALARM_CONFIGURATION_MENU 41
+#define ALARM_CODE_CONFIGURATION_SUBMENU 411
+#define ALARM_CONFIGURATION_SUBMENU 41
 
 extern int keypadMenu;
-extern String alarmCode;
 
 extern unsigned long pressedKeypadTouchTime;
 extern unsigned long keypadSubMenuTimer;
+
+extern String alarmCode;
 
 void keypadButtonPressed(char key, boolean longPress);
 

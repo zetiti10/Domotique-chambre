@@ -109,9 +109,7 @@ void setup()
   pinMode(PIN_MOTOR_TRAY_2, OUTPUT);
 
   if (debugMode)
-  {
     Serial.println("[INFO] [SETUP] Broches de l'Arduino initialisése.");
-  }
 
   // Communication avec l'ESP8266-01.
   Serial1.begin(9600);
@@ -120,9 +118,7 @@ void setup()
     errorCounter++;
 
     if (debugMode)
-    {
       Serial.println("[ERREUR] [SETUP] La communication avec l'ESP8266-01 n'a pas pu être établie. La connexion à Home Assistant n'est pas effectuée.");
-    }
   }
 
   IrSender.begin(PIN_IR_LED);
@@ -140,9 +136,7 @@ void setup()
 
     airSensor.humidity().getEvent(&event);
     if (!isnan(event.relative_humidity))
-    {
       humidity = event.relative_humidity;
-    }
   }
 
   else
@@ -150,9 +144,7 @@ void setup()
     errorCounter++;
 
     if (debugMode)
-    {
       Serial.println("[ERREUR] [SETUP] La communication avec le capteur de température et d'humidité n'a pas pu être établie. Il est possible que le boîtier des capteurs ne soit pas opérationnel.");
-    }
   }
 
   // Communication avec le lecteur NFC.
@@ -164,15 +156,11 @@ void setup()
     errorCounter++;
 
     if (debugMode)
-    {
       Serial.println("[ERREUR] [SETUP] La communication avec le lecteur NFC n'a pas pu être établie. Il est possible que le boîtier de la porte ne soit pas opérationnel.");
-    }
   }
 
   if (debugMode)
-  {
     Serial.println("[INFO] [SETUP] Les communications avec les divers périphériques ont été établies.");
-  }
 
   // Récupération des informations stockées dans la mémoire persistante.
   alarmBuzzerState = EEPROM.read(ALARM_BUZZER_STATE_STORAGE_LOCATION);
@@ -180,15 +168,16 @@ void setup()
   multicolorSpeed = EEPROM.read(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION);
   soundReactSensibility = EEPROM.read(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION);
 
+  if (debugMode)
+    Serial.println("[INFO] [SETUP] Les valeurs stockées dans la mémoire persistante ont été récupérées.");
+
   // Démarrage de l'écran OLED.
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
   {
     errorCounter++;
 
     if (debugMode)
-    {
       Serial.println("[ERREUR] [SETUP] La communication avec l'écran n'a pas pu être établie. Aucun affichage ne sera effectué.");
-    }
   }
 
   else
@@ -219,9 +208,7 @@ void setup()
     }
 
     if (debugMode)
-    {
       Serial.println("[INFO] [SETUP] La communication avec l'écran a été établie.");
-    }
   }
 
   if (debugMode)
@@ -233,13 +220,6 @@ void setup()
     Serial.print(errorCounter);
     Serial.println(" erreur(s).");
   }
-
-  Serial.begin(115200);
-  Serial.print("Son");
-  Serial.print(",");
-  Serial.print("Son_max");
-  Serial.print(",");
-  Serial.println("Son_pallier");
 }
 
 void loop()
@@ -255,15 +235,11 @@ void loop()
 
       airSensor.humidity().getEvent(&event);
       if (!isnan(event.relative_humidity))
-      {
         humidity = event.relative_humidity;
-      }
     }
 
     else if (debugMode)
-    {
       Serial.println("[ERREUR] [LOOP] Une erreur est survenue lors de la communication avec le capteur de température et de d'humidité. Il est possible que le boîtier des capteurs ne soit pas opérationnel.");
-    }
 
     airSensorsCounter = millis();
   }
@@ -274,26 +250,24 @@ void loop()
   {
     digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, LOW);
     displayDeviceState(false);
+    wardrobeState = false;
   }
 
   else if (wardrobeDoorState == LOW && wardrobeState == false)
   {
     if (wardrobeCounter == 0)
-    {
       wardrobeCounter = millis();
-    }
 
     else if ((millis() - wardrobeCounter) >= 50)
     {
       digitalWrite(PIN_WARDROBE_LIGHTS_RELAY, HIGH);
       displayDeviceState(true);
+      wardrobeState = true;
     }
   }
 
   else if (wardrobeDoorState == HIGH && wardrobeCounter != 0)
-  {
     wardrobeCounter = 0;
-  }
 
   // Gestion de la sonnette.
   if (digitalRead(PIN_DOORBELL_BUTTON) == HIGH && alarmState == false && (millis() - doorbellCounter) >= 250)
@@ -327,9 +301,7 @@ void loop()
   }
 
   else
-  {
     alarmSheduler();
-  }
 
   // Gestion du mode des rubans de DEL multicolor.
   multicolorScheduler();
@@ -347,24 +319,15 @@ void loop()
     keypadEvent e = keypad.read();
 
     if (e.bit.EVENT == KEY_JUST_PRESSED)
-    {
       pressedKeypadTouchTime = millis();
-    }
 
     else if (e.bit.EVENT == KEY_JUST_RELEASED)
     {
 
-      boolean longPress;
+      boolean longPress = false;
 
-      if ((millis() - pressedKeypadTouchTime) < 250)
-      {
-        longPress = false;
-      }
-
-      else
-      {
+      if ((millis() - pressedKeypadTouchTime) >= 250)
         longPress = true;
-      }
 
       keypadButtonPressed(e.bit.KEY, longPress);
     }
@@ -375,9 +338,7 @@ void loop()
     keypadSubMenuTimer = 0;
 
     if (keypadMenu == ALARM_CODE_CONFIGURATION_SUBMENU)
-    {
       alarmCode = "b";
-    }
 
     else if (keypadMenu != LIGHTS_MENU)
     {

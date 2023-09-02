@@ -193,7 +193,7 @@ void switchTray(int action, boolean displayState)
 
     if (action == CLOSE && trayState)
     {
-        analogWrite(PIN_TRAY_MOTOR_SPEED, 150);
+        analogWrite(PIN_TRAY_MOTOR_SPEED, 140);
         digitalWrite(PIN_MOTOR_TRAY_1, HIGH);
         digitalWrite(PIN_MOTOR_TRAY_2, LOW);
 
@@ -210,6 +210,7 @@ void switchTray(int action, boolean displayState)
             display.drawLine(28, 50 - i, 100, 50 - i, BLACK);
             if (displayState)
                 display.display();
+            delay(15);
         }
 
         if (displayState)
@@ -223,7 +224,7 @@ void switchTray(int action, boolean displayState)
 
     else if (action == OPEN && !trayState)
     {
-        analogWrite(PIN_TRAY_MOTOR_SPEED, 150);
+        analogWrite(PIN_TRAY_MOTOR_SPEED, 120);
         digitalWrite(PIN_MOTOR_TRAY_1, LOW);
         digitalWrite(PIN_MOTOR_TRAY_2, HIGH);
 
@@ -234,6 +235,7 @@ void switchTray(int action, boolean displayState)
             display.drawLine(28, 11 + i, 100, 11 + i, WHITE);
             if (displayState)
                 display.display();
+            delay(15);
         }
 
         if (displayState)
@@ -258,7 +260,6 @@ void switchTray(int action, boolean displayState)
 // Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état. Cette fonction ne contrôle que les rubans en mode couleur seule.
 void switchRGBStrip(int action, boolean displayState)
 {
-
     if (action == SWITCH_OFF && RGBStripState)
     {
         RLEDOFFValue = RLEDValue;
@@ -325,40 +326,26 @@ void controlRGBStrip(int r, int g, int b)
         return;
     }
 
-    if (RGBStripState == false)
-    {
+    if (!RGBStripState)
         switchRGBStrip(SWITCH_ON, false);
-    }
 
     if (r < 0)
-    {
         r = 0;
-    }
 
     if (r > 255)
-    {
         r = 255;
-    }
 
     if (g < 0)
-    {
         g = 0;
-    }
 
     if (g > 255)
-    {
         g = 255;
-    }
 
     if (b < 0)
-    {
         b = 0;
-    }
 
     if (b > 255)
-    {
         b = 255;
-    }
 
     RLEDValue = r;
     GLEDValue = g;
@@ -424,7 +411,7 @@ void multicolorScheduler()
 
     unsigned long actualTime = millis();
 
-    if ((actualTime - multicolorLastTime) < multicolorSpeed)
+    if ((actualTime - multicolorLastTime) < (multicolorSpeed * 10))
         return;
 
     multicolorLastTime = actualTime;
@@ -529,8 +516,6 @@ void soundReactScheduler()
         soundReactMaxChanged = true;
     }
 
-    Serial.println((soundReactSensibility * soundReactMax));
-
     unsigned long actualTime = millis();
 
     boolean colorChanged = false;
@@ -612,7 +597,7 @@ void volumeSono(int action, boolean displayState)
 
     if (action == DECREASE && (volume > 0))
     {
-        IrSender.sendNEC(0x44C1, 0xC7, 5);
+        IrSender.sendNEC(0x44C1, 0xC7, 2);
         volume--;
         EEPROM.write(VOLUME_STORAGE_LOCATION, volume);
 
@@ -622,7 +607,7 @@ void volumeSono(int action, boolean displayState)
 
     else if (action == INCREASE && (volume < 25))
     {
-        IrSender.sendNEC(0x44C1, 0x47, 5);
+        IrSender.sendNEC(0x44C1, 0x47, 2);
         volume++;
         EEPROM.write(VOLUME_STORAGE_LOCATION, volume);
 
@@ -759,8 +744,12 @@ void switchAlarm(int action, boolean displayState)
 
     else if (action == STOP_RINGING)
     {
+Serial.println("0");
+        
         if (alarmTriggered == false)
             return;
+
+        Serial.println("1");
 
         if (alarmBuzzerState == true)
             digitalWrite(PIN_ALARM_RELAY, LOW);
@@ -807,7 +796,7 @@ boolean checkCard(uint8_t card[4])
 // Boucle qui s'exécute lorsque l'alarme sonne. Elle permet de l'éteindre après un certain temps si la porte est refermée. De plus, cette boucle gère le clignottement des rubans de DELs en rouge.
 void alarmSheduler()
 {
-    if ((millis() - cardCounter) >= 2000)
+    if ((millis() - cardCounter) >= 1000)
     {
         uint8_t uid[] = {0, 0, 0, 0, 0};
         uint8_t uidLength;
@@ -824,6 +813,8 @@ void alarmSheduler()
                 else
                     switchAlarm(TOGGLE, true);
             }
+
+            cardCounter = millis();
         }
     }
 
@@ -852,14 +843,16 @@ void alarmSheduler()
         alarmTriggeredLightsCounter += 100;
         RLEDValue = 255;
         digitalWrite(PIN_DOOR_LED, HIGH);
+        RGBStripState = true;
         displayAlarmTriggered(0);
     }
 
-    if ((millis() - alarmTriggeredLightsCounter) >= 400)
+    else if ((millis() - alarmTriggeredLightsCounter) >= 400)
     {
         alarmTriggeredLightsCounter = millis();
         RLEDValue = 0;
         digitalWrite(PIN_DOOR_LED, LOW);
+        RGBStripState = false;
         displayAlarmTriggered(1);
     }
 

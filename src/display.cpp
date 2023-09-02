@@ -19,7 +19,7 @@ unsigned long ScreenCurrentOnTime = 0UL;
 void displayBell()
 {
   display.clearDisplay();
-  display.drawBitmap(0, 0, bellBitmap, 128, 32, 1);
+  display.drawBitmap(0, 0, bellBitmap, 128, 64, WHITE);
   display.display();
   ScreenCurrentOnTime = millis();
 }
@@ -133,21 +133,21 @@ void displayLEDState()
 
   display.setCursor(22, 0);
   display.print("R");
-  int rGauge = int(map(RLEDValue, 0, 255, 64, 16));
-  display.drawLine(25, 64, 25, rGauge, WHITE);
-  display.drawRect(24, 15, 3, 50, WHITE);
+  int rGauge = int(map(RLEDValue, 0, 255, 0, 45));
+  display.fillRect(25, 18, 4, rGauge, WHITE);
+  display.drawRect(24, 17, 6, 47, WHITE);
 
   display.setCursor(62, 0);
   display.print("V");
-  int gGauge = int(map(GLEDValue, 0, 255, 64, 16));
-  display.drawLine(65, 64, 65, gGauge, WHITE);
-  display.drawRect(64, 15, 3, 50, WHITE);
+  int gGauge = int(map(GLEDValue, 0, 255, 0, 45));
+  display.fillRect(65, 18, 4, gGauge, WHITE);
+  display.drawRect(64, 17, 6, 47, WHITE);
 
   display.setCursor(101, 0);
   display.print("B");
-  int bGauge = int(map(BLEDValue, 0, 255, 64, 16));
-  display.drawLine(102, 64, 102, bGauge, WHITE);
-  display.drawRect(101, 15, 3, 50, WHITE);
+  int bGauge = int(map(BLEDValue, 0, 255, 0, 45));
+  display.fillRect(102, 18, 4, bGauge, WHITE);
+  display.drawRect(101, 17, 6, 47, WHITE);
 
   display.display();
   ScreenCurrentOnTime = millis();

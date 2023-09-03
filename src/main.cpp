@@ -312,6 +312,9 @@ void loop()
   // Gestion de l'arret automatique de l'écran OLED lorsqu'un élement est affiché.
   displaySheduler();
 
+  // Gestion de l'enregistrement des données importantes.
+  EEPROMSheduler();
+
   // Gestion du clavier.
   keypad.tick();
   while (keypad.available())
@@ -333,7 +336,7 @@ void loop()
     }
   }
 
-  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 60000))
+  if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 600000))
   {
     keypadSubMenuTimer = 0;
 

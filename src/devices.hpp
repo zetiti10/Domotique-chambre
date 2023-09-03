@@ -50,10 +50,12 @@ void multicolorScheduler();
 void switchSoundReact(int action, boolean displayState);
 void soundReactScheduler();
 void volumeSono(int action, boolean displayState);
+void syncVolume(boolean display);
 void switchTV(int action, boolean displayState);
 void switchAlarm(int action, boolean displayState);
 void alarmSheduler();
 void storeCard(uint8_t card[4]);
 void removeCards();
+void EEPROMSheduler();
 
 #endif

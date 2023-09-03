@@ -60,6 +60,8 @@ boolean alarmTriggered = false;
 boolean alarmBuzzerState = false;
 boolean cardToStoreState = false;
 
+unsigned long EEPROMCounter = 0;
+
 // Paramètre : SWITCH_OFF = éteindre - SWITCH_ON = allumer - TOGGLE = changer l'état.
 void switchDisco(int action, boolean displayState)
 {
@@ -599,7 +601,6 @@ void volumeSono(int action, boolean displayState)
     {
         IrSender.sendNEC(0x44C1, 0xC7, 2);
         volume--;
-        EEPROM.write(VOLUME_STORAGE_LOCATION, volume);
 
         if (displayState)
             displayVolume(DECREASE);
@@ -609,7 +610,6 @@ void volumeSono(int action, boolean displayState)
     {
         IrSender.sendNEC(0x44C1, 0x47, 2);
         volume++;
-        EEPROM.write(VOLUME_STORAGE_LOCATION, volume);
 
         if (displayState)
             displayVolume(INCREASE);
@@ -641,6 +641,24 @@ void volumeSono(int action, boolean displayState)
         else
             volumeSono(UNMUTE, displayState);
     }
+}
+
+void syncVolume(boolean display)
+{
+    if (!TVState)
+        return;
+
+    if (volumeMuted)
+        return;
+
+    if (display)
+        displayMessage("INFO", "Calibration du son en cours...");
+
+    IrSender.sendNEC(0x44C1, 0xC7, 50);
+    volume = 0;
+
+    if (display)
+        displayMessage("INFO", "Son calibre");
 }
 
 // Fonction qui permet de faire bouger le servomoteur sans bibliothèque.
@@ -725,6 +743,7 @@ void switchAlarm(int action, boolean displayState)
         if (cardToStoreState == true)
         {
             displayMessage("ERREUR", "Vous etes en mode ajout d'une carte.");
+            return;
         }
 
         digitalWrite(PIN_DOOR_LED, HIGH);
@@ -744,12 +763,9 @@ void switchAlarm(int action, boolean displayState)
 
     else if (action == STOP_RINGING)
     {
-Serial.println("0");
-        
+
         if (alarmTriggered == false)
             return;
-
-        Serial.println("1");
 
         if (alarmBuzzerState == true)
             digitalWrite(PIN_ALARM_RELAY, LOW);
@@ -897,4 +913,17 @@ void removeCards()
 
     yesSound();
     displayMessage("INFO", "Les cartes ont ete supprimees avec succes.");
+}
+
+void EEPROMSheduler()
+{
+    if ((millis() - EEPROMCounter) < 6000000)
+        return;
+
+    EEPROM.put(ALARM_BUZZER_STATE_STORAGE_LOCATION, alarmBuzzerState);
+    EEPROM.put(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION, multicolorSpeed);
+    EEPROM.put(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION, soundReactSensibility);
+    EEPROM.put(VOLUME_STORAGE_LOCATION, volume);
+
+    EEPROMCounter = millis();
 }

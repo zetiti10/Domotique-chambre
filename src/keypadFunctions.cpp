@@ -386,7 +386,6 @@ void keypadButtonPressed(char key, boolean longPress)
     case '4':
       multicolorSpeed++;
       displayMulticolorSpeed();
-      EEPROM.write(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case '5':
@@ -394,7 +393,6 @@ void keypadButtonPressed(char key, boolean longPress)
         soundReactSensibility = soundReactSensibility + 0.05;
 
       displaySoundReactSensibility();
-      EEPROM.write(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case '7':
@@ -402,7 +400,6 @@ void keypadButtonPressed(char key, boolean longPress)
         multicolorSpeed = multicolorSpeed - 1;
 
       displayMulticolorSpeed();
-      EEPROM.write(MULTICOLOR_ANIMATION_SPEED_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case '8':
@@ -410,7 +407,6 @@ void keypadButtonPressed(char key, boolean longPress)
         soundReactSensibility = soundReactSensibility - 0.05;
 
       displaySoundReactSensibility();
-      EEPROM.write(SOUND_REACT_ANIMATION_SENSIBILITY_STORAGE_LOCATION, multicolorSpeed);
       break;
 
     case 'B':
@@ -465,6 +461,10 @@ void keypadButtonPressed(char key, boolean longPress)
     {
     case '1':
       switchTV(TOGGLE, true);
+      break;
+
+    case '2':
+      syncVolume(true);
       break;
 
     case '4':
@@ -555,13 +555,13 @@ void keypadButtonPressed(char key, boolean longPress)
       if (alarmBuzzerState == false)
       {
         alarmBuzzerState = true;
-        EEPROM.write(ALARM_BUZZER_STATE_STORAGE_LOCATION, alarmBuzzerState);
+        displayMessage("INFO", "Le buzzer de l'alarme est active.");
       }
 
       else
       {
         alarmBuzzerState = false;
-        EEPROM.write(ALARM_BUZZER_STATE_STORAGE_LOCATION, alarmBuzzerState);
+        displayMessage("INFO", "Le buzzer de l'alarme est desactive.");
       }
 
       break;
@@ -571,10 +571,16 @@ void keypadButtonPressed(char key, boolean longPress)
         return;
 
       if (cardToStoreState == false)
+      {
         cardToStoreState = true;
+        displayMessage("INFO", "Presentez au lecteur NFC la carte à enregistrer.");
+      }
 
       else
+      {
         cardToStoreState = false;
+        displayMessage("INFO", "Annule.");
+      }
       break;
 
     case '3':

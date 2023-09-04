@@ -438,16 +438,49 @@ void keypadButtonPressed(char key, boolean longPress)
       switchTray(TOGGLE, true);
       break;
 
-    case '5':
-      displayAirValues();
-      break;
-
     case 'C':
       setKeypadMenu(LIGHTS_MENU);
       break;
 
     case 'D':
-      setKeypadMenu(TV_MENU);
+      setKeypadMenu(SENSORS_MENU);
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  else if (keypadMenu == SENSORS_MENU)
+  {
+    switch (key)
+    {
+    case '1':
+      displayAirValues();
+      break;
+
+    case '2':
+      displayLuminosityMotionSensorValues();
+      break;
+
+    case '4':
+      volumeSono(DECREASE, true);
+      break;
+
+    case '5':
+      volumeSono(TOGGLE_MUTE, true);
+      break;
+
+    case '6':
+      volumeSono(INCREASE, true);
+      break;
+
+    case 'C':
+      setKeypadMenu(DEVICES_MENU);
+      break;
+
+    case 'D':
+      setKeypadMenu(CONFIGURATION_MENU);
       break;
 
     default:
@@ -480,7 +513,7 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case 'C':
-      setKeypadMenu(DEVICES_MENU);
+      setKeypadMenu(SENSORS_MENU);
       break;
 
     case 'D':

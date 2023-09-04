@@ -8,6 +8,7 @@
 
 // Autres fichiers du programme.
 #include <main.hpp>
+#include <pinDefinitions.hpp>
 #include <bitmaps.hpp>
 #include <display.hpp>
 #include <devices.hpp>
@@ -119,6 +120,30 @@ void displayAirValues()
 
   display.setCursor(40, 10);
   display.print(humidity);
+  display.write(0x25);
+
+  display.display();
+  ScreenCurrentOnTime = millis();
+}
+
+// Affichage de la luminosité et de l'état du capteur de présence.
+void displayLuminosityMotionSensorValues()
+{
+  display.clearDisplay();
+  display.drawBitmap(0, 0, luminosityMotionSensorsBitmap, 128, 64, WHITE);
+  display.setTextSize(2);
+
+  display.setCursor(40, 42);
+  if(digitalRead(PIN_MOTION_SENSOR))
+    display.print("Detecte");
+
+  else
+    display.print("Non detecte");
+  display.write(0xF8);
+  display.print("C");
+
+  display.setCursor(40, 10);
+  display.print(analogRead(PIN_LIGHT_SENSOR));
   display.write(0x25);
 
   display.display();

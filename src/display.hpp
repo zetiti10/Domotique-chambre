@@ -10,6 +10,7 @@ void displayMessage(String title, String message);
 void displayVolume(int element);
 void displayAlarmTriggered(int element);
 void displayAirValues();
+void displayLuminosityMotionSensorValues();
 void displayLEDState();
 void displayDeviceState(boolean on);
 void displayKeypadMenu();

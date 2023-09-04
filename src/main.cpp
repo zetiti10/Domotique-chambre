@@ -338,16 +338,7 @@ void loop()
 
   if ((keypadSubMenuTimer != 0) && ((millis() - keypadSubMenuTimer) >= 600000))
   {
-    keypadSubMenuTimer = 0;
-
-    if (keypadMenu == ALARM_CODE_CONFIGURATION_SUBMENU)
-      alarmCode = "b";
-
-    else if (keypadMenu != LIGHTS_MENU)
-    {
-      keypadMenu = LIGHTS_MENU;
-      displayKeypadMenu();
-    }
+    setKeypadMenu(LIGHTS_MENU);
   }
 
   // Gestion du récepteur infrarouge pour contrôler le système avec la télécommande Google Chromecast.

@@ -22,12 +22,14 @@
 
 #define DEVICES_MENU 2
 
-#define TV_MENU 3
+#define SENSORS_MENU 3
 
-#define CONFIGURATION_MENU 4
+#define TV_MENU 4
 
-#define ALARM_CODE_CONFIGURATION_SUBMENU 411
-#define ALARM_CONFIGURATION_SUBMENU 41
+#define CONFIGURATION_MENU 5
+
+#define ALARM_CODE_CONFIGURATION_SUBMENU 511
+#define ALARM_CONFIGURATION_SUBMENU 51
 
 extern int keypadMenu;
 
@@ -36,6 +38,7 @@ extern unsigned long keypadSubMenuTimer;
 
 extern String alarmCode;
 
+void setKeypadMenu(int menu);
 void keypadButtonPressed(char key, boolean longPress);
 
 #endif

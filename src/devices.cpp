@@ -658,7 +658,7 @@ void syncVolume(boolean display)
     volume = 0;
 
     if (display)
-        displayMessage("INFO", "Son calibre");
+        displayMessage("INFO", "Son calibre.");
 }
 
 // Fonction qui permet de faire bouger le servomoteur sans bibliothèque.

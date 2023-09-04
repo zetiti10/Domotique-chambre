@@ -463,24 +463,12 @@ void keypadButtonPressed(char key, boolean longPress)
       displayLuminosityMotionSensorValues();
       break;
 
-    case '4':
-      volumeSono(DECREASE, true);
-      break;
-
-    case '5':
-      volumeSono(TOGGLE_MUTE, true);
-      break;
-
-    case '6':
-      volumeSono(INCREASE, true);
-      break;
-
     case 'C':
       setKeypadMenu(DEVICES_MENU);
       break;
 
     case 'D':
-      setKeypadMenu(CONFIGURATION_MENU);
+      setKeypadMenu(TV_MENU);
       break;
 
     default:

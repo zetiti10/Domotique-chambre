@@ -134,17 +134,14 @@ void displayLuminosityMotionSensorValues()
   display.setTextSize(2);
 
   display.setCursor(40, 42);
-  if(digitalRead(PIN_MOTION_SENSOR))
-    display.print("Detecte");
-
-  else
-    display.print("Non detecte");
-  display.write(0xF8);
-  display.print("C");
+  display.print(analogRead(PIN_LIGHT_SENSOR));
 
   display.setCursor(40, 10);
-  display.print(analogRead(PIN_LIGHT_SENSOR));
-  display.write(0x25);
+  if(digitalRead(PIN_MOTION_SENSOR))
+    display.print("OUI");
+
+  else
+    display.print("NON");
 
   display.display();
   ScreenCurrentOnTime = millis();
@@ -299,6 +296,12 @@ void displayKeypadMenu()
     display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
     display.setCursor(4, 55);
     display.print("Menu : peripheriques");
+    break;
+
+  case SENSORS_MENU:
+    display.drawBitmap(0, 0, sensorsMenuBitmap, 128, 64, WHITE);
+    display.setCursor(20, 55);
+    display.print("Menu : capteurs");
     break;
 
   case TV_MENU:

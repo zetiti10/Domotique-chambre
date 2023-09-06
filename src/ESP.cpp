@@ -7,7 +7,7 @@
  */
 
 // Ajout des bibilothèques au programme.
-/*#include <Arduino.h>
+#include <Arduino.h>
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
@@ -16,8 +16,40 @@
 #include <main.hpp>
 #include <pinDefinitions.hpp>
 
-// Fonction complète de communication à l'ESP8266-01 qui st connecté en série. Il permet au système d'être connecté à Home Assistant.
-void receivedData()
+// Fonction complète de communication à l'ESP8266-01 qui est connecté en série. Il permet au système d'être connecté à Home Assistant.
+void reveivedData()
+{
+  delay(50);
+
+  // Décodage du message : la variable "receivedMessage" contient le message envoyé par l'ESP8266-01.
+  String receivedMessage;
+  while (Serial1.available() > 0)
+  {
+    byte letter = Serial1.read();
+    letter = letter - 48;
+    receivedMessage += letter;
+  }
+
+  if(receivedMessage == "0")
+  {
+    String message = "0";
+    int temp = temperature * 100;
+    message += temp;
+  }
+
+  else if(receivedMessage == "1")
+  {
+    switchStreet(SWITCH_OFF, true);
+  }
+
+  else if(receivedMessage == "2")
+  {
+    switchStreet(SWITCH_ON, true);
+  }
+}
+
+
+/*void receivedData()
 {
 
   delay(50);

@@ -101,7 +101,7 @@ void setup()
   pinMode(PIN_ALARM_RELAY, OUTPUT);
   pinMode(PIN_DISCO_RELAY, OUTPUT);
   pinMode(PIN_LED_CUBE_RELAY, OUTPUT);
-  pinMode(PIN_RELAY_6, OUTPUT);
+  pinMode(PIN_BEACON_RELAY, OUTPUT);
   pinMode(PIN_STREET_RELAY, OUTPUT);
   pinMode(PIN_DESK_LIGHT_RELAY, OUTPUT);
   pinMode(PIN_RELAY_7, OUTPUT);
@@ -109,7 +109,7 @@ void setup()
   pinMode(PIN_MOTOR_TRAY_2, OUTPUT);
 
   if (debugMode)
-    Serial.println("[INFO] [SETUP] Broches de l'Arduino initialisése.");
+    Serial.println("[INFO] [SETUP] Broches de l'Arduino initialisées.");
 
   // Communication avec l'ESP8266-01.
   Serial1.begin(9600);
@@ -211,9 +211,13 @@ void setup()
       Serial.println("[INFO] [SETUP] La communication avec l'écran a été établie.");
   }
 
+  // PROVISOIRE - DEBUT
+  Serial3.begin(9600);
+  // PROVISOIRE - FIN
+
   if (debugMode)
   {
-    float elapsedTime = millis() / 1000;
+    float elapsedTime = millis() / long(1000);
     Serial.print("[INFO] [SETUP] L'initialisation du système de domotique a été effectuée en ");
     Serial.print(elapsedTime);
     Serial.print(" seconde(s) et a détecté ");
@@ -389,8 +393,40 @@ void loop()
   }
 
   // Gestion des informations reçues par l'ESP8266-01.
-  /*if (ESP8266.available())
+  if (Serial1.available())
   {
     receivedData();
-  }*/
+  }
+
+  // PROVISOIRE - DEBUT
+  if (Serial.available())
+  {
+    delay(50);
+
+    String receivedMessage;
+    while (Serial.available() > 0)
+    {
+      char letter = Serial.read();
+      receivedMessage += letter;
+    }
+
+    Serial3.print(receivedMessage); 
+    Serial.println("Message reçu de l'ordinateur : " + receivedMessage);
+  }
+
+  if(Serial3.available())
+  {
+    delay(50);
+
+    String receivedMessage;
+    while (Serial3.available() > 0)
+    {
+      char letter = Serial3.read();
+      receivedMessage += letter;
+    }
+
+    Serial.println("Message reçu du lance missile : " + receivedMessage);
+  }
+
+  // PROVISOIRE - FIN
 }

@@ -17,7 +17,7 @@
 #include <pinDefinitions.hpp>
 
 // Fonction complète de communication à l'ESP8266-01 qui est connecté en série. Il permet au système d'être connecté à Home Assistant.
-void reveivedData()
+void receivedData()
 {
   delay(50);
 
@@ -25,16 +25,20 @@ void reveivedData()
   String receivedMessage;
   while (Serial1.available() > 0)
   {
-    byte letter = Serial1.read();
-    letter = letter - 48;
+    char letter = Serial1.read();
     receivedMessage += letter;
   }
+
+  if(debugMode)
+    Serial.println("[INFO] [COM ESP] Message reçu de l'ESP8266-01 : '" + receivedMessage + "'.");
 
   if(receivedMessage == "0")
   {
     String message = "0";
     int temp = temperature * 100;
     message += temp;
+
+    Serial1.print(message);
   }
 
   else if(receivedMessage == "1")

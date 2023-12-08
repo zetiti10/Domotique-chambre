@@ -6,6 +6,8 @@
  * @date 2023-03-01
  */
 
+// Bonjour.
+
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 #include <EEPROM.h>

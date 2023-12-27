@@ -11,10 +11,10 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
-#include <ESP.hpp>
-#include <devices.hpp>
-#include <main.hpp>
-#include <pinDefinitions.hpp>
+#include "ESP.hpp"
+#include "devices.hpp"
+#include "main.hpp"
+#include "pinDefinitions.hpp"
 
 // Fonction complète de communication à l'ESP8266-01 qui est connecté en série. Il permet au système d'être connecté à Home Assistant.
 void receivedData()

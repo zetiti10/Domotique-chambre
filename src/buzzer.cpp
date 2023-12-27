@@ -11,7 +11,7 @@
 #include <TimerFreeTone.h>
 
 // Autres fichiers du programme.
-#include <pinDefinitions.hpp>
+#include "pinDefinitions.hpp"
 
 void clickSound()
 {

@@ -9,14 +9,15 @@
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <missileLauncher.hpp>
 
 // Autres fichiers du programme.
-#include <main.hpp>
-#include <keypadFunctions.hpp>
-#include <devices.hpp>
-#include <pinDefinitions.hpp>
-#include <display.hpp>
-#include <buzzer.hpp>
+#include "main.hpp"
+#include "keypadFunctions.hpp"
+#include "devices.hpp"
+#include "pinDefinitions.hpp"
+#include "display.hpp"
+#include "buzzer.hpp"
 
 int keypadMenu = LIGHTS_MENU;
 
@@ -437,6 +438,26 @@ void keypadButtonPressed(char key, boolean longPress)
     case '4':
       switchTray(TOGGLE, true);
       break;
+
+    // PROVISOIRE - DEBUT
+
+    case '5':
+      missileLauncher.relativeMove(BASE, +20);
+      break;
+
+    case '6':
+      missileLauncher.relativeMove(BASE, -20);
+      break;
+
+    case '7':
+      missileLauncher.launchMissile(1);
+      break;
+
+    case '8':
+      displayMessage("MISSILES", String(*missileLauncher.getMissileStates()));
+      break;
+
+    // PROVISOIRE - FIN
 
     case 'C':
       setKeypadMenu(LIGHTS_MENU);

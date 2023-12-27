@@ -7,12 +7,12 @@
  */
 
 // Autres fichiers du programme.
-#include <main.hpp>
-#include <pinDefinitions.hpp>
-#include <bitmaps.hpp>
-#include <display.hpp>
-#include <devices.hpp>
-#include <keypadFunctions.hpp>
+#include "main.hpp"
+#include "pinDefinitions.hpp"
+#include "bitmaps.hpp"
+#include "display.hpp"
+#include "devices.hpp"
+#include "keypadFunctions.hpp"
 
 unsigned long ScreenCurrentOnTime = 0UL;
 

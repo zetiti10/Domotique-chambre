@@ -18,16 +18,17 @@
 #include <DHT_U.h>
 #include <PN532_HSU.h>
 #include <PN532.h>
+#include <missileLauncher.hpp>
 
 // Autres fichiers du programme.
-#include <main.hpp>
-#include <pinDefinitions.hpp>
-#include <keypadFunctions.hpp>
-#include <display.hpp>
-#include <devices.hpp>
-#include <ESP.hpp>
-#include <buzzer.hpp>
-#include <bitmaps.hpp>
+#include "main.hpp"
+#include "pinDefinitions.hpp"
+#include "keypadFunctions.hpp"
+#include "display.hpp"
+#include "devices.hpp"
+#include "ESP.hpp"
+#include "buzzer.hpp"
+#include "bitmaps.hpp"
 
 // Variables globales.
 unsigned long IRRemoteCounter = 0;
@@ -66,6 +67,9 @@ DHT_Unified airSensor(PIN_AIR_SENSOR, DHT22);
 // Mise en place de la communication avec le lecteur NFC.
 PN532_HSU pn532hsu(Serial2);
 PN532 nfcReader(pn532hsu);
+
+// Création du lance-missile.
+MissileLauncher missileLauncher(&Serial3);
 
 void setup()
 {
@@ -159,6 +163,15 @@ void setup()
       Serial.println("[ERREUR] [SETUP] La communication avec le lecteur NFC n'a pas pu être établie. Il est possible que le boîtier de la porte ne soit pas opérationnel.");
   }
 
+  // Initialisation de la communication avec le lance-missile.
+  if(!missileLauncher.begin())
+  {
+    errorCounter++;
+
+    if(debugMode)
+      Serial.println("[ERREUR] [SETUP] La communication avec le lance-missile n'a pas pu être établie. Il est possible qu'il ne soit pas correctement connecté.");
+  }
+
   if (debugMode)
     Serial.println("[INFO] [SETUP] Les communications avec les divers périphériques ont été établies.");
 
@@ -211,13 +224,9 @@ void setup()
       Serial.println("[INFO] [SETUP] La communication avec l'écran a été établie.");
   }
 
-  // PROVISOIRE - DEBUT
-  Serial3.begin(9600);
-  // PROVISOIRE - FIN
-
   if (debugMode)
   {
-    float elapsedTime = millis() / long(1000);
+    unsigned long elapsedTime = millis() / 1000UL;
     Serial.print("[INFO] [SETUP] L'initialisation du système de domotique a été effectuée en ");
     Serial.print(elapsedTime);
     Serial.print(" seconde(s) et a détecté ");
@@ -397,36 +406,4 @@ void loop()
   {
     receivedData();
   }
-
-  // PROVISOIRE - DEBUT
-  if (Serial.available())
-  {
-    delay(50);
-
-    String receivedMessage;
-    while (Serial.available() > 0)
-    {
-      char letter = Serial.read();
-      receivedMessage += letter;
-    }
-
-    Serial3.print(receivedMessage); 
-    Serial.println("Message reçu de l'ordinateur : " + receivedMessage);
-  }
-
-  if(Serial3.available())
-  {
-    delay(50);
-
-    String receivedMessage;
-    while (Serial3.available() > 0)
-    {
-      char letter = Serial3.read();
-      receivedMessage += letter;
-    }
-
-    Serial.println("Message reçu du lance missile : " + receivedMessage);
-  }
-
-  // PROVISOIRE - FIN
 }

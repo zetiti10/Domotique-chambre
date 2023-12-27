@@ -16,12 +16,12 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
-#include <pinDefinitions.hpp>
-#include <display.hpp>
-#include <main.hpp>
-#include <devices.hpp>
-#include <TimerFreeTone.h>
-#include <buzzer.hpp>
+#include "pinDefinitions.hpp"
+#include "display.hpp"
+#include "main.hpp"
+#include "devices.hpp"
+#include "TimerFreeTone.h"
+#include "buzzer.hpp"
 
 boolean discoState = false;
 boolean LEDCubeState = false;

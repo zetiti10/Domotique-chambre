@@ -19,4 +19,6 @@ extern float humidity;
 extern Adafruit_SSD1306 display;
 extern PN532 nfcReader;
 
+extern MissileLauncher missileLauncher;
+
 #endif

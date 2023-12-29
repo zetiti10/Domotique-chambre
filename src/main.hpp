@@ -3,6 +3,7 @@
 
 #include <Adafruit_SSD1306.h>
 #include <PN532.h>
+#include <missileLauncher.hpp>
 
 #define STORED_CARD_COUNTER_STORAGE_LOCATION 0
 #define ALARM_BUZZER_STATE_STORAGE_LOCATION 1
@@ -18,7 +19,6 @@ extern float humidity;
 
 extern Adafruit_SSD1306 display;
 extern PN532 nfcReader;
-
 extern MissileLauncher missileLauncher;
 
 #endif

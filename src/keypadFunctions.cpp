@@ -8,7 +8,6 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
-#include <EEPROM.h>
 #include <missileLauncher.hpp>
 
 // Autres fichiers du programme.
@@ -439,7 +438,7 @@ void keypadButtonPressed(char key, boolean longPress)
       switchTray(TOGGLE, true);
       break;
 
-    // PROVISOIRE - DEBUT
+      // PROVISOIRE - DEBUT
 
     case '5':
       missileLauncher.relativeMove(BASE, +20);
@@ -454,10 +453,19 @@ void keypadButtonPressed(char key, boolean longPress)
       break;
 
     case '8':
-      displayMessage("MISSILES", String(*missileLauncher.getMissileStates()));
+    {
+      int firstMissile = 0;
+      int secondMissile = 0;
+      int thirdMissile = 0;
+      missileLauncher.getMissileStates(firstMissile, secondMissile, thirdMissile);
+      String message = "";
+      message += firstMissile;
+      message += secondMissile;
+      message += thirdMissile;
+      displayMessage("MISSILES", message);
       break;
-
-    // PROVISOIRE - FIN
+    }
+      // PROVISOIRE - FIN
 
     case 'C':
       setKeypadMenu(LIGHTS_MENU);

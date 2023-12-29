@@ -8,7 +8,6 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
-#include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "ESP.hpp"

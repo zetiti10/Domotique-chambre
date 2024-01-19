@@ -18,39 +18,38 @@
 // Fonction complète de communication à l'ESP8266-01 qui est connecté en série. Il permet au système d'être connecté à Home Assistant.
 void receivedData()
 {
-  delay(50);
+    delay(50);
 
-  // Décodage du message : la variable "receivedMessage" contient le message envoyé par l'ESP8266-01.
-  String receivedMessage;
-  while (Serial1.available() > 0)
-  {
-    char letter = Serial1.read();
-    receivedMessage += letter;
-  }
+    // Décodage du message : la variable "receivedMessage" contient le message envoyé par l'ESP8266-01.
+    String receivedMessage;
+    while (Serial1.available() > 0)
+    {
+        char letter = Serial1.read();
+        receivedMessage += letter;
+    }
 
-  if(debugMode)
-    Serial.println("[INFO] [COM ESP] Message reçu de l'ESP8266-01 : '" + receivedMessage + "'.");
+    if (debugMode)
+        Serial.println("[INFO] [COM ESP] Message reçu de l'ESP8266-01 : '" + receivedMessage + "'.");
 
-  if(receivedMessage == "0")
-  {
-    String message = "0";
-    int temp = temperature * 100;
-    message += temp;
+    if (receivedMessage == "0")
+    {
+        String message = "0";
+        int temp = temperature * 100;
+        message += temp;
 
-    Serial1.print(message);
-  }
+        Serial1.print(message);
+    }
 
-  else if(receivedMessage == "1")
-  {
-    switchStreet(SWITCH_OFF, true);
-  }
+    else if (receivedMessage == "1")
+    {
+        switchStreet(SWITCH_OFF, true);
+    }
 
-  else if(receivedMessage == "2")
-  {
-    switchStreet(SWITCH_ON, true);
-  }
+    else if (receivedMessage == "2")
+    {
+        switchStreet(SWITCH_ON, true);
+    }
 }
-
 
 /*void receivedData()
 {

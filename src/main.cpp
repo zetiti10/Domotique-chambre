@@ -27,6 +27,9 @@ void setup()
 {
     Serial.begin(115200);
 
+    if(Serial)
+        loggerEnabled = true;
+
     for (int i = 0; i < devicesNumber; i ++)
     {
         deviceList[i]->setup();

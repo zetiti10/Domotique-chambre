@@ -21,7 +21,7 @@ private:
     boolean m_state;
     boolean m_operational;
     boolean m_locked;
-    boolean m_relayPin;
+    int m_relayPin;
 };
 
 #endif

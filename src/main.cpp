@@ -10,25 +10,34 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
+#include "pinDefinition.hpp"
 #include "devices/binaryDevice.hpp"
 
 // Instanciation des périphériques du système.
-BinaryDevice LEDCube(25);
+BinaryDevice LEDCube(PIN_LED_CUBE_RELAY);
+BinaryDevice disco(PIN_DISCO_RELAY);
+BinaryDevice beacon(PIN_BEACON_RELAY);
+BinaryDevice street(PIN_STREET_RELAY);
+
+Device* deviceList[] = {&LEDCube, &disco, &beacon, &street};
+int devicesNumber = 4;
 
 void setup()
 {
     Serial.begin(115200);
 
-    LEDCube.setup();
+    for (int i = 0; i < devicesNumber; i ++)
+    {
+        deviceList[i]->setup();
+    }
 }
 
 void loop()
 {
-    LEDCube.turnOn();
+    for (int i = 0; i < devicesNumber; i ++)
+    {
+        deviceList[i]->toggle();
+    }
 
-    delay(5000);
-
-    LEDCube.toggle();
-
-    delay(5000);
+    delay(10000);
 }

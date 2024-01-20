@@ -29,6 +29,8 @@ void BinaryDevice::turnOn(boolean shareInformation)
     {
         digitalWrite(m_relayPin, HIGH);
 
+        m_state = true;
+
         if (shareInformation)
         {
             // Affichage de l'animation d'allumage.
@@ -41,6 +43,8 @@ void BinaryDevice::turnOff(boolean shareInformation)
     if (m_state && m_operational && !m_locked)
     {
         digitalWrite(m_relayPin, LOW);
+
+        m_state = false;
 
         if (shareInformation)
         {

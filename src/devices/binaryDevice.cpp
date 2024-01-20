@@ -1,5 +1,5 @@
 /**
- * @file devices/device.cpp
+ * @file devices/binaryDevice.cpp
  * @author Louis L
  * @brief Classe mère des périphériques du système de domotique.
  * @version 2.0 dev
@@ -11,6 +11,7 @@
 
 // Autres fichiers du programme.
 #include "binaryDevice.hpp"
+#include "../logger.hpp"
 
 BinaryDevice::BinaryDevice(int relayPin) : m_relayPin(relayPin) {}
 
@@ -21,6 +22,8 @@ void BinaryDevice::setup()
     pinMode(m_relayPin, OUTPUT);
 
     m_operational = true;
+
+    sendLogMessage(INFO, "Le périphérique " + getFriendlyName() + " est initialisé.");
 }
 
 void BinaryDevice::turnOn(boolean shareInformation)
@@ -35,6 +38,8 @@ void BinaryDevice::turnOn(boolean shareInformation)
         {
             // Affichage de l'animation d'allumage.
         }
+
+        sendLogMessage(INFO, "Le périphérique " + getFriendlyName() + " est allumé.");
     }
 }
 
@@ -50,6 +55,8 @@ void BinaryDevice::turnOff(boolean shareInformation)
         {
             // Affichage de l'animation d'arrêt.
         }
+
+        sendLogMessage(INFO, "Le périphérique " + getFriendlyName() + " est éteint.");
     }
 }
 

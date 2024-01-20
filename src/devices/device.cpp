@@ -1,7 +1,7 @@
 /**
  * @file devices/device.cpp
  * @author Louis L
- * @brief Classe mère des périphériques du système de domotique.
+ * @brief Classe représentant les périphériques basiques du système.
  * @version 2.0 dev
  * @date 2024-01-20
  */
@@ -12,9 +12,14 @@
 // Autres fichiers du programme.
 #include "device.hpp"
 
-Device::Device() : m_state(false), m_operational(false), m_locked(false) {}
+Device::Device() : m_friendlyName("périphérique"), m_state(false), m_operational(false), m_locked(false) {}
 
 Device::~Device() {}
+
+String Device::getFriendlyName()
+{
+    return m_friendlyName;
+}
 
 void Device::setOperational()
 {

@@ -12,6 +12,7 @@
 // Autres fichiers du programme.
 #include "pinDefinition.hpp"
 #include "devices/binaryDevice.hpp"
+#include "logger.hpp"
 
 // Instanciation des périphériques du système.
 BinaryDevice LEDCube(PIN_LED_CUBE_RELAY);
@@ -30,14 +31,11 @@ void setup()
     {
         deviceList[i]->setup();
     }
+
+    sendLogMessage(ERROR, "Ceci est un test d'erreur.");
 }
 
 void loop()
 {
-    for (int i = 0; i < devicesNumber; i ++)
-    {
-        deviceList[i]->toggle();
-    }
 
-    delay(10000);
 }

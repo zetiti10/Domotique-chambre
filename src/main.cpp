@@ -15,10 +15,10 @@
 #include "logger.hpp"
 
 // Instanciation des périphériques du système.
-BinaryDevice LEDCube(PIN_LED_CUBE_RELAY);
-BinaryDevice disco(PIN_DISCO_RELAY);
-BinaryDevice beacon(PIN_BEACON_RELAY);
-BinaryDevice street(PIN_STREET_RELAY);
+BinaryDevice LEDCube("Cube de DEL", PIN_LED_CUBE_RELAY);
+BinaryDevice disco("Lampes discothèque", PIN_DISCO_RELAY);
+BinaryDevice beacon("Gyrophare", PIN_BEACON_RELAY);
+BinaryDevice street("Maquette de rue", PIN_STREET_RELAY);
 
 Device* deviceList[] = {&LEDCube, &disco, &beacon, &street};
 int devicesNumber = 4;
@@ -30,12 +30,15 @@ void setup()
     if(Serial)
         loggerEnabled = true;
 
+    sendLogMessage(INFO, "Journalisation activée.");
+    sendLogMessage(INFO, "Démarrage du système...");
+
     for (int i = 0; i < devicesNumber; i ++)
     {
         deviceList[i]->setup();
     }
 
-    sendLogMessage(ERROR, "Ceci est un test d'erreur.");
+    sendLogMessage(INFO, "Initialisation terminée.");
 }
 
 void loop()

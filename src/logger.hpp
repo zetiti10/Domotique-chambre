@@ -9,7 +9,8 @@ extern boolean loggerEnabled;
 enum messageType
 {
     INFO,
-    ERROR
+    ERROR,
+    HIGHLIGHT
 };
 
 void sendLogMessage(messageType type, String message);

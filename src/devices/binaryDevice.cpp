@@ -13,7 +13,7 @@
 #include "binaryDevice.hpp"
 #include "../logger.hpp"
 
-BinaryDevice::BinaryDevice(int relayPin) : m_relayPin(relayPin) {}
+BinaryDevice::BinaryDevice(String friendlyName, int relayPin) : m_friendlyName(friendlyName), m_relayPin(relayPin) {}
 
 BinaryDevice::~BinaryDevice() {}
 
@@ -23,7 +23,7 @@ void BinaryDevice::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le périphérique " + getFriendlyName() + " est initialisé.");
+    sendLogMessage(INFO, "Le périphérique '" + getFriendlyName() + "' est initialisé.");
 }
 
 void BinaryDevice::turnOn(boolean shareInformation)
@@ -39,7 +39,7 @@ void BinaryDevice::turnOn(boolean shareInformation)
             // Affichage de l'animation d'allumage.
         }
 
-        sendLogMessage(INFO, "Le périphérique " + getFriendlyName() + " est allumé.");
+        sendLogMessage(INFO, "Le périphérique '" + getFriendlyName() + "' est allumé.");
     }
 }
 
@@ -56,7 +56,7 @@ void BinaryDevice::turnOff(boolean shareInformation)
             // Affichage de l'animation d'arrêt.
         }
 
-        sendLogMessage(INFO, "Le périphérique " + getFriendlyName() + " est éteint.");
+        sendLogMessage(INFO, "Le périphérique '" + getFriendlyName() + "' est éteint.");
     }
 }
 

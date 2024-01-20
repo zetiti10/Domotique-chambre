@@ -10,7 +10,7 @@
 class BinaryDevice : public Device
 {
 public:
-    BinaryDevice(int relayPin);
+    BinaryDevice(String friendlyName, int relayPin);
     virtual ~BinaryDevice();
     virtual void setup();
     virtual void turnOn(boolean shareInformation = false);
@@ -18,6 +18,7 @@ public:
     virtual void toggle(boolean shareInformation = false);
 
 private:
+    String m_friendlyName;
     boolean m_state;
     boolean m_operational;
     boolean m_locked;

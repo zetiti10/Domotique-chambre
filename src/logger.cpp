@@ -31,7 +31,13 @@ void sendLogMessage(messageType type, String message)
         case ERROR:
             messageToSend = "\033[1;31m[E] ";
             messageToSend += message;
-            messageToSend += "\n\033[0m;";
+            messageToSend += "\033[0m";
+            break;
+
+        case HIGHLIGHT:
+            messageToSend = "\033[1;36m[E] ";
+            messageToSend += message;
+            messageToSend += "\033[0m";
             break;
         
         default:

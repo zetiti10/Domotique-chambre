@@ -1,27 +1,22 @@
-#ifndef BINARY_DEVICE_DEFINITIONS
-#define BINARY_DEVICE_DEFINITIONS
+#ifndef BINARY_OUTPUT_DEFINITIONS
+#define BINARY_OUTPUT_DEFINITIONS
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device.hpp"
+#include "output.hpp"
 
-class BinaryDevice : public Device
+class BinaryOutput : public Output
 {
 public:
-    BinaryDevice(String friendlyName, int relayPin);
-    virtual ~BinaryDevice();
+    BinaryOutput(String friendlyName, int relayPin);
     virtual void setup();
     virtual void turnOn(boolean shareInformation = false);
     virtual void turnOff(boolean shareInformation = false);
     virtual void toggle(boolean shareInformation = false);
 
-private:
-    String m_friendlyName;
-    boolean m_state;
-    boolean m_operational;
-    boolean m_locked;
+protected:
     int m_relayPin;
 };
 

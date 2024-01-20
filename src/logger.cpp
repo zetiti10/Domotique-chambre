@@ -39,7 +39,7 @@ void sendLogMessage(messageType type, String message)
             messageToSend += message;
             messageToSend += "\033[0m";
             break;
-        
+
         default:
             break;
         }

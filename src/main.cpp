@@ -11,29 +11,29 @@
 
 // Autres fichiers du programme.
 #include "pinDefinition.hpp"
-#include "devices/binaryDevice.hpp"
+#include "device/output/binaryOutput.hpp"
 #include "logger.hpp"
 
 // Instanciation des périphériques du système.
-BinaryDevice LEDCube("Cube de DEL", PIN_LED_CUBE_RELAY);
-BinaryDevice disco("Lampes discothèque", PIN_DISCO_RELAY);
-BinaryDevice beacon("Gyrophare", PIN_BEACON_RELAY);
-BinaryDevice street("Maquette de rue", PIN_STREET_RELAY);
+BinaryOutput LEDCube("Cube de DEL", PIN_LED_CUBE_RELAY);
+BinaryOutput disco("Lampes discothèque", PIN_DISCO_RELAY);
+BinaryOutput beacon("Gyrophare", PIN_BEACON_RELAY);
+BinaryOutput street("Maquette de rue", PIN_STREET_RELAY);
 
-Device* deviceList[] = {&LEDCube, &disco, &beacon, &street};
+Output *deviceList[] = {&LEDCube, &disco, &beacon, &street};
 int devicesNumber = 4;
 
 void setup()
 {
     Serial.begin(115200);
 
-    if(Serial)
+    if (Serial)
         loggerEnabled = true;
 
     sendLogMessage(INFO, "Journalisation activée.");
     sendLogMessage(INFO, "Démarrage du système...");
 
-    for (int i = 0; i < devicesNumber; i ++)
+    for (int i = 0; i < devicesNumber; i++)
     {
         deviceList[i]->setup();
     }
@@ -43,5 +43,4 @@ void setup()
 
 void loop()
 {
-
 }

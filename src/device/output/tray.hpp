@@ -1,5 +1,5 @@
-#ifndef BINARY_OUTPUT_DEFINITIONS
-#define BINARY_OUTPUT_DEFINITIONS
+#ifndef TRAY_DEFINITIONS
+#define TRAY_DEFINITIONS
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
@@ -7,16 +7,17 @@
 // Autres fichiers du programme.
 #include "output.hpp"
 
-class BinaryOutput : public Output
+class Tray : public Output
 {
 public:
-    BinaryOutput(String friendlyName, int relayPin);
+    Tray(String friendlyName, int motorPin1, int motorPin2);
     virtual void setup();
     virtual void turnOn(boolean shareInformation = false);
     virtual void turnOff(boolean shareInformation = false);
 
 protected:
-    int m_relayPin;
+    int m_motorPin1;
+    int m_motorPin2;
 };
 
 #endif

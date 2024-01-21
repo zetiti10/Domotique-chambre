@@ -6,6 +6,7 @@
 
 extern boolean loggerEnabled;
 
+// Liste des types de message disponibles.
 enum messageType
 {
     INFO,

@@ -15,6 +15,10 @@
 // Variables globales.
 boolean loggerEnabled = false;
 
+
+/// @brief Cette fonction envoie un message à l'ordinateur s'il est connecté.
+/// @param type Le type de message (la couleur change en fonction du type de message).
+/// @param message Le message à envoyer.
 void sendLogMessage(messageType type, String message)
 {
     if (loggerEnabled)

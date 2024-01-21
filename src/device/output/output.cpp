@@ -14,19 +14,21 @@
 
 Output::Output(String friendlyName) : Device(friendlyName) {}
 
-void Output::setOperational()
+void Output::toggle(boolean shareInformation)
 {
-    m_operational = true;
+    if (m_operational && !m_locked)
+    {
+        if (m_state)
+            turnOff(shareInformation);
+
+        else
+            turnOn(shareInformation);
+    }
 }
 
-void Output::setUnavailable()
+boolean Output::getState() const
 {
-    m_operational = false;
-}
-
-boolean Output::getAvailability() const
-{
-    return m_operational;
+    return m_state;
 }
 
 void Output::lock()

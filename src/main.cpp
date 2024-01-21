@@ -10,8 +10,9 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "pinDefinition.hpp"
+#include "pinDefinitions.hpp"
 #include "device/output/binaryOutput.hpp"
+#include "device/device.hpp"
 #include "logger.hpp"
 
 // Instanciation des périphériques du système.
@@ -20,27 +21,31 @@ BinaryOutput disco("Lampes discothèque", PIN_DISCO_RELAY);
 BinaryOutput beacon("Gyrophare", PIN_BEACON_RELAY);
 BinaryOutput street("Maquette de rue", PIN_STREET_RELAY);
 
-Output *deviceList[] = {&LEDCube, &disco, &beacon, &street};
+// Création d'une liste contenant des références vers tous les périphériques du système.
+Device *deviceList[] = {&LEDCube, &disco, &beacon, &street};
 int devicesNumber = 4;
 
+// Initialisation du système.
 void setup()
 {
+    // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
 
+    // Activation du mode journalisation si un ordinateur est connecté.
     if (Serial)
         loggerEnabled = true;
 
     sendLogMessage(INFO, "Journalisation activée.");
     sendLogMessage(INFO, "Démarrage du système...");
 
+    // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)
-    {
         deviceList[i]->setup();
-    }
 
     sendLogMessage(INFO, "Initialisation terminée.");
 }
 
+// Boucle d'exécution des tâches du système.
 void loop()
 {
 }

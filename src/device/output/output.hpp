@@ -11,19 +11,15 @@ class Output : public Device
 {
 public:
     Output(String friendlyName);
-    virtual void setup() = 0;
     virtual void turnOn(boolean shareInformation = false) = 0;
     virtual void turnOff(boolean shareInformation = false) = 0;
-    virtual void toggle(boolean shareInformation = false) = 0;
-    virtual void setOperational();
-    virtual void setUnavailable();
-    virtual boolean getAvailability() const;
+    virtual void toggle(boolean shareInformation = false);
+    virtual boolean getState() const;
     virtual void lock();
     virtual void unLock();
 
 protected:
     boolean m_state;
-    boolean m_operational;
     boolean m_locked;
 };
 

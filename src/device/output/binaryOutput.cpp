@@ -21,7 +21,7 @@ void BinaryOutput::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le périphérique '" + getFriendlyName() + "' est initialisé.");
+    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + m_relayPin + ".");
 }
 
 void BinaryOutput::turnOn(boolean shareInformation)
@@ -37,7 +37,7 @@ void BinaryOutput::turnOn(boolean shareInformation)
             // Affichage de l'animation d'allumage.
         }
 
-        sendLogMessage(INFO, "Le périphérique '" + getFriendlyName() + "' est allumé.");
+        sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est allumé.");
     }
 }
 
@@ -54,18 +54,6 @@ void BinaryOutput::turnOff(boolean shareInformation)
             // Affichage de l'animation d'arrêt.
         }
 
-        sendLogMessage(INFO, "Le périphérique '" + getFriendlyName() + "' est éteint.");
-    }
-}
-
-void BinaryOutput::toggle(boolean shareInformation)
-{
-    if (m_operational && !m_locked)
-    {
-        if (m_state)
-            turnOff(shareInformation);
-
-        else
-            turnOn(shareInformation);
+        sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est éteint.");
     }
 }

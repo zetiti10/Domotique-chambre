@@ -11,19 +11,23 @@
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
-#include "device/output/binaryOutput.hpp"
 #include "device/device.hpp"
+#include "device/display.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/tray.hpp"
 #include "logger.hpp"
 
 // Instanciation des périphériques du système.
+Display display("Ecran");
+Tray tray("Plateau", PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2);
 BinaryOutput LEDCube("Cube de DEL", PIN_LED_CUBE_RELAY);
 BinaryOutput disco("Lampes discothèque", PIN_DISCO_RELAY);
 BinaryOutput beacon("Gyrophare", PIN_BEACON_RELAY);
 BinaryOutput street("Maquette de rue", PIN_STREET_RELAY);
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
-Device *deviceList[] = {&LEDCube, &disco, &beacon, &street};
-int devicesNumber = 4;
+Device *deviceList[] = {&display, &tray, &LEDCube, &disco, &beacon, &street};
+int devicesNumber = 6;
 
 // Initialisation du système.
 void setup()

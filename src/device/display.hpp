@@ -3,7 +3,6 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
-#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
 // Autres fichiers du programme.
@@ -21,7 +20,7 @@ class Display : public Device
 {
 public:
     Display(String friendlyName);
-    virtual void setup();
+    virtual void setup() override;
     virtual void displayUnavailableDevices();
     virtual void displayBell();
     virtual void displayMessage(String message, String title = "Info");
@@ -35,7 +34,7 @@ public:
     virtual void displayTray(boolean shareInformation, boolean on);
     virtual void loop();
 
-private:
+protected:
     Adafruit_SSD1306 m_display;
     unsigned long m_displayCounter;
 };

@@ -14,7 +14,7 @@
 #include "../logger.hpp"
 #include "../bitmaps.hpp"
 
-Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1), m_displayCounter(0UL) {}
+Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1) {}
 
 void Display::setup()
 {
@@ -23,6 +23,8 @@ void Display::setup()
         m_display.clearDisplay();
         m_display.cp437(true);
         m_display.setTextColor(WHITE);
+
+        m_displayCounter = 0;
 
         m_operational = true;
 
@@ -376,7 +378,7 @@ void Display::displayTray(boolean shareInformation, boolean on)
 
 void Display::loop()
 {
-    if ((m_displayCounter != 0) && ((millis() - m_displayCounter) >= 8000))
+    if (m_operational && (m_displayCounter != 0) && ((millis() - m_displayCounter) >= 8000))
     {
         m_displayCounter = 0;
         m_display.clearDisplay();

@@ -12,8 +12,8 @@ class Tray : public Output
 public:
     Tray(String friendlyName, int motorPin1, int motorPin2);
     virtual void setup();
-    virtual void turnOn(boolean shareInformation = false);
-    virtual void turnOff(boolean shareInformation = false);
+    virtual void turnOn(boolean shareInformation = false) override;
+    virtual void turnOff(boolean shareInformation = false) override;
 
 protected:
     int m_motorPin1;

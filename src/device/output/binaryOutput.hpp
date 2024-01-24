@@ -11,9 +11,9 @@ class BinaryOutput : public Output
 {
 public:
     BinaryOutput(String friendlyName, int relayPin);
-    virtual void setup();
-    virtual void turnOn(boolean shareInformation = false);
-    virtual void turnOff(boolean shareInformation = false);
+    virtual void setup() override;
+    virtual void turnOn(boolean shareInformation = false) override;
+    virtual void turnOff(boolean shareInformation = false) override;
 
 protected:
     int m_relayPin;

@@ -27,7 +27,7 @@ void Tray::setup()
 
 void Tray::turnOn(boolean shareInformation)
 {
-    if (!m_state && m_operational && !m_locked)
+    if (m_operational && !m_locked && !m_state)
     {
         // Ouverture.
 
@@ -44,7 +44,7 @@ void Tray::turnOn(boolean shareInformation)
 
 void Tray::turnOff(boolean shareInformation)
 {
-    if (m_state && m_operational && !m_locked)
+    if (m_operational && !m_locked && m_state)
     {
         // Fermeture.
 

@@ -8,8 +8,8 @@ class Device
 {
 public:
     Device(String friendlyName);
-    virtual String getFriendlyName() const;
     virtual void setup() = 0;
+    virtual String getFriendlyName() const;
     virtual boolean getAvailability() const;
 
 protected:

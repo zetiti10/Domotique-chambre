@@ -1,7 +1,7 @@
 /**
- * @file device/output/binaryDevice.cpp
+ * @file device/output/binaryOutput.cpp
  * @author Louis L
- * @brief Objet simple incluant en plus de l'héritage de Device, une broche de l'Arduino et un constructeur.
+ * @brief Objet simple incluant en plus de l'héritage de Device, une broche de l'Arduino pour la contrôler.
  * @version 2.0 dev
  * @date 2024-01-20
  */
@@ -26,7 +26,7 @@ void BinaryOutput::setup()
 
 void BinaryOutput::turnOn(boolean shareInformation)
 {
-    if (!m_state && m_operational && !m_locked)
+    if (m_operational && !m_locked && !m_state)
     {
         digitalWrite(m_relayPin, HIGH);
 
@@ -43,7 +43,7 @@ void BinaryOutput::turnOn(boolean shareInformation)
 
 void BinaryOutput::turnOff(boolean shareInformation)
 {
-    if (m_state && m_operational && !m_locked)
+    if (m_operational && !m_locked && m_state)
     {
         digitalWrite(m_relayPin, LOW);
 

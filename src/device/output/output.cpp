@@ -1,5 +1,5 @@
 /**
- * @file device/output/device.cpp
+ * @file device/output/output.cpp
  * @author Louis L
  * @brief Cette classe représente tous les appareils de type sortie (lumières...) du système de domotique.
  * @version 2.0 dev
@@ -11,8 +11,9 @@
 
 // Autres fichiers du programme.
 #include "output.hpp"
+#include "../../logger.hpp"
 
-Output::Output(String friendlyName) : Device(friendlyName) {}
+Output::Output(String friendlyName) : Device(friendlyName), m_state(false), m_locked(false) {}
 
 void Output::toggle(boolean shareInformation)
 {
@@ -34,9 +35,13 @@ boolean Output::getState() const
 void Output::lock()
 {
     m_locked = true;
+
+    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été bloqué.");
 }
 
 void Output::unLock()
 {
     m_locked = false;
+
+    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
 }

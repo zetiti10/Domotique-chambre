@@ -8,6 +8,7 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
+#include <IRremote.hpp>
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
@@ -15,6 +16,10 @@
 #include "device/display.hpp"
 #include "device/output/binaryOutput.hpp"
 #include "device/output/tray.hpp"
+#include "device/input/airSensor.hpp"
+#include "device/input/analogInput.hpp"
+#include "device/input/binaryInput.hpp"
+#include "device/input/IRSensor.hpp"
 #include "logger.hpp"
 
 // Instanciation des périphériques du système.
@@ -23,7 +28,16 @@ Tray tray("Plateau", PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2);
 BinaryOutput LEDCube("Cube de DEL", PIN_LED_CUBE_RELAY);
 BinaryOutput disco("Lampes discothèque", PIN_DISCO_RELAY);
 BinaryOutput beacon("Gyrophare", PIN_BEACON_RELAY);
+BinaryOutput wardrobeLights("Lumière armoire", PIN_WARDROBE_LIGHTS_RELAY);
 BinaryOutput street("Maquette de rue", PIN_STREET_RELAY);
+BinaryOutput deskLight("Lampe du bureau", PIN_DESK_LIGHT_RELAY);
+WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
+// DoorSensor.
+BinaryInput presenceSensor("Capteur de présence", PIN_MOTION_SENSOR, false, false);
+Doorbell doorbell("Sonnette", PIN_DOORBELL_BUTTON, false, false);
+AnalogInput lightsensor("Capteur de luminosité", PIN_LIGHT_SENSOR);
+AirSensor airSensor("Capteur de l'air", PIN_AIR_SENSOR);
+IRSensor iRSensor("Capteur infrarouge", PIN_IR_SENSOR);
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
 Device *deviceList[] = {&display, &tray, &LEDCube, &disco, &beacon, &street};

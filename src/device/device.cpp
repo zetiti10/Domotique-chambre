@@ -12,7 +12,7 @@
 // Autres fichiers du programme.
 #include "device.hpp"
 
-Device::Device(String friendlyName) : m_friendlyName(friendlyName) {}
+Device::Device(String friendlyName) : m_friendlyName(friendlyName), m_operational(false) {}
 
 String Device::getFriendlyName() const
 {

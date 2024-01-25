@@ -34,3 +34,11 @@ void Alarm::setup()
     else
         sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée.");
 }
+
+void Alarm::turnOn(boolean shareInformation)
+{
+    if (m_operational && !m_locked && !m_state)
+    {
+        
+    }
+}

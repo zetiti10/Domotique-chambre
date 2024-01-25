@@ -35,13 +35,13 @@ WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", PIN_WAR
 // DoorSensor.
 BinaryInput presenceSensor("Capteur de présence", PIN_MOTION_SENSOR, false, false);
 Doorbell doorbell("Sonnette", PIN_DOORBELL_BUTTON, false, false);
-AnalogInput lightsensor("Capteur de luminosité", PIN_LIGHT_SENSOR);
+AnalogInput lightSensor("Capteur de luminosité", PIN_LIGHT_SENSOR);
 AirSensor airSensor("Capteur de l'air", PIN_AIR_SENSOR);
 IRSensor iRSensor("Capteur infrarouge", PIN_IR_SENSOR);
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
-Device *deviceList[] = {&display, &tray, &LEDCube, &disco, &beacon, &street};
-int devicesNumber = 6;
+Device *deviceList[] = {&display, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &wardrobeDoorSensor, &presenceSensor, &doorbell, &lightSensor, &airSensor, &iRSensor};
+int devicesNumber = 14;
 
 // Initialisation du système.
 void setup()

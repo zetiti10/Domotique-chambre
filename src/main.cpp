@@ -16,6 +16,7 @@
 #include "device/display.hpp"
 #include "device/output/binaryOutput.hpp"
 #include "device/output/tray.hpp"
+#include "device/output/alarm.hpp"
 #include "device/input/airSensor.hpp"
 #include "device/input/analogInput.hpp"
 #include "device/input/binaryInput.hpp"

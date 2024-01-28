@@ -17,6 +17,7 @@ public:
     virtual boolean getState() const;
     virtual void lock();
     virtual void unLock();
+    virtual boolean isLocked();
 
 protected:
     boolean m_state;

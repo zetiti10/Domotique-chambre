@@ -10,6 +10,7 @@ extern boolean loggerEnabled;
 enum messageType
 {
     INFO,
+    WARN,
     ERROR,
     HIGHLIGHT
 };

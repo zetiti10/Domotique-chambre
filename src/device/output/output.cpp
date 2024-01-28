@@ -45,3 +45,8 @@ void Output::unLock()
 
     sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
 }
+
+boolean Output::isLocked()
+{
+    return m_locked;
+}

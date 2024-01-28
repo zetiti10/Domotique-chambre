@@ -7,6 +7,7 @@
 // Autres fichiers du programme.
 #include "input.hpp"
 #include "../output/binaryOutput.hpp"
+#include "../output/alarm.hpp"
 
 class BinaryInput : public Input
 {
@@ -37,15 +38,15 @@ protected:
     boolean m_activated;
 };
 
-/*class DoorSensor : public BinaryInput
+class DoorSensor : public BinaryInput
 {
 public:
     DoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, Alarm &alarm);
     virtual void loop();
 
 protected:
-    BinaryOutput &m_alarm;
-};*/
+    Alarm &m_alarm;
+};
 
 class Doorbell : public BinaryInput
 {

@@ -80,17 +80,17 @@ boolean WardrobeDoorSensor::getActivation() const
     return m_activated;
 }
 
-/*DoorSensor::DoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, Alarm &alarm) : BinaryInput(friendlyName, pin, revert, pullup), m_alarm(alarm) {}
+DoorSensor::DoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, Alarm &alarm) : BinaryInput(friendlyName, pin, revert, pullup), m_alarm(alarm) {}
 
 void DoorSensor::loop()
 {
-    if (m_alarm.getAvailability() && m_alarm.getState() && getState)
+    if (m_alarm.getAvailability() && m_alarm.getState() && getState())
     {
         m_alarm.trigger();
 
         sendLogMessage(INFO, "L'alarme '" + m_alarm.getFriendlyName() + "' a été déclenchée par le capteur de porte '" + m_friendlyName + "'.");
     }
-}*/
+}
 
 Doorbell::Doorbell(String friendlyName, int pin, boolean revert, boolean pullup) : BinaryInput(friendlyName, pin, revert, pullup) {}
 

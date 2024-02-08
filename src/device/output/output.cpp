@@ -13,7 +13,15 @@
 #include "output.hpp"
 #include "../../logger.hpp"
 
-Output::Output(String friendlyName) : Device(friendlyName), m_state(false), m_locked(false) {}
+Output::Output(String friendlyName, Display &display) : Device(friendlyName), m_display(display), m_state(false), m_locked(false) {}
+
+void Output::setup()
+{
+    m_display.setup();
+
+    if (!m_display.getAvailability())
+        sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de la sortie '" + m_friendlyName + "'.");
+}
 
 void Output::toggle(boolean shareInformation)
 {
@@ -46,7 +54,7 @@ void Output::unLock()
     sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
 }
 
-boolean Output::isLocked()
+boolean Output::isLocked() const
 {
     return m_locked;
 }

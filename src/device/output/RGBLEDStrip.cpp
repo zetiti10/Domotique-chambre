@@ -13,10 +13,12 @@
 #include "RGBLEDStrip.hpp"
 #include "../../logger.hpp"
 
-RGBLEDStrip::RGBLEDStrip(String friendlyName, int RPin, int GPin, int BPin) : Output(friendlyName), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_mode(nullptr) {}
+RGBLEDStrip::RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_mode(nullptr) {}
 
 void RGBLEDStrip::setup()
 {
+    Output::setup();
+
     pinMode(m_RPin, OUTPUT);
     pinMode(m_GPin, OUTPUT);
     pinMode(m_BPin, OUTPUT);
@@ -42,9 +44,7 @@ void RGBLEDStrip::turnOn(boolean shareInformation)
     m_state = true;
 
     if (shareInformation)
-    {
-        // Affichage de l'animation d'allumage.
-    }
+        m_display.displayDeviceState(true);
 
     sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est allumé avec le mode '" + m_mode->getFriendlyName() + "'.");
 }
@@ -61,9 +61,7 @@ void RGBLEDStrip::turnOff(boolean shareInformation)
     m_state = false;
 
     if (shareInformation)
-    {
-        // Affichage de l'animation d'allumage.
-    }
+        m_display.displayDeviceState(false);
 
     sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est désactivé.");
 }
@@ -76,7 +74,7 @@ void RGBLEDStrip::loop()
     m_mode->loop();
 }
 
-void RGBLEDStrip::setMode(RGBLEDStripMode &mode)
+void RGBLEDStrip::setMode(RGBLEDStripMode &mode, boolean shareInformation)
 {
     if (m_locked)
         return;
@@ -85,6 +83,9 @@ void RGBLEDStrip::setMode(RGBLEDStripMode &mode)
         m_mode->desactivate();
 
     m_mode = &mode;
+
+    sendLogMessage(INFO, "Le mode du ruban de DEL RVB '" + m_friendlyName + "' a été défini sur '" + m_mode->getFriendlyName() + "'.");
+    m_display.displayMessage(m_mode->getFriendlyName(), "Mode");
 
     if (m_operational && m_state)
         m_mode->activate();

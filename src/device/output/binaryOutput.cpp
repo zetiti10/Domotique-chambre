@@ -13,10 +13,12 @@
 #include "binaryOutput.hpp"
 #include "../../logger.hpp"
 
-BinaryOutput::BinaryOutput(String friendlyName, int relayPin) : Output(friendlyName), m_relayPin(relayPin) {}
+BinaryOutput::BinaryOutput(String friendlyName, Display &display, int relayPin) : Output(friendlyName, display), m_relayPin(relayPin) {}
 
 void BinaryOutput::setup()
 {
+    Output::setup();
+
     pinMode(m_relayPin, OUTPUT);
 
     m_operational = true;
@@ -33,9 +35,7 @@ void BinaryOutput::turnOn(boolean shareInformation)
         m_state = true;
 
         if (shareInformation)
-        {
-            // Affichage de l'animation d'allumage.
-        }
+            m_display.displayDeviceState(true);
 
         sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est allumé.");
     }
@@ -50,9 +50,7 @@ void BinaryOutput::turnOff(boolean shareInformation)
         m_state = false;
 
         if (shareInformation)
-        {
-            // Affichage de l'animation d'arrêt.
-        }
+            m_display.displayDeviceState(false);
 
         sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est éteint.");
     }

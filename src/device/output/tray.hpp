@@ -10,7 +10,7 @@
 class Tray : public Output
 {
 public:
-    Tray(String friendlyName, int motorPin1, int motorPin2);
+    Tray(String friendlyName, Display &display, int motorPin1, int motorPin2, int speedPin);
     virtual void setup() override;
     virtual void turnOn(boolean shareInformation = false) override;
     virtual void turnOff(boolean shareInformation = false) override;
@@ -18,6 +18,7 @@ public:
 protected:
     int m_motorPin1;
     int m_motorPin2;
+    int m_speedPin;
 };
 
 #endif

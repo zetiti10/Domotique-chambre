@@ -84,7 +84,7 @@ DoorSensor::DoorSensor(String friendlyName, int pin, boolean revert, boolean pul
 
 void DoorSensor::loop()
 {
-    if (m_alarm.getAvailability() && m_alarm.getState() && getState())
+    if (getState() && m_alarm.getAvailability() && m_alarm.getState())
     {
         m_alarm.trigger();
 
@@ -92,7 +92,17 @@ void DoorSensor::loop()
     }
 }
 
-Doorbell::Doorbell(String friendlyName, int pin, boolean revert, boolean pullup) : BinaryInput(friendlyName, pin, revert, pullup) {}
+Doorbell::Doorbell(String friendlyName, int pin, boolean revert, boolean pullup, Display &display) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display) {}
+
+void Doorbell::setup()
+{
+    BinaryInput::setup();
+
+    m_display.setup();
+
+    if (!m_display.getAvailability())
+        sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de la sonnette '" + m_friendlyName + "'.");
+}
 
 void Doorbell::loop()
 {

@@ -16,7 +16,7 @@
 class Alarm : public Output
 {
 public:
-    Alarm(String friendlyName, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, Display &display, RGBLEDStrip &strip, MissileLauncher &missileLauncher, int alarmRelayPin, int beaconRelayPin, boolean buzzerState);
+    Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, int alarmRelayPin, boolean buzzerState);
     virtual void setup() override;
     virtual void turnOn(boolean shareInformation = false) override;
     virtual void turnOff(boolean shareInformation = false) override;
@@ -34,7 +34,6 @@ protected:
     PN532 m_nfcReader;
     BinaryOutput &m_doorLED;
     BinaryOutput &m_beacon;
-    Display &m_display;
     RGBLEDStrip &m_strip;
     AlarmMode m_alarmStripMode;
     MissileLauncher &m_missileLauncher;

@@ -24,11 +24,11 @@ public:
     virtual void displayUnavailableDevices();
     virtual void displayBell();
     virtual void displayMessage(String message, String title = "Info");
-    virtual void displayVolume(volumeType action = UNMUTE);
+    virtual void displayVolume(volumeType action = UNMUTE, int volume = 0);
     virtual void displayAlarmTriggered(boolean colorsInverted = false);
-    virtual void displayAirValues();
-    virtual void displayLuminosityMotionSensorValues();
-    virtual void displayLEDState();
+    virtual void displayAirValues(float temperature, float humidity);
+    virtual void displayLuminosityMotionSensorValues(int luminosity, boolean motionDetected);
+    virtual void displayLEDState(int r, int g, int b);
     virtual void displayDeviceState(boolean on);
     virtual void displayKeypadMenu();
     virtual void displayTray(boolean shareInformation, boolean on);

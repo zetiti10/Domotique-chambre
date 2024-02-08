@@ -8,6 +8,7 @@
 #include "input.hpp"
 #include "../output/binaryOutput.hpp"
 #include "../output/alarm.hpp"
+#include "../display.hpp"
 
 class BinaryInput : public Input
 {
@@ -51,8 +52,12 @@ protected:
 class Doorbell : public BinaryInput
 {
 public:
-    Doorbell(String friendlyName, int pin, boolean revert, boolean pullup);
+    Doorbell(String friendlyName, int pin, boolean revert, boolean pullup, Display &display);
+    virtual void setup() override;
     virtual void loop() override;
+
+protected:
+    Display &m_display;
 };
 
 #endif

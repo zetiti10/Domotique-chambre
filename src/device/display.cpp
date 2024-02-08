@@ -63,7 +63,7 @@ void Display::displayMessage(String message, String title)
     m_displayCounter = millis();
 }
 
-void Display::displayVolume(volumeType action)
+void Display::displayVolume(volumeType action, int volume = 0)
 {
     m_display.clearDisplay();
 
@@ -83,12 +83,12 @@ void Display::displayVolume(volumeType action)
     {
         m_display.drawRect(50, 52, 27, 3, WHITE);
 
-        /*if (volume > 0)
-            m_display.drawLine(51, 53, 51 + volume, 53, WHITE);*/
+        if (volume > 0)
+            m_display.drawLine(51, 53, 51 + volume, 53, WHITE);
 
         m_display.setTextSize(1);
         m_display.setCursor(80, 52);
-        // m_display.print(volume);
+        m_display.print(volume);
     }
 
     m_display.display();
@@ -110,66 +110,64 @@ void Display::displayAlarmTriggered(boolean colorsInverted)
     m_displayCounter = millis();
 }
 
-void Display::displayAirValues()
+void Display::displayAirValues(float temperature, float humidity)
 {
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, airBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
 
     m_display.setCursor(40, 42);
-    // m_display.print(temperature);
+    m_display.print(temperature);
     m_display.write(0xF8);
     m_display.print("C");
 
     m_display.setCursor(40, 10);
-    // m_display.print(humidity);
+    m_display.print(humidity);
     m_display.write(0x25);
 
     m_display.display();
     m_displayCounter = millis();
 }
 
-void Display::displayLuminosityMotionSensorValues()
+void Display::displayLuminosityMotionSensorValues(int luminosity, boolean motionDetected)
 {
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, luminosityMotionSensorsBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
 
     m_display.setCursor(40, 42);
-    // m_display.print(analogRead(PIN_LIGHT_SENSOR));
+    m_display.print(luminosity);
 
     m_display.setCursor(40, 10);
-    /*if (digitalRead(PIN_MOTION_SENSOR))
+
+    if (motionDetected)
         m_display.print("OUI");
 
     else
-        m_display.print("NON");*/
+        m_display.print("NON");
 
     m_display.display();
     m_displayCounter = millis();
 }
 
-void Display::displayLEDState()
+void Display::displayLEDState(int r, int g, int b)
 {
     m_display.clearDisplay();
     m_display.setTextSize(2);
 
     m_display.setCursor(22, 0);
     m_display.print("R");
-    /*int rGauge = int(map(RLEDValue, 0, 255, 0, 45));
-    m_display.fillRect(25, 18, 4, rGauge, WHITE);*/
+    m_display.fillRect(25, 18, 4, int(map(r, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(24, 17, 6, 47, WHITE);
 
     m_display.setCursor(62, 0);
     m_display.print("V");
-    /*int gGauge = int(map(GLEDValue, 0, 255, 0, 45));
-    m_display.fillRect(65, 18, 4, gGauge, WHITE);*/
+    m_display.fillRect(65, 18, 4, int(map(g, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(64, 17, 6, 47, WHITE);
 
     m_display.setCursor(101, 0);
     m_display.print("B");
-    /*int bGauge = int(map(BLEDValue, 0, 255, 0, 45));
-    m_display.fillRect(102, 18, 4, bGauge, WHITE);*/
+    m_display.fillRect(102, 18, 4, int(map(b, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(101, 17, 6, 47, WHITE);
 
     m_display.display();

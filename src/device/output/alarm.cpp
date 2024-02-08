@@ -15,19 +15,17 @@
 #include "../../logger.hpp"
 #include "../../buzzer.hpp"
 
-Alarm::Alarm(String friendlyName, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, Display &display, RGBLEDStrip &strip, MissileLauncher &missileLauncher, int alarmRelayPin, int beaconRelayPin, boolean buzzerState) : Output(friendlyName), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_display(display), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_missileLauncher(missileLauncher), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
+Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, int alarmRelayPin, boolean buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_missileLauncher(missileLauncher), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
 
 void Alarm::setup()
 {
+    Output::setup();
+
     pinMode(m_alarmRelayPin, OUTPUT);
 
     m_doorLED.setup();
     m_beacon.setup();
-    m_display.setup();
     m_strip.setup();
-
-    if (!m_display.getAvailability())
-        sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de l'alarme '" + m_friendlyName + "'.");
 
     if (!m_missileLauncher.begin())
         sendLogMessage(WARN, "Le lance-missile n'a pas pu être initialisé lors de l'initialisation de l'alarme '" + m_friendlyName + "'.");
@@ -63,9 +61,7 @@ void Alarm::turnOn(boolean shareInformation)
     m_state = true;
 
     if (shareInformation)
-    {
-        // Affichage de l'animation.
-    }
+        m_display.displayDeviceState(true);
 
     sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est allumée.");
 }
@@ -87,9 +83,7 @@ void Alarm::turnOff(boolean shareInformation)
     m_state = false;
 
     if (shareInformation)
-    {
-        // Affichage de l'animation.
-    }
+        m_display.displayDeviceState(false);
 
     sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est éteinte.");
 }
@@ -150,6 +144,10 @@ void Alarm::storeCard()
         return;
 
     m_cardToStoreState = true;
+
+    sendLogMessage(INFO, "Le système de domotique est prêt a enregistrer une nouvelle carte.");
+    m_display.displayMessage("Presentez la carte a enregistrer.");
+    yesSound();
 }
 
 void Alarm::storeCard(uint8_t card[4])
@@ -157,6 +155,7 @@ void Alarm::storeCard(uint8_t card[4])
     if (checkCard(card))
     {
         sendLogMessage(ERROR, "Cette carte est déjà enregistrée dans le système.");
+        m_display.displayMessage("Cette carte a deja ete enregistree.", "Erreur");
         noSound();
         return;
     }
@@ -169,7 +168,7 @@ void Alarm::storeCard(uint8_t card[4])
     EEPROM.write(0, EEPROM.read(0) + 1);
 
     sendLogMessage(INFO, "La carte a été enregistrée dans le système.");
-
+    m_display.displayMessage("La carte a ete enregistree dans le systeme.");
     yesSound();
 }
 
@@ -186,7 +185,7 @@ void Alarm::removeCards()
     }
 
     sendLogMessage(INFO, "Les cartes enregistrées ont été supprimées.");
-
+    m_display.displayMessage("Les cartes enregistrees ont ete supprimees.");
     yesSound();
 }
 
@@ -226,7 +225,7 @@ void Alarm::stopRinging()
 {
     if (!m_isRinging)
         return;
-    
+
     if (m_buzzerState)
         digitalWrite(m_alarmRelayPin, LOW);
 

@@ -13,7 +13,7 @@
 #include "tray.hpp"
 #include "../../logger.hpp"
 
-Tray::Tray(String friendlyName, int motorPin1, int motorPin2) : Output(friendlyName), m_motorPin1(motorPin1), m_motorPin2(motorPin2) {}
+Tray::Tray(String friendlyName, Display &display, int motorPin1, int motorPin2, int speedPin) : Output(friendlyName, display), m_motorPin1(motorPin1), m_motorPin2(motorPin2), m_speedPin(speedPin) {}
 
 void Tray::setup()
 {
@@ -29,14 +29,17 @@ void Tray::turnOn(boolean shareInformation)
 {
     if (m_operational && !m_locked && !m_state)
     {
-        // Ouverture.
+        analogWrite(m_speedPin, 120);
+        digitalWrite(m_motorPin1, LOW);
+        digitalWrite(m_motorPin2, HIGH);
+
+        m_display.displayTray(shareInformation, true);
+
+        digitalWrite(m_motorPin1, HIGH);
+        digitalWrite(m_motorPin2, HIGH);
+        analogWrite(m_speedPin, 120);
 
         m_state = true;
-
-        if (shareInformation)
-        {
-            // Affichage de l'animation d'allumage.
-        }
 
         sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est ouvert.");
     }
@@ -46,14 +49,17 @@ void Tray::turnOff(boolean shareInformation)
 {
     if (m_operational && !m_locked && m_state)
     {
-        // Fermeture.
+        analogWrite(m_speedPin, 120);
+        digitalWrite(m_motorPin1, HIGH);
+        digitalWrite(m_motorPin2, LOW);
+
+        m_display.displayTray(shareInformation, false);
+
+        digitalWrite(m_motorPin1, HIGH);
+        digitalWrite(m_motorPin2, HIGH);
+        analogWrite(m_speedPin, 120);
 
         m_state = false;
-
-        if (shareInformation)
-        {
-            // Affichage de l'animation d'allumage.
-        }
 
         sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est fermé.");
     }

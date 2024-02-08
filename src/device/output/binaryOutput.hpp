@@ -10,7 +10,7 @@
 class BinaryOutput : public Output
 {
 public:
-    BinaryOutput(String friendlyName, int relayPin);
+    BinaryOutput(String friendlyName, Display &display, int relayPin);
     virtual void setup() override;
     virtual void turnOn(boolean shareInformation = false) override;
     virtual void turnOff(boolean shareInformation = false) override;

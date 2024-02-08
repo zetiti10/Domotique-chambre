@@ -70,7 +70,7 @@ void RGBLEDStrip::turnOff(boolean shareInformation)
 
 void RGBLEDStrip::loop()
 {
-    if (!m_operational || m_locked || !m_state)
+    if (!m_operational || !m_state)
         return;
 
     m_mode->loop();
@@ -233,6 +233,5 @@ void AlarmMode::loop()
     {
         m_counter = millis();
         m_strip.setColor(0, 0, 0);
-        
     }
 }

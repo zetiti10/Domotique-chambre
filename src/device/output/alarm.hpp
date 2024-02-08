@@ -21,13 +21,14 @@ public:
     virtual void turnOn(boolean shareInformation = false) override;
     virtual void turnOff(boolean shareInformation = false) override;
     virtual void loop();
-    virtual void storeCard(uint8_t card[4]);
+    virtual void storeCard();
     virtual void removeCards();
     virtual void trigger();
     virtual void stopRinging();
 
 protected:
     virtual boolean checkCard(uint8_t card[4]);
+    virtual void storeCard(uint8_t card[4]);
 
     PN532_HSU m_pn532hsu;
     PN532 m_nfcReader;

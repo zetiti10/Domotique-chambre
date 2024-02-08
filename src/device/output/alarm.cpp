@@ -118,7 +118,8 @@ void Alarm::loop()
         {
             if (m_cardToStoreState)
             {
-                storeCard(uid); // PAS FINI
+                storeCard(uid);
+                m_cardToStoreState = false;
             }
 
             else if (checkCard(uid))
@@ -141,6 +142,14 @@ void Alarm::loop()
 
     if ((millis() - m_autoTriggerOffCounter) >= 5000)
         stopRinging();
+}
+
+void Alarm::storeCard()
+{
+    if (!m_operational || m_locked || m_state || m_cardToStoreState)
+        return;
+
+    m_cardToStoreState = true;
 }
 
 void Alarm::storeCard(uint8_t card[4])
@@ -179,4 +188,56 @@ void Alarm::removeCards()
     sendLogMessage(INFO, "Les cartes enregistrées ont été supprimées.");
 
     yesSound();
+}
+
+void Alarm::trigger()
+{
+    if (m_isRinging)
+        return;
+
+    if (!m_state)
+    {
+        turnOn();
+
+        if (!m_state)
+        {
+            sendLogMessage(ERROR, "Impossible de déclencher l'alarme car il est impossible de l'allumer.");
+            return;
+        }
+    }
+
+    if (m_buzzerState)
+        digitalWrite(m_alarmRelayPin, HIGH);
+
+    m_beacon.unLock();
+    m_strip.unLock();
+
+    m_beacon.turnOn();
+    m_strip.setMode(m_alarmStripMode);
+    m_strip.turnOn();
+
+    m_beacon.lock();
+    m_strip.lock();
+
+    m_isRinging = true;
+}
+
+void Alarm::stopRinging()
+{
+    if (!m_isRinging)
+        return;
+    
+    if (m_buzzerState)
+        digitalWrite(m_alarmRelayPin, LOW);
+
+    m_beacon.unLock();
+    m_strip.unLock();
+
+    m_beacon.turnOff();
+    m_strip.turnOff();
+
+    m_beacon.lock();
+    m_strip.lock();
+
+    m_isRinging = true;
 }

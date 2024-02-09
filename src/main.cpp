@@ -19,6 +19,7 @@
 #include "device/output/binaryOutput.hpp"
 #include "device/output/tray.hpp"
 #include "device/output/alarm.hpp"
+#include "device/output/television.hpp"
 #include "device/input/airSensor.hpp"
 #include "device/input/analogInput.hpp"
 #include "device/input/binaryInput.hpp"
@@ -40,7 +41,7 @@ BinaryOutput deskLight("Lampe du bureau", display, PIN_DESK_LIGHT_RELAY);
 BinaryOutput doorLED("DEL de la porte", display, PIN_DOOR_LED);
 RGBLEDStrip LEDStrip("Ruban de DEL", display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
 Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, missileLauncher, buzzer, PIN_ALARM_RELAY, true);
-// TV.
+Television television("Télévision", display, PIN_SCREEN_SERVO, PIN_IR_LED);
 
 WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
 DoorSensor doorSensor("Capteur de la porte de la chambre", PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
@@ -55,8 +56,8 @@ ColorMode colorMode("Mode couleur unique", LEDStrip);
 // Modes.
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
-Device *deviceList[] = {&display, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &airSensor, &iRSensor};
-int devicesNumber = 18;
+Device *deviceList[] = {&display, &buzzer, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
+int devicesNumber = 21;
 
 // Initialisation du système.
 void setup()

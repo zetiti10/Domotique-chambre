@@ -37,6 +37,7 @@ private:
     friend class RGBLEDStripMode;
     friend class ColorMode;
     friend class AlarmMode;
+    friend class RainbowMode;
 };
 
 class RGBLEDStripMode
@@ -70,9 +71,9 @@ protected:
     int m_B;
 
 private:
-    virtual void activate();
-    virtual void desactivate();
-    virtual void loop();
+    virtual void activate() override;
+    virtual void desactivate() override;
+    virtual void loop() override;
     friend class RGBLEDStrip;
 };
 
@@ -85,8 +86,29 @@ protected:
     unsigned long m_counter;
 
 private:
-    virtual void desactivate();
-    virtual void loop();
+    virtual void desactivate() override;
+    virtual void loop() override;
+    friend class RGBLEDStrip;
+};
+
+class RainbowMode : RGBLEDStripMode
+{
+public:
+    RainbowMode(String friendlyName, RGBLEDStrip &strip);
+    virtual void setAnimationSpeed(int speed);
+    virtual int getAnimationSpeed();
+
+protected:
+    unsigned long m_counter;
+    int m_step;
+    int m_increment;
+    int m_delay;
+    int m_speed;
+
+private:
+    virtual void activate() override;
+    virtual void desactivate() override;
+    virtual void loop() override;
     friend class RGBLEDStrip;
 };
 

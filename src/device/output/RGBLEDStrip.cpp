@@ -236,3 +236,75 @@ void AlarmMode::loop()
         m_strip.setColor(0, 0, 0);
     }
 }
+
+RainbowMode::RainbowMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_counter(0), m_step(0), m_increment(1), m_delay(10), m_speed(0) {}
+
+void RainbowMode::setAnimationSpeed(int speed)
+{
+    if (speed < 0)
+        speed = 0;
+
+    if (speed > 100)
+        speed = 100;
+
+    m_speed = speed;
+
+    m_increment = map(speed, 0, 100, 1, 20);
+    m_delay = map(speed, 0, 100, 10, 1);
+}
+
+int RainbowMode::getAnimationSpeed()
+{
+    return m_speed;
+}
+
+void RainbowMode::activate()
+{
+    RGBLEDStripMode::activate();
+
+    m_strip.setColor(0, 0, 255);
+
+    m_counter = millis();
+}
+
+void RainbowMode::desactivate()
+{
+    RGBLEDStripMode::desactivate();
+
+    m_counter = 0;
+    m_step = 0;
+}
+
+void RainbowMode::loop()
+{
+    unsigned long actualTime = millis();
+
+    if ((actualTime - m_counter) < m_speed)
+        return;
+
+    m_counter = actualTime;
+
+    if (m_step == 0)
+    {
+        m_strip.setColor(m_strip.getR() + m_increment, m_strip.getG(), m_strip.getB() - m_increment);
+
+        if (m_strip.getR() >= 255 - m_increment)
+            m_step = 1;
+    }
+
+    else if (m_step == 1)
+    {
+        m_strip.setColor(m_strip.getR() - m_increment, m_strip.getG() + m_increment, m_strip.getB());
+
+        if (m_strip.getG() >= 255 - m_increment)
+            m_step = 2;
+    }
+
+    else if (m_step == 2)
+    {
+        m_strip.setColor(m_strip.getR(), m_strip.getG() - m_increment, m_strip.getB() + m_increment);
+
+        if (m_strip.getB() >= 255 - m_increment)
+            m_step = 0;
+    }
+}

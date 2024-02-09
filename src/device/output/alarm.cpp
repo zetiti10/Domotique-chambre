@@ -13,9 +13,9 @@
 // Autres fichiers du programme.
 #include "alarm.hpp"
 #include "../../logger.hpp"
-#include "../../buzzer.hpp"
+#include "../buzzer.hpp"
 
-Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, int alarmRelayPin, boolean buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_missileLauncher(missileLauncher), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
+Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, Buzzer &buzzer, int alarmRelayPin, boolean buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(missileLauncher), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
 
 void Alarm::setup()
 {
@@ -26,6 +26,7 @@ void Alarm::setup()
     m_doorLED.setup();
     m_beacon.setup();
     m_strip.setup();
+    m_buzzer.setup();
 
     if (!m_missileLauncher.begin())
         sendLogMessage(WARN, "Le lance-missile n'a pas pu être initialisé lors de l'initialisation de l'alarme '" + m_friendlyName + "'.");
@@ -49,6 +50,8 @@ void Alarm::turnOn(boolean shareInformation)
 {
     if (!m_operational || m_locked || m_state || m_cardToStoreState || m_strip.isLocked() || m_beacon.isLocked())
         return;
+
+    m_previousMode = &m_strip.getMode();
 
     m_doorLED.turnOn();
     m_beacon.turnOff();
@@ -77,6 +80,8 @@ void Alarm::turnOff(boolean shareInformation)
     m_doorLED.unLock();
     m_beacon.unLock();
     m_strip.unLock();
+
+    m_strip.setMode(*m_previousMode);
 
     m_doorLED.turnOff();
 
@@ -118,7 +123,7 @@ void Alarm::loop()
 
             else if (checkCard(uid))
             {
-                yesSound();
+                m_buzzer.yesSound();
 
                 if (m_isRinging)
                     stopRinging();
@@ -147,7 +152,7 @@ void Alarm::storeCard()
 
     sendLogMessage(INFO, "Le système de domotique est prêt a enregistrer une nouvelle carte.");
     m_display.displayMessage("Presentez la carte a enregistrer.");
-    yesSound();
+    m_buzzer.yesSound();
 }
 
 void Alarm::storeCard(uint8_t card[4])
@@ -156,7 +161,7 @@ void Alarm::storeCard(uint8_t card[4])
     {
         sendLogMessage(ERROR, "Cette carte est déjà enregistrée dans le système.");
         m_display.displayMessage("Cette carte a deja ete enregistree.", "Erreur");
-        noSound();
+        m_buzzer.noSound();
         return;
     }
 
@@ -169,7 +174,7 @@ void Alarm::storeCard(uint8_t card[4])
 
     sendLogMessage(INFO, "La carte a été enregistrée dans le système.");
     m_display.displayMessage("La carte a ete enregistree dans le systeme.");
-    yesSound();
+    m_buzzer.yesSound();
 }
 
 void Alarm::removeCards()
@@ -186,7 +191,7 @@ void Alarm::removeCards()
 
     sendLogMessage(INFO, "Les cartes enregistrées ont été supprimées.");
     m_display.displayMessage("Les cartes enregistrees ont ete supprimees.");
-    yesSound();
+    m_buzzer.yesSound();
 }
 
 void Alarm::trigger()
@@ -219,6 +224,22 @@ void Alarm::trigger()
     m_strip.lock();
 
     m_isRinging = true;
+    m_autoTriggerOffCounter = millis();
+
+    m_missileLauncher.absoluteMove(BASE, 110);
+    m_missileLauncher.absoluteMove(ANGLE, 10);
+
+    int baseAngle = 0;
+    int angleAngle = 0;
+    m_missileLauncher.getPosition(baseAngle, angleAngle);
+
+    if (baseAngle < 45)
+        delay(2000);
+
+    m_missileLauncher.launchMissile(3);
+
+    sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' a été déclenchée.");
+    m_display.displayAlarmTriggered(false);
 }
 
 void Alarm::stopRinging()

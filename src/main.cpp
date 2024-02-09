@@ -15,6 +15,7 @@
 #include "pinDefinitions.hpp"
 #include "device/device.hpp"
 #include "device/display.hpp"
+#include "device/buzzer.hpp"
 #include "device/output/binaryOutput.hpp"
 #include "device/output/tray.hpp"
 #include "device/output/alarm.hpp"
@@ -28,6 +29,7 @@ MissileLauncher missileLauncher(&Serial3);
 
 // Instanciation des périphériques du système.
 Display display("Écran");
+Buzzer buzzer("Buzzer", PIN_BUZZER);
 Tray tray("Plateau", display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
 BinaryOutput LEDCube("Cube de DEL", display, PIN_LED_CUBE_RELAY);
 BinaryOutput disco("Lampes discothèque", display, PIN_DISCO_RELAY);
@@ -37,16 +39,20 @@ BinaryOutput street("Maquette de rue", display, PIN_STREET_RELAY);
 BinaryOutput deskLight("Lampe du bureau", display, PIN_DESK_LIGHT_RELAY);
 BinaryOutput doorLED("DEL de la porte", display, PIN_DOOR_LED);
 RGBLEDStrip LEDStrip("Ruban de DEL", display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
-Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, missileLauncher, PIN_ALARM_RELAY, true);
+Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, missileLauncher, buzzer, PIN_ALARM_RELAY, true);
+// TV.
+
 WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
 DoorSensor doorSensor("Capteur de la porte de la chambre", PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
 BinaryInput presenceSensor("Capteur de présence", PIN_MOTION_SENSOR, false, false);
-Doorbell doorbell("Sonnette", PIN_DOORBELL_BUTTON, false, false, display);
+Doorbell doorbell("Sonnette", PIN_DOORBELL_BUTTON, false, false, display, buzzer);
 AnalogInput lightSensor("Capteur de luminosité", PIN_LIGHT_SENSOR);
+AnalogInput microphone("Microphone", PIN_MICROPHONE);
 AirSensor airSensor("Capteur de l'air", PIN_AIR_SENSOR);
 IRSensor iRSensor("Capteur infrarouge", PIN_IR_SENSOR);
 
 ColorMode colorMode("Mode couleur unique", LEDStrip);
+// Modes.
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
 Device *deviceList[] = {&display, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &airSensor, &iRSensor};

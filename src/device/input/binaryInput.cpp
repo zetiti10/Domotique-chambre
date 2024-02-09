@@ -11,7 +11,7 @@
 
 // Autres fichiers du programme.
 #include "binaryInput.hpp"
-#include "../../buzzer.hpp"
+#include "../buzzer.hpp"
 #include "../../logger.hpp"
 
 BinaryInput::BinaryInput(String friendlyName, int pin, boolean revert, boolean pullup) : Input(friendlyName), m_state(false), m_pin(pin), m_reverted(revert), m_pullup(pullup) {}
@@ -92,13 +92,16 @@ void DoorSensor::loop()
     }
 }
 
-Doorbell::Doorbell(String friendlyName, int pin, boolean revert, boolean pullup, Display &display) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display) {}
+Doorbell::Doorbell(String friendlyName, int pin, boolean revert, boolean pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_delay(0) {}
 
 void Doorbell::setup()
 {
     BinaryInput::setup();
 
     m_display.setup();
+    m_buzzer.setup();
+
+    m_delay = millis();
 
     if (!m_display.getAvailability())
         sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de la sonnette '" + m_friendlyName + "'.");
@@ -106,10 +109,12 @@ void Doorbell::setup()
 
 void Doorbell::loop()
 {
-    if (getState())
+    if (getState() && ((millis() - 10000) >= m_delay))
     {
-        doorbellMusic();
+        m_buzzer.doorbellMusic();
 
-        sendLogMessage(INFO, "La sonnette a été déclenchée par le bouton de sonnette '" + m_friendlyName + "'.");
+        m_delay = millis();
+
+        sendLogMessage(INFO, "La sonnette '" + m_buzzer.getFriendlyName() + "' a été déclenchée par le bouton de sonnette '" + m_friendlyName + "'.");
     }
 }

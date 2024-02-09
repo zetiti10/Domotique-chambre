@@ -12,11 +12,12 @@
 #include "binaryOutput.hpp"
 #include "../display.hpp"
 #include "RGBLEDStrip.hpp"
+#include "../buzzer.hpp"
 
 class Alarm : public Output
 {
 public:
-    Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, int alarmRelayPin, boolean buzzerState);
+    Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, Buzzer &buzzer, int alarmRelayPin, boolean buzzerState);
     virtual void setup() override;
     virtual void turnOn(boolean shareInformation = false) override;
     virtual void turnOff(boolean shareInformation = false) override;
@@ -36,7 +37,9 @@ protected:
     BinaryOutput &m_beacon;
     RGBLEDStrip &m_strip;
     AlarmMode m_alarmStripMode;
+    RGBLEDStripMode *m_previousMode;
     MissileLauncher &m_missileLauncher;
+    Buzzer &m_buzzer;
     int m_alarmRelayPin;
     boolean m_isRinging;
     boolean m_buzzerState;

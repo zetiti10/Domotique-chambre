@@ -131,9 +131,9 @@ void Alarm::loop()
                 else
                     toggle();
             }
-
-            m_cardCounter = millis();
         }
+
+        m_cardCounter = millis();
     }
 
     if (!m_isRinging)

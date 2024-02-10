@@ -137,9 +137,9 @@ void RGBLEDStrip::setColor(int r, int g, int b)
         m_GState = g;
         m_BState = b;
 
-        digitalWrite(m_RPin, r);
-        digitalWrite(m_GPin, g);
-        digitalWrite(m_BPin, b);
+        analogWrite(m_RPin, r);
+        analogWrite(m_GPin, g);
+        analogWrite(m_BPin, b);
     }
 }
 
@@ -249,8 +249,8 @@ void RainbowMode::setAnimationSpeed(int speed)
 
     m_speed = speed;
 
-    m_increment = map(speed, 0, 100, 1, 20);
-    m_delay = map(speed, 0, 100, 10, 1);
+    m_increment = map(speed, 0, 100, 1, 10);
+    m_delay = map(speed, 0, 100, 100, 5);
 }
 
 int RainbowMode::getAnimationSpeed()
@@ -277,9 +277,10 @@ void RainbowMode::desactivate()
 
 void RainbowMode::loop()
 {
+
     unsigned long actualTime = millis();
 
-    if ((actualTime - m_counter) < m_speed)
+    if ((actualTime - m_counter) < m_delay)
         return;
 
     m_counter = actualTime;

@@ -18,6 +18,9 @@ Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64,
 
 void Display::setup()
 {
+    if (m_operational)
+        return;
+
     if (m_display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
     {
         m_display.clearDisplay();

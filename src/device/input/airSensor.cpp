@@ -41,7 +41,7 @@ void AirSensor::setup()
 
 void AirSensor::loop()
 {
-    if (m_operational && ((millis() - m_lastMeasure) >= 10000))
+    if (m_operational && ((millis() - m_lastMeasure) >= 60000))
     {
         sensors_event_t event;
         m_sensor.temperature().getEvent(&event);

@@ -82,6 +82,9 @@ byte keypadRowPins[KEYPAD_ROWS] = {31, 33, 35, 37};
 byte keypadColPins[KEYPAD_COLS] = {30, 32, 34, 36};
 Adafruit_Keypad keypad = Adafruit_Keypad(makeKeymap(keypadKeys), keypadRowPins, keypadColPins, KEYPAD_ROWS, KEYPAD_COLS);
 
+int counter = 0;
+unsigned long test = 0;
+
 // Initialisation du système.
 void setup()
 {
@@ -100,6 +103,10 @@ void setup()
         deviceList[i]->setup();
 
     sendLogMessage(INFO, "Initialisation terminée.");
+
+    // PROVISOIRE
+    keypad.begin();
+    test = millis();
 }
 
 // Boucle d'exécution des tâches du système.
@@ -146,13 +153,14 @@ void loop()
                 break;
             
             case '8':
-                LEDStrip.setMode(colorMode);
+                rainbowMode.setAnimationSpeed(1);
+                LEDStrip.setMode(rainbowMode);
                 LEDStrip.toggle(true);
                 colorMode.setColor(255, 255, 255);
                 break;
 
             case '9':
-                television.toggle(true);
+                rainbowMode.setAnimationSpeed(100);
                 break;
             
             default:
@@ -160,4 +168,18 @@ void loop()
             }
         }
     }
+
+    display.loop();
+    alarm.loop();
+    LEDStrip.loop();
+
+    /*if ((millis() - 1000) >= test)
+    {
+        sendLogMessage(HIGHLIGHT, "Itérations / seconde : " + String(counter));
+        counter = 0;
+        test = millis();
+    }
+
+    else
+        counter++;*/
 }

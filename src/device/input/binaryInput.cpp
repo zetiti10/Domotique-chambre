@@ -111,6 +111,7 @@ void Doorbell::loop()
 {
     if (getState() && ((millis() - 10000) >= m_delay))
     {
+        m_display.displayBell();
         m_buzzer.doorbellMusic();
 
         m_delay = millis();

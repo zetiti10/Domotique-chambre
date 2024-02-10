@@ -91,7 +91,7 @@ private:
     friend class RGBLEDStrip;
 };
 
-class RainbowMode : RGBLEDStripMode
+class RainbowMode : public RGBLEDStripMode
 {
 public:
     RainbowMode(String friendlyName, RGBLEDStrip &strip);

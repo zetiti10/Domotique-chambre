@@ -35,7 +35,7 @@ void RGBLEDStrip::turnOn(boolean shareInformation)
 
     if (m_mode == nullptr)
     {
-        sendLogMessage(ERROR, "Le ruban de DEL RVB '" + m_friendlyName + "' n'a pas pu être allumé car aucun mode n'est sélctionné.");
+        sendLogMessage(ERROR, "Le ruban de DEL RVB '" + m_friendlyName + "' n'a pas pu être allumé car aucun mode n'est sélectionné.");
         return;
     }
 

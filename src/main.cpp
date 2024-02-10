@@ -10,6 +10,7 @@
 #include <Arduino.h>
 #include <IRremote.hpp>
 #include <missileLauncher.hpp>
+#include <Adafruit_Keypad.h>
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
@@ -31,6 +32,7 @@ MissileLauncher missileLauncher(&Serial3);
 // Instanciation des périphériques du système.
 Display display("Écran");
 Buzzer buzzer("Buzzer", PIN_BUZZER);
+
 Tray tray("Plateau", display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
 BinaryOutput LEDCube("Cube de DEL", display, PIN_LED_CUBE_RELAY);
 BinaryOutput disco("Lampes discothèque", display, PIN_DISCO_RELAY);
@@ -53,11 +55,32 @@ AirSensor airSensor("Capteur de l'air", PIN_AIR_SENSOR);
 IRSensor iRSensor("Capteur infrarouge", PIN_IR_SENSOR);
 
 ColorMode colorMode("Mode couleur unique", LEDStrip);
-// Modes.
+RainbowMode rainbowMode("Mode arc-en-ciel", LEDStrip);
+// Mode son-réaction.
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
 Device *deviceList[] = {&display, &buzzer, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
 int devicesNumber = 21;
+
+// Création d'une liste contenant des références vers tous les capteurs.
+Input *inputList[] = {&wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &lightSensor, &microphone, &airSensor, &iRSensor};
+int inputsNumber = 9;
+
+// Création d'une liste contenant des références vers tous les actionneurs.
+Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television};
+int outputsNumber = 11;
+
+// PROVISOIRE : création du clavier pour contrôler le système.
+const byte KEYPAD_ROWS = 4;
+const byte KEYPAD_COLS = 4;
+char keypadKeys[KEYPAD_ROWS][KEYPAD_COLS] = {
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'}};
+byte keypadRowPins[KEYPAD_ROWS] = {31, 33, 35, 37};
+byte keypadColPins[KEYPAD_COLS] = {30, 32, 34, 36};
+Adafruit_Keypad keypad = Adafruit_Keypad(makeKeymap(keypadKeys), keypadRowPins, keypadColPins, KEYPAD_ROWS, KEYPAD_COLS);
 
 // Initialisation du système.
 void setup()
@@ -82,4 +105,59 @@ void setup()
 // Boucle d'exécution des tâches du système.
 void loop()
 {
+    for (int i = 0; i < inputsNumber; i++)
+        inputList[i]->loop();
+    
+    keypad.tick();
+    while (keypad.available())
+    {
+        keypadEvent e = keypad.read();
+
+        if (e.bit.EVENT == KEY_JUST_PRESSED)
+        {
+            switch (e.bit.KEY)
+            {
+            case '1':
+                tray.toggle(true);
+                break;
+
+            case '2':
+                LEDCube.toggle(true);
+                break;
+            
+            case '3':
+                disco.toggle(true);
+                break;
+            
+            case '4':
+                beacon.toggle(true);
+                break;
+            
+            case '5':
+                street.toggle(true);
+                break;
+            
+            case '6':
+                deskLight.toggle(true);
+                break;
+            
+            case '7':
+                doorLED.toggle(true);
+                break;
+            
+            case '8':
+                LEDStrip.setMode(colorMode);
+                LEDStrip.toggle(true);
+                colorMode.setColor(255, 255, 255);
+                break;
+
+            case '9':
+                television.toggle(true);
+                break;
+            
+            default:
+                break;
+            }
+        }
+    }
 }

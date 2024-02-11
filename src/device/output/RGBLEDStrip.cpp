@@ -216,31 +216,31 @@ void ColorMode::desactivate()
 
 void ColorMode::loop() {}
 
-AlarmMode::AlarmMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_counter(0) {}
+AlarmMode::AlarmMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_lastTime(0) {}
 
 void AlarmMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
 
-    m_counter = 0;
+    m_lastTime = 0;
 }
 
 void AlarmMode::loop()
 {
-    if ((millis() - m_counter) >= 200 && (millis() - m_counter) <= 300)
+    if ((millis() - m_lastTime) >= 200 && (millis() - m_lastTime) <= 300)
     {
-        m_counter += 100;
+        m_lastTime += 100;
         m_strip.setColor(255, 0, 0);
     }
 
-    else if ((millis() - m_counter) >= 400)
+    else if ((millis() - m_lastTime) >= 400)
     {
-        m_counter = millis();
+        m_lastTime = millis();
         m_strip.setColor(0, 0, 0);
     }
 }
 
-RainbowMode::RainbowMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_counter(0), m_step(0), m_increment(1), m_delay(10), m_speed(0) {}
+RainbowMode::RainbowMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(0) {}
 
 void RainbowMode::setAnimationSpeed(int speed)
 {
@@ -267,14 +267,14 @@ void RainbowMode::activate()
 
     m_strip.setColor(0, 0, 255);
 
-    m_counter = millis();
+    m_lastTime = millis();
 }
 
 void RainbowMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
 
-    m_counter = 0;
+    m_lastTime = 0;
     m_step = 0;
 }
 
@@ -283,10 +283,10 @@ void RainbowMode::loop()
 
     unsigned long actualTime = millis();
 
-    if ((actualTime - m_counter) < (unsigned long)m_delay)
+    if ((actualTime - m_lastTime) < (unsigned long)m_delay)
         return;
 
-    m_counter = actualTime;
+    m_lastTime = actualTime;
 
     if (m_step == 0)
     {

@@ -95,7 +95,7 @@ void DoorSensor::loop()
     }
 }
 
-Doorbell::Doorbell(String friendlyName, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_delay(0) {}
+Doorbell::Doorbell(String friendlyName, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_lastTime(0) {}
 
 void Doorbell::setup()
 {
@@ -104,7 +104,7 @@ void Doorbell::setup()
     m_display.setup();
     m_buzzer.setup();
 
-    m_delay = millis();
+    m_lastTime = millis();
 
     if (!m_display.getAvailability())
         sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de la sonnette '" + m_friendlyName + "'.");
@@ -112,12 +112,12 @@ void Doorbell::setup()
 
 void Doorbell::loop()
 {
-    if (getState() && ((millis() - 10000) >= m_delay))
+    if (getState() && ((millis() - m_lastTime) >= 10000))
     {
         m_display.displayBell();
         m_buzzer.doorbellMusic();
 
-        m_delay = millis();
+        m_lastTime = millis();
 
         sendLogMessage(INFO, "La sonnette '" + m_buzzer.getFriendlyName() + "' a été déclenchée par le bouton de sonnette '" + m_friendlyName + "'.");
     }

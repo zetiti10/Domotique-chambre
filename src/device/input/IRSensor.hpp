@@ -19,7 +19,7 @@ public:
 protected:
     const int m_pin;
     IRrecv m_sensor;
-    unsigned long m_counter;
+    unsigned long m_lastTime;
 };
 
 #endif

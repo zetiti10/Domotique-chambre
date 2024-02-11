@@ -13,7 +13,7 @@
 #include "IRSensor.hpp"
 #include "../../logger.hpp"
 
-IRSensor::IRSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin), m_counter(0) {}
+IRSensor::IRSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
 
 void IRSensor::setup()
 {
@@ -22,7 +22,7 @@ void IRSensor::setup()
 
     m_sensor.enableIRIn();
 
-    m_counter = millis();
+    m_lastTime = millis();
 
     m_operational = true;
 
@@ -31,9 +31,9 @@ void IRSensor::setup()
 
 void IRSensor::loop()
 {
-    if (m_operational && m_sensor.decode() && ((millis() - m_counter) >= 250))
+    if (m_operational && m_sensor.decode() && ((millis() - m_lastTime) >= 250))
     {
-        m_counter = millis();
+        m_lastTime = millis();
 
         switch (m_sensor.decodedIRData.decodedRawData)
         {

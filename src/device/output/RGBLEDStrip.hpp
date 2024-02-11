@@ -83,7 +83,7 @@ public:
     AlarmMode(String friendlyName, RGBLEDStrip &strip);
 
 protected:
-    unsigned long m_counter;
+    unsigned long m_lastTime;
 
 private:
     virtual void desactivate() override;
@@ -99,7 +99,7 @@ public:
     virtual int getAnimationSpeed();
 
 protected:
-    unsigned long m_counter;
+    unsigned long m_lastTime;
     int m_step;
     int m_increment;
     int m_delay;

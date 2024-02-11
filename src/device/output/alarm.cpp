@@ -15,7 +15,7 @@
 #include "../../logger.hpp"
 #include "../buzzer.hpp"
 
-Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(missileLauncher), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
+Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
 
 void Alarm::setup()
 {
@@ -117,7 +117,7 @@ bool Alarm::checkCard(uint8_t card[4])
 
 void Alarm::loop()
 {
-    if ((millis() - m_cardCounter) >= 1000)
+    if ((millis() - m_lastTimeCardChecked) >= 1000)
     {
         uint8_t uid[] = {0, 0, 0, 0, 0};
         uint8_t uidLength;
@@ -142,13 +142,13 @@ void Alarm::loop()
             }
         }
 
-        m_cardCounter = millis();
+        m_lastTimeCardChecked = millis();
     }
 
     if (!m_isRinging)
         return;
 
-    if ((millis() - m_autoTriggerOffCounter) >= 5000)
+    if ((millis() - m_lastTimeAutoTriggerOff) >= 5000)
         stopRinging();
 }
 
@@ -233,7 +233,7 @@ void Alarm::trigger()
     m_strip.lock();
 
     m_isRinging = true;
-    m_autoTriggerOffCounter = millis();
+    m_lastTimeAutoTriggerOff = millis();
 
     m_missileLauncher.absoluteMove(BASE, 110);
     m_missileLauncher.absoluteMove(ANGLE, 10);
@@ -269,4 +269,9 @@ void Alarm::stopRinging()
     m_strip.lock();
 
     m_isRinging = true;
+}
+
+MissileLauncher &Alarm::getMissileLauncher()
+{
+    return m_missileLauncher;
 }

@@ -17,7 +17,7 @@
 class Alarm : public Output
 {
 public:
-    Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
+    Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
@@ -26,6 +26,7 @@ public:
     virtual void removeCards();
     virtual void trigger();
     virtual void stopRinging();
+    virtual MissileLauncher &getMissileLauncher();
 
 protected:
     virtual bool checkCard(uint8_t card[4]);
@@ -38,13 +39,13 @@ protected:
     RGBLEDStrip &m_strip;
     AlarmMode m_alarmStripMode;
     RGBLEDStripMode *m_previousMode;
-    MissileLauncher &m_missileLauncher;
+    MissileLauncher m_missileLauncher;
     Buzzer &m_buzzer;
     const int m_alarmRelayPin;
     bool m_isRinging;
     bool m_buzzerState;
-    unsigned long m_autoTriggerOffCounter;
-    unsigned long m_cardCounter;
+    unsigned long m_lastTimeAutoTriggerOff;
+    unsigned long m_lastTimeCardChecked;
     bool m_cardToStoreState;
 };
 

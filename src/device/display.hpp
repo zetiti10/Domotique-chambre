@@ -21,7 +21,7 @@ class Display : public Device
 public:
     Display(String friendlyName);
     virtual void setup() override;
-    virtual void displayUnavailableDevices();
+    virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
     virtual void displayBell();
     virtual void displayMessage(String message, String title = "Info");
     virtual void displayVolume(volumeType action = UNMUTE, int volume = 0);
@@ -36,7 +36,7 @@ public:
 
 protected:
     Adafruit_SSD1306 m_display;
-    unsigned long m_displayCounter;
+    unsigned long m_lastTime;
 };
 
 #endif

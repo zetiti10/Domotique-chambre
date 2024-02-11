@@ -22,7 +22,7 @@ protected:
     DHT_Unified m_sensor;
     float m_temperature;
     float m_humidity;
-    unsigned long m_lastMeasure;
+    unsigned long m_lastTime;
 };
 
 #endif

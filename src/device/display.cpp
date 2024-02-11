@@ -14,7 +14,7 @@
 #include "../logger.hpp"
 #include "../bitmaps.hpp"
 
-Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1), m_displayCounter(0) {}
+Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1), m_lastTime(0) {}
 
 void Display::setup()
 {
@@ -36,20 +36,64 @@ void Display::setup()
         sendLogMessage(ERROR, "La communication avec l'écran '" + m_friendlyName + "' n'a pas pu être est initialisée.");
 }
 
-void Display::displayUnavailableDevices()
+void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber)
 {
+    if (!m_operational)
+        return;
+
+    m_display.clearDisplay();
+    m_display.setTextSize(1);
+    m_display.setTextColor(WHITE);
+    m_display.setCursor(0, 0);
+
+    int counter = 0;
+
+    for (int i = 0; i < devicesNumber; i++)
+    {
+        if (!deviceList[i]->getAvailability())
+        {
+            m_display.setCursor(0, counter * 10);
+            m_display.println(deviceList[i]->getFriendlyName());
+            counter++;
+        }
+    }
+
+    if (counter == 0)
+    {
+        displayMessage("Initialisation terminee sans erreur.");
+    }
+
+    else
+    {
+        m_display.display();
+
+        if (counter > 5)
+            m_display.startscrollright(0x00, 0x0F);
+
+        delay(500 * (counter - 5));
+
+        m_display.stopscroll();
+
+        m_lastTime = millis();
+    }
 }
 
 void Display::displayBell()
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, bellBitmap, 128, 64, WHITE);
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayMessage(String message, String title)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
 
     m_display.setCursor(0, 0);
@@ -61,11 +105,14 @@ void Display::displayMessage(String message, String title)
     m_display.print(message);
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayVolume(volumeType action, int volume)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
 
     if (action == DECREASE)
@@ -93,11 +140,14 @@ void Display::displayVolume(volumeType action, int volume)
     }
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayAlarmTriggered(bool colorsInverted)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, alarmTriggeredBitmap, 128, 64, 1);
 
@@ -108,11 +158,14 @@ void Display::displayAlarmTriggered(bool colorsInverted)
         m_display.invertDisplay(true);
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayAirValues(float temperature, float humidity)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, airBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
@@ -127,11 +180,14 @@ void Display::displayAirValues(float temperature, float humidity)
     m_display.write(0x25);
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDetected)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, luminosityMotionSensorsBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
@@ -148,11 +204,14 @@ void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDet
         m_display.print("NON");
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayLEDState(int r, int g, int b)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
     m_display.setTextSize(2);
 
@@ -172,11 +231,14 @@ void Display::displayLEDState(int r, int g, int b)
     m_display.drawRect(101, 17, 6, 47, WHITE);
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayDeviceState(bool on)
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
 
     if (on == true)
@@ -201,11 +263,14 @@ void Display::displayDeviceState(bool on)
         }
     }
 
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayKeypadMenu()
 {
+    if (!m_operational)
+        return;
+
     m_display.clearDisplay();
     m_display.setTextSize(1);
     m_display.setCursor(0, 0);
@@ -332,11 +397,14 @@ void Display::displayKeypadMenu()
     }*/
 
     m_display.display();
-    m_displayCounter = millis();
+    m_lastTime = millis();
 }
 
 void Display::displayTray(bool shareInformation, bool on)
 {
+    if (!m_operational)
+        return;
+
     if (on)
     {
         m_display.clearDisplay();
@@ -350,7 +418,7 @@ void Display::displayTray(bool shareInformation, bool on)
         }
 
         if (shareInformation)
-            m_displayCounter = millis();
+            m_lastTime = millis();
     }
 
     else
@@ -371,15 +439,15 @@ void Display::displayTray(bool shareInformation, bool on)
         }
 
         if (shareInformation)
-            m_displayCounter = millis();
+            m_lastTime = millis();
     }
 }
 
 void Display::loop()
 {
-    if (m_operational && (m_displayCounter != 0) && ((millis() - m_displayCounter) >= 8000))
+    if (m_operational && (m_lastTime != 0) && ((millis() - m_lastTime) >= 8000))
     {
-        m_displayCounter = 0;
+        m_lastTime = 0;
         m_display.clearDisplay();
         m_display.display();
     }

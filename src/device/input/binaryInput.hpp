@@ -60,7 +60,7 @@ public:
 protected:
     Display &m_display;
     Buzzer &m_buzzer;
-    unsigned long m_delay;
+    unsigned long m_lastTime;
 };
 
 #endif

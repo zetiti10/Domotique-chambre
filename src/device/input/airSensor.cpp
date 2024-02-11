@@ -14,7 +14,7 @@
 #include "airSensor.hpp"
 #include "../../logger.hpp"
 
-AirSensor::AirSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastMeasure(0) {}
+AirSensor::AirSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
 
 void AirSensor::setup()
 {
@@ -36,7 +36,7 @@ void AirSensor::setup()
         m_sensor.humidity().getEvent(&event);
         m_humidity = event.relative_humidity;
 
-        m_lastMeasure = millis();
+        m_lastTime = millis();
 
         sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a été initialisé à la broche " + m_pin + ".");
     }
@@ -44,7 +44,7 @@ void AirSensor::setup()
 
 void AirSensor::loop()
 {
-    if (m_operational && ((millis() - m_lastMeasure) >= 60000))
+    if (m_operational && ((millis() - m_lastTime) >= 60000))
     {
         sensors_event_t event;
         m_sensor.temperature().getEvent(&event);
@@ -62,7 +62,7 @@ void AirSensor::loop()
             m_sensor.humidity().getEvent(&event);
             m_humidity = event.relative_humidity;
 
-            m_lastMeasure = millis();
+            m_lastTime = millis();
 
             sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a récupéré une température de " + m_temperature + "°C, et une humidité relative de " + m_humidity + "%.");
         }

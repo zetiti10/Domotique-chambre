@@ -22,6 +22,8 @@ void Buzzer::setup()
         return;
 
     pinMode(m_pin, OUTPUT);
+
+    m_operational = true;
 }
 
 void Buzzer::clickSound()

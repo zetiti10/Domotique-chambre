@@ -93,6 +93,7 @@ void setup()
         if (!deviceList[i]->getAvailability())
             errors++;
     }
+    display.setup();
 
     // Compte rendu des informations de l'initialisation du système.
     sendLogMessage(INFO, "L'initialisation du système de domotique est terminée. Elle a été effectuée en " + String(millis()) + " milliseconde(s), et " + errors + " erreur(s) ont été détectées.");

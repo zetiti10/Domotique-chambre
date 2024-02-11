@@ -52,7 +52,7 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     {
         if (!deviceList[i]->getAvailability())
         {
-            m_display.setCursor(0, counter * 10);
+            m_display.setCursor(0, counter * 10 + 18);
             m_display.println(deviceList[i]->getFriendlyName());
             counter++;
         }
@@ -65,14 +65,11 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
 
     else
     {
+        m_display.setCursor(0, 0);
+        m_display.setTextSize(2);
+        m_display.print("Erreur(s)");
+
         m_display.display();
-
-        if (counter > 5)
-            m_display.startscrollright(0x00, 0x0F);
-
-        delay(500 * (counter - 5));
-
-        m_display.stopscroll();
 
         m_lastTime = millis();
     }

@@ -8,6 +8,7 @@
 #include "../device.hpp"
 #include "../display.hpp"
 
+// Classe commune à tous les périphériques de sortie (actionneurs).
 class Output : public Device
 {
 public:

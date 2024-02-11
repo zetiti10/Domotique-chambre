@@ -7,6 +7,7 @@
 // Autres fichiers du programme.
 #include "output.hpp"
 
+// Classe gérant un plateau.
 class Tray : public Output
 {
 public:

@@ -14,8 +14,11 @@
 #include "../logger.hpp"
 #include "../bitmaps.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1), m_lastTime(0) {}
 
+/// @brief Initialise l'objet.
 void Display::setup()
 {
     if (m_operational)
@@ -29,13 +32,16 @@ void Display::setup()
 
         m_operational = true;
 
-        sendLogMessage(INFO, "L'écran '" + m_friendlyName + "' est initialisé.");
+        sendLogMessage(INFO, "L'écran '" + m_friendlyName + "' est initialisé sur le port I2C.");
     }
 
     else
-        sendLogMessage(ERROR, "La communication avec l'écran '" + m_friendlyName + "' n'a pas pu être est initialisée.");
+        sendLogMessage(ERROR, "La communication avec l'écran '" + m_friendlyName + "' n'a pas pu être est initialisée sur le port I2C.");
 }
 
+/// @brief Affiche la liste des périphériques indisponibles.
+/// @param deviceList Un pointeur vers la liste à vérifier.
+/// @param devicesNumber Le nombre d'éléments de la liste.
 void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber)
 {
     if (!m_operational)
@@ -46,6 +52,7 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     m_display.setTextColor(WHITE);
     m_display.setCursor(0, 0);
 
+    // Vérification pour chaque périphérique de la liste s'il est indisponible.
     int counter = 0;
 
     for (int i = 0; i < devicesNumber; i++)
@@ -58,11 +65,13 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
         }
     }
 
+    // Si aucune erreur n'a été détectée, affichage d'un message.
     if (counter == 0)
     {
         displayMessage("Initialisation terminee sans erreur.");
     }
 
+    // Affichage de la liste des périphériques indisponibles.
     else
     {
         m_display.setCursor(0, 0);
@@ -73,8 +82,11 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
 
         m_lastTime = millis();
     }
+
+    sendLogMessage(INFO, "Affichage de la liste des périphériques indisponibles à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche un pictogramme de cloche à l'écran.
 void Display::displayBell()
 {
     if (!m_operational)
@@ -84,8 +96,13 @@ void Display::displayBell()
     m_display.drawBitmap(0, 0, bellBitmap, 128, 64, WHITE);
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage du pictogramme de cloche à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche un message à l'écran avec un gros titre.
+/// @param message Le message à afficher.
+/// @param title Le titre du message (par défaut `INFO`).
 void Display::displayMessage(String message, String title)
 {
     if (!m_operational)
@@ -103,15 +120,21 @@ void Display::displayMessage(String message, String title)
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage du message '" + title + "' - '" + message + "' à l'écran '" + m_friendlyName + "'.");
 }
 
-void Display::displayVolume(volumeType action, int volume)
+/// @brief Affiche le volume actuel.
+/// @param action Le type de message à afficher (modifie le picrogramme ainsi que les informations affichées ; par défaut, le volume actuel).
+/// @param volume Le volume actuel (par défaut `0`, pour les actions qui n'affichent pas le volume actuel).
+void Display::displayVolume(VolumeType action, int volume)
 {
     if (!m_operational)
         return;
 
     m_display.clearDisplay();
 
+    // Affichage d'un pictogramme en fonction de l'action sélectionnée.
     if (action == DECREASE)
         m_display.drawBitmap(0, 0, volumeDecreaseBitmap, 128, 64, WHITE);
 
@@ -124,6 +147,7 @@ void Display::displayVolume(volumeType action, int volume)
     else if (action == UNMUTE)
         m_display.drawBitmap(0, 0, unmuteBitmap, 128, 64, WHITE);
 
+    // Affichage du volume selon le mode sélectionné.
     if (action == DECREASE || action == INCREASE || action == UNMUTE)
     {
         m_display.drawRect(50, 52, 27, 3, WHITE);
@@ -138,8 +162,12 @@ void Display::displayVolume(volumeType action, int volume)
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage du volume à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche un pictogramme d'alerte (point d'exclamation).
+/// @param colorsInverted Inversion ou non des couleurs de l'écran.
 void Display::displayAlarmTriggered(bool colorsInverted)
 {
     if (!m_operational)
@@ -156,8 +184,13 @@ void Display::displayAlarmTriggered(bool colorsInverted)
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage du pictogramme d'alerte à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche les valeurs des capteurs de température et d'humidité, avec deux pictogrammes.
+/// @param temperature La valeur de la température à afficher.
+/// @param humidity La valeur de l'humidité à afficher.
 void Display::displayAirValues(float temperature, float humidity)
 {
     if (!m_operational)
@@ -169,17 +202,24 @@ void Display::displayAirValues(float temperature, float humidity)
 
     m_display.setCursor(40, 42);
     m_display.print(temperature);
+    // Code pour insérer un "°".
     m_display.write(0xF8);
     m_display.print("C");
 
     m_display.setCursor(40, 10);
     m_display.print(humidity);
+    // Code pour insérer un "%".
     m_display.write(0x25);
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage des valeurs du capteur de l'air à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche les valeurs des capteurs de luminosité et de mouvement, avec deux pictogrammes.
+/// @param luminosity La valeur de la luminosité à afficher.
+/// @param motionDetected La valeur du capteur de mouvement à afficher.
 void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDetected)
 {
     if (!m_operational)
@@ -202,8 +242,14 @@ void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDet
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage des valeurs du capteur de luminosité et du capteur de mouvement à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche trois jauges correspondant à l'intensité des trois couleurs.
+/// @param r La valeur de l'intensité du rouge.
+/// @param g La valeur de l'intensité du vert.
+/// @param b La valeur de l'intensité du bleu.
 void Display::displayLEDState(int r, int g, int b)
 {
     if (!m_operational)
@@ -229,15 +275,22 @@ void Display::displayLEDState(int r, int g, int b)
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage de l'état du ruban de DEL à l'écran '" + m_friendlyName + "'.");
 }
 
+/// @brief Affiche une animation illustrant la mise en marche ou l'arrêt d'un périphérique.
+/// @param on Mise en marche ou errêt.
 void Display::displayDeviceState(bool on)
 {
     if (!m_operational)
         return;
 
+    sendLogMessage(INFO, "Affichage de l'animation bouton à l'écran '" + m_friendlyName + "'.");
+
     m_display.clearDisplay();
 
+    // Animation de mise en marche.
     if (on == true)
     {
         for (int i = 51; i < 75; i += 4)
@@ -249,6 +302,7 @@ void Display::displayDeviceState(bool on)
         }
     }
 
+    // Animation d'arrêt.
     else
     {
         for (int i = 75; i > 51; i -= 4)
@@ -263,6 +317,7 @@ void Display::displayDeviceState(bool on)
     m_lastTime = millis();
 }
 
+/// @brief Affiche les informations sur le menu sélectionné.
 void Display::displayKeypadMenu()
 {
     if (!m_operational)
@@ -395,12 +450,19 @@ void Display::displayKeypadMenu()
 
     m_display.display();
     m_lastTime = millis();
+
+    sendLogMessage(INFO, "Affichage des informations sur un menu à l'écran '" + m_friendlyName + "'.");
 }
 
-void Display::displayTray(bool shareInformation, bool on)
+/// @brief Affiche l'animation d'ouverture ou de fermeture du plateau.
+/// @param on Ouverture ou fermeture du plateau.
+/// @param shareInformation Affichage ou non de l'animation (permet d'obtenir un délai sans rien afficher).
+void Display::displayTray(bool on, bool shareInformation)
 {
     if (!m_operational)
         return;
+
+    sendLogMessage(INFO, "Affichage de l'animation du plateau à l'écran '" + m_friendlyName + "'.");
 
     if (on)
     {
@@ -440,6 +502,7 @@ void Display::displayTray(bool shareInformation, bool on)
     }
 }
 
+/// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps.
 void Display::loop()
 {
     if (m_operational && (m_lastTime != 0) && ((millis() - m_lastTime) >= 8000))
@@ -447,5 +510,7 @@ void Display::loop()
         m_lastTime = 0;
         m_display.clearDisplay();
         m_display.display();
+
+        sendLogMessage(INFO, "Mise en veille de l'écran.");
     }
 }

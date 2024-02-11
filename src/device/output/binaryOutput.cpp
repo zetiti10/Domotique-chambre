@@ -13,8 +13,13 @@
 #include "binaryOutput.hpp"
 #include "../../logger.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param display L'écran à utiliser pour afficher des informations / animations.
+/// @param relayPin La broche de l'Arduino liée au relai qui contrôle le périphérique.
 BinaryOutput::BinaryOutput(String friendlyName, Display &display, int relayPin) : Output(friendlyName, display), m_relayPin(relayPin) {}
 
+/// @brief Initialise l'objet.
 void BinaryOutput::setup()
 {
     if (m_operational)
@@ -26,9 +31,11 @@ void BinaryOutput::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + m_relayPin + ".");
+    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + String(m_relayPin) + ".");
 }
 
+/// @brief Met en marche le périphérique.
+/// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void BinaryOutput::turnOn(bool shareInformation)
 {
     if (m_operational && !m_locked && !m_state)
@@ -44,6 +51,8 @@ void BinaryOutput::turnOn(bool shareInformation)
     }
 }
 
+/// @brief Arrête le périphérique.
+/// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
 void BinaryOutput::turnOff(bool shareInformation)
 {
     if (m_operational && !m_locked && m_state)

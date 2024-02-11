@@ -7,6 +7,7 @@
 // Autres fichiers du programme.
 #include "device.hpp"
 
+// Classe intégrant les méthodes nécessaires pour émettre des sons avec le buzzer.
 class Buzzer : public Device
 {
 public:

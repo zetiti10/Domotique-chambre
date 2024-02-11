@@ -8,7 +8,8 @@
 // Autres fichiers du programme.
 #include "device.hpp"
 
-enum volumeType
+// Types d'affichages pour le volume de la télévision.
+enum VolumeType
 {
     INCREASE,
     DECREASE,
@@ -16,6 +17,7 @@ enum volumeType
     UNMUTE
 };
 
+// Classe regroupant les méthodes de contrôle de l'écran.
 class Display : public Device
 {
 public:
@@ -24,14 +26,14 @@ public:
     virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
     virtual void displayBell();
     virtual void displayMessage(String message, String title = "Info");
-    virtual void displayVolume(volumeType action = UNMUTE, int volume = 0);
+    virtual void displayVolume(VolumeType action = UNMUTE, int volume = 0);
     virtual void displayAlarmTriggered(bool colorsInverted = false);
     virtual void displayAirValues(float temperature, float humidity);
     virtual void displayLuminosityMotionSensorValues(int luminosity, bool motionDetected);
     virtual void displayLEDState(int r, int g, int b);
     virtual void displayDeviceState(bool on);
     virtual void displayKeypadMenu();
-    virtual void displayTray(bool shareInformation, bool on);
+    virtual void displayTray(bool on, bool shareInformation = false);
     virtual void loop();
 
 protected:

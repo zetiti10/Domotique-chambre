@@ -4,6 +4,7 @@
 // Ajout des bibliothèques au programme.
 #include <Arduino.h>
 
+// Classe commune à tous les périphériques du système.
 class Device
 {
 public:

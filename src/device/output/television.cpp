@@ -13,8 +13,14 @@
 #include "television.hpp"
 #include "../../logger.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param display L'écran à utiliser pour afficher des informations / animations.
+/// @param servomotorPin La broche associée à celle du servomoteur.
+/// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 Television::Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin) : Output(friendlyName, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(0), m_volumeMuted(false) {}
 
+/// @brief Initialise l'objet.
 void Television::setup()
 {
     if (m_operational)
@@ -27,9 +33,11 @@ void Television::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est initialisé.");
+    sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est initialisé à la broche du servomoteur " + String(m_servomotorPin) + " et à la broche de la DEL infrarouge " + String(m_IRLEDPin) + ".");
 }
 
+/// @brief Met en marche la télévision.
+/// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void Television::turnOn(bool shareInformation)
 {
     if (m_operational && !m_locked && !m_state)
@@ -46,6 +54,8 @@ void Television::turnOn(bool shareInformation)
     }
 }
 
+/// @brief Arrête la télévision.
+/// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
 void Television::turnOff(bool shareInformation)
 {
     if (m_operational && !m_locked && m_state)
@@ -62,6 +72,8 @@ void Television::turnOff(bool shareInformation)
     }
 }
 
+/// @brief Synchronise le volume virtuel avec celui de la sono.
+/// @param shareInformation Affiche ou non les messages sur l'écran.
 void Television::syncVolume(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
@@ -74,6 +86,8 @@ void Television::syncVolume(bool shareInformation)
         return;
     }
 
+    sendLogMessage(INFO, "Calibration du son de la télévision '" + m_friendlyName + "'...");
+
     if (shareInformation)
         m_display.displayMessage("Calibration du son...");
 
@@ -84,8 +98,12 @@ void Television::syncVolume(bool shareInformation)
 
     if (shareInformation)
         m_display.displayMessage("Calibration terminee !");
+    
+    sendLogMessage(INFO, "Calibration du son de la télévision '" + m_friendlyName + "' terminée.");
 }
 
+/// @brief Augmente le volume de la télévision.
+/// @param shareInformation Affiche ou non l'animation sur l'écran.
 void Television::increaseVolume(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 25))
@@ -103,8 +121,12 @@ void Television::increaseVolume(bool shareInformation)
 
     if (shareInformation)
         m_display.displayVolume(INCREASE, m_volume);
+
+    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été augmenté.");
 }
 
+/// @brief Diminue le volume de la télévision.
+/// @param shareInformation Affiche ou non l'animation sur l'écran.
 void Television::decreaseVolume(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 0))
@@ -122,13 +144,19 @@ void Television::decreaseVolume(bool shareInformation)
 
     if (shareInformation)
         m_display.displayVolume(DECREASE, m_volume);
+
+    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été diminué.");
 }
 
+/// @brief Méthode permettant de récupérer le volume actuel de la télévision.
+/// @return Le volume actuel de la télévision.
 int Television::getVolume()
 {
     return m_volume;
 }
 
+/// @brief Désactive le son de la télévision.
+/// @param shareInformation Affiche ou non l'animation sur l'écran.
 void Television::mute(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
@@ -146,8 +174,12 @@ void Television::mute(bool shareInformation)
 
     if (shareInformation)
         m_display.displayVolume(MUTE, m_volume);
+
+    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été coupé.");
 }
 
+/// @brief Réetablie le son de la télévision.
+/// @param shareInformation Affiche ou non l'animation sur l'écran.
 void Television::unMute(bool shareInformation)
 {
     if (!m_state || m_locked || !m_volumeMuted || !m_operational)
@@ -165,8 +197,12 @@ void Television::unMute(bool shareInformation)
 
     if (shareInformation)
         m_display.displayVolume(UNMUTE, m_volume);
+
+    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été réetabli.");
 }
 
+/// @brief Bascule le son de la télévision.
+/// @param shareInformation Affiche ou non l'animation sur l'écran.
 void Television::toggleMute(bool shareInformation)
 {
     if (m_volumeMuted)
@@ -176,6 +212,8 @@ void Television::toggleMute(bool shareInformation)
         mute();
 }
 
+/// @brief Méthode permettant de récupérer l'état actuel du mode sourdinne de la télévision.
+/// @return L'état actuel du mode sourdinne de la télévision.
 bool Television::getMute()
 {
     return m_volumeMuted;

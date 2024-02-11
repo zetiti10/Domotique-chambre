@@ -7,6 +7,7 @@
 // Autres fichiers du programme.
 #include "output.hpp"
 
+// Classe représentant un périphérique de sortie basique.
 class BinaryOutput : public Output
 {
 public:

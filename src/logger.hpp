@@ -4,7 +4,7 @@
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 
-extern boolean loggerEnabled;
+extern bool loggerEnabled;
 
 // Liste des types de message disponibles.
 enum messageType

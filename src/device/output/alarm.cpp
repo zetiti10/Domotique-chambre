@@ -15,10 +15,13 @@
 #include "../../logger.hpp"
 #include "../buzzer.hpp"
 
-Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, Buzzer &buzzer, int alarmRelayPin, boolean buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(missileLauncher), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
+Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, MissileLauncher &missileLauncher, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(missileLauncher), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_autoTriggerOffCounter(0), m_cardCounter(0), m_cardToStoreState(false) {}
 
 void Alarm::setup()
 {
+    if (m_operational)
+        return;
+
     Output::setup();
 
     pinMode(m_alarmRelayPin, OUTPUT);
@@ -29,7 +32,10 @@ void Alarm::setup()
     m_buzzer.setup();
 
     if (!m_missileLauncher.begin())
-        sendLogMessage(WARN, "Le lance-missile n'a pas pu être initialisé lors de l'initialisation de l'alarme '" + m_friendlyName + "'.");
+    {
+        sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lance-missile ne répond pas.");
+        return;
+    }
 
     m_nfcReader.begin();
     m_nfcReader.SAMConfig();
@@ -43,10 +49,13 @@ void Alarm::setup()
     }
 
     else
-        sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lecteur NFC ne répond pas.");
+    {
+        sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lecteur NFC ne répond pas.");
+        return;
+    }
 }
 
-void Alarm::turnOn(boolean shareInformation)
+void Alarm::turnOn(bool shareInformation)
 {
     if (!m_operational || m_locked || m_state || m_cardToStoreState || m_strip.isLocked() || m_beacon.isLocked())
         return;
@@ -69,7 +78,7 @@ void Alarm::turnOn(boolean shareInformation)
     sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est allumée.");
 }
 
-void Alarm::turnOff(boolean shareInformation)
+void Alarm::turnOff(bool shareInformation)
 {
     if (!m_operational || m_locked || !m_state)
         return;
@@ -93,7 +102,7 @@ void Alarm::turnOff(boolean shareInformation)
     sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est éteinte.");
 }
 
-boolean Alarm::checkCard(uint8_t card[4])
+bool Alarm::checkCard(uint8_t card[4])
 {
     int storedCardsNumber = EEPROM.read(0);
 

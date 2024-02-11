@@ -25,13 +25,13 @@ public:
     virtual void displayBell();
     virtual void displayMessage(String message, String title = "Info");
     virtual void displayVolume(volumeType action = UNMUTE, int volume = 0);
-    virtual void displayAlarmTriggered(boolean colorsInverted = false);
+    virtual void displayAlarmTriggered(bool colorsInverted = false);
     virtual void displayAirValues(float temperature, float humidity);
-    virtual void displayLuminosityMotionSensorValues(int luminosity, boolean motionDetected);
+    virtual void displayLuminosityMotionSensorValues(int luminosity, bool motionDetected);
     virtual void displayLEDState(int r, int g, int b);
-    virtual void displayDeviceState(boolean on);
+    virtual void displayDeviceState(bool on);
     virtual void displayKeypadMenu();
-    virtual void displayTray(boolean shareInformation, boolean on);
+    virtual void displayTray(bool shareInformation, bool on);
     virtual void loop();
 
 protected:

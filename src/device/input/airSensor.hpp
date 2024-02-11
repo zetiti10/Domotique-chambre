@@ -18,7 +18,7 @@ public:
     virtual float getHumidity() const;
 
 protected:
-    int m_pin;
+    const int m_pin;
     DHT_Unified m_sensor;
     float m_temperature;
     float m_humidity;

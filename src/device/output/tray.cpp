@@ -17,6 +17,9 @@ Tray::Tray(String friendlyName, Display &display, int motorPin1, int motorPin2, 
 
 void Tray::setup()
 {
+    if (m_operational)
+        return;
+
     pinMode(m_motorPin1, OUTPUT);
     pinMode(m_motorPin2, OUTPUT);
 
@@ -25,7 +28,7 @@ void Tray::setup()
     sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est initialisé aux broches " + m_motorPin1 + " et " + m_motorPin2 + ".");
 }
 
-void Tray::turnOn(boolean shareInformation)
+void Tray::turnOn(bool shareInformation)
 {
     if (m_operational && !m_locked && !m_state)
     {
@@ -45,7 +48,7 @@ void Tray::turnOn(boolean shareInformation)
     }
 }
 
-void Tray::turnOff(boolean shareInformation)
+void Tray::turnOff(bool shareInformation)
 {
     if (m_operational && !m_locked && m_state)
     {

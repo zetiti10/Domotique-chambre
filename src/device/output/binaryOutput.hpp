@@ -12,11 +12,11 @@ class BinaryOutput : public Output
 public:
     BinaryOutput(String friendlyName, Display &display, int relayPin);
     virtual void setup() override;
-    virtual void turnOn(boolean shareInformation = false) override;
-    virtual void turnOff(boolean shareInformation = false) override;
+    virtual void turnOn(bool shareInformation = false) override;
+    virtual void turnOff(bool shareInformation = false) override;
 
 protected:
-    int m_relayPin;
+    const int m_relayPin;
 };
 
 #endif

@@ -17,6 +17,9 @@ AnalogInput::AnalogInput(String friendlyName, int pin) : Input(friendlyName), m_
 
 void AnalogInput::setup()
 {
+    if (m_operational)
+        return;
+
     pinMode(m_pin, INPUT);
 
     m_operational = true;

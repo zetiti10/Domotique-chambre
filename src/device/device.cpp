@@ -19,7 +19,7 @@ String Device::getFriendlyName() const
     return m_friendlyName;
 }
 
-boolean Device::getAvailability() const
+bool Device::getAvailability() const
 {
     return m_operational;
 }

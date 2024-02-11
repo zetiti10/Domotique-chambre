@@ -14,36 +14,36 @@
 class BinaryInput : public Input
 {
 public:
-    BinaryInput(String friendlyName, int pin, boolean revert = false, boolean pullup = false);
+    BinaryInput(String friendlyName, int pin, bool revert = false, bool pullup = false);
     virtual void setup() override;
     virtual void loop() override;
-    virtual boolean getState();
+    virtual bool getState();
 
 protected:
-    boolean m_state;
-    int m_pin;
-    boolean m_reverted;
-    boolean m_pullup;
+    bool m_state;
+    const int m_pin;
+    const bool m_reverted;
+    const bool m_pullup;
 };
 
 class WardrobeDoorSensor : public BinaryInput
 {
 public:
-    WardrobeDoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, BinaryOutput &output);
+    WardrobeDoorSensor(String friendlyName, int pin, bool revert, bool pullup, BinaryOutput &output);
     virtual void loop() override;
     virtual void activate();
     virtual void desactivate();
-    virtual boolean getActivation() const;
+    virtual bool getActivation() const;
 
 protected:
     BinaryOutput &m_output;
-    boolean m_activated;
+    bool m_activated;
 };
 
 class DoorSensor : public BinaryInput
 {
 public:
-    DoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, Alarm &alarm);
+    DoorSensor(String friendlyName, int pin, bool revert, bool pullup, Alarm &alarm);
     virtual void loop();
 
 protected:
@@ -53,7 +53,7 @@ protected:
 class Doorbell : public BinaryInput
 {
 public:
-    Doorbell(String friendlyName, int pin, boolean revert, boolean pullup, Display &display, Buzzer &buzzer);
+    Doorbell(String friendlyName, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer);
     virtual void setup() override;
     virtual void loop() override;
 

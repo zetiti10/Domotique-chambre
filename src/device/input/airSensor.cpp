@@ -14,10 +14,13 @@
 #include "airSensor.hpp"
 #include "../../logger.hpp"
 
-AirSensor::AirSensor(String friendlyName, int pin) : Input(friendlyName), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0) {}
+AirSensor::AirSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastMeasure(0) {}
 
 void AirSensor::setup()
 {
+    if (m_operational)
+        return;
+
     m_sensor.begin();
     sensors_event_t event;
     m_sensor.temperature().getEvent(&event);

@@ -14,19 +14,19 @@ class RGBLEDStrip : public Output
 public:
     RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin);
     virtual void setup() override;
-    virtual void turnOn(boolean shareInformation = false) override;
-    virtual void turnOff(boolean shareInformation = false) override;
+    virtual void turnOn(bool shareInformation = false) override;
+    virtual void turnOff(bool shareInformation = false) override;
     virtual void loop();
-    virtual void setMode(RGBLEDStripMode &mode, boolean shareInformation = false);
+    virtual void setMode(RGBLEDStripMode &mode, bool shareInformation = false);
     virtual RGBLEDStripMode &getMode() const;
     virtual int getR() const;
     virtual int getG() const;
     virtual int getB() const;
 
 protected:
-    int m_RPin;
-    int m_GPin;
-    int m_BPin;
+    const int m_RPin;
+    const int m_GPin;
+    const int m_BPin;
     int m_RState;
     int m_GState;
     int m_BState;
@@ -45,7 +45,7 @@ class RGBLEDStripMode
 public:
     RGBLEDStripMode(String friendlyName, RGBLEDStrip &strip);
     virtual String getFriendlyName() const;
-    virtual boolean isActivated() const;
+    virtual bool isActivated() const;
 
 protected:
     virtual void activate();
@@ -53,7 +53,7 @@ protected:
     virtual void loop() = 0;
     String m_friendlyName;
     RGBLEDStrip &m_strip;
-    boolean m_activated;
+    bool m_activated;
 
 private:
     friend class RGBLEDStrip;

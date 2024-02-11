@@ -13,18 +13,18 @@ class Output : public Device
 public:
     Output(String friendlyName, Display &display);
     virtual void setup() override;
-    virtual void turnOn(boolean shareInformation = false) = 0;
-    virtual void turnOff(boolean shareInformation = false) = 0;
-    virtual void toggle(boolean shareInformation = false);
-    virtual boolean getState() const;
+    virtual void turnOn(bool shareInformation = false) = 0;
+    virtual void turnOff(bool shareInformation = false) = 0;
+    virtual void toggle(bool shareInformation = false);
+    virtual bool getState() const;
     virtual void lock();
     virtual void unLock();
-    virtual boolean isLocked() const;
+    virtual bool isLocked() const;
 
 protected:
     Display &m_display;
-    boolean m_state;
-    boolean m_locked;
+    bool m_state;
+    bool m_locked;
 };
 
 #endif

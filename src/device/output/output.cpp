@@ -23,7 +23,7 @@ void Output::setup()
         sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de la sortie '" + m_friendlyName + "'.");
 }
 
-void Output::toggle(boolean shareInformation)
+void Output::toggle(bool shareInformation)
 {
     if (m_operational && !m_locked)
     {
@@ -35,7 +35,7 @@ void Output::toggle(boolean shareInformation)
     }
 }
 
-boolean Output::getState() const
+bool Output::getState() const
 {
     return m_state;
 }
@@ -54,7 +54,7 @@ void Output::unLock()
     sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
 }
 
-boolean Output::isLocked() const
+bool Output::isLocked() const
 {
     return m_locked;
 }

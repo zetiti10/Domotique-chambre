@@ -17,6 +17,9 @@ Television::Television(String friendlyName, Display &display, int servomotorPin,
 
 void Television::setup()
 {
+    if (m_operational)
+        return;
+
     Output::setup();
 
     pinMode(m_servomotorPin, OUTPUT);
@@ -27,7 +30,7 @@ void Television::setup()
     sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est initialisé.");
 }
 
-void Television::turnOn(boolean shareInformation)
+void Television::turnOn(bool shareInformation)
 {
     if (m_operational && !m_locked && !m_state)
     {
@@ -43,7 +46,7 @@ void Television::turnOn(boolean shareInformation)
     }
 }
 
-void Television::turnOff(boolean shareInformation)
+void Television::turnOff(bool shareInformation)
 {
     if (m_operational && !m_locked && m_state)
     {
@@ -59,7 +62,7 @@ void Television::turnOff(boolean shareInformation)
     }
 }
 
-void Television::syncVolume(boolean shareInformation)
+void Television::syncVolume(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
@@ -83,7 +86,7 @@ void Television::syncVolume(boolean shareInformation)
         m_display.displayMessage("Calibration terminee !");
 }
 
-void Television::increaseVolume(boolean shareInformation)
+void Television::increaseVolume(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 25))
     {
@@ -102,7 +105,7 @@ void Television::increaseVolume(boolean shareInformation)
         m_display.displayVolume(INCREASE, m_volume);
 }
 
-void Television::decreaseVolume(boolean shareInformation)
+void Television::decreaseVolume(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 0))
     {
@@ -126,7 +129,7 @@ int Television::getVolume()
     return m_volume;
 }
 
-void Television::mute(boolean shareInformation)
+void Television::mute(bool shareInformation)
 {
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
@@ -145,7 +148,7 @@ void Television::mute(boolean shareInformation)
         m_display.displayVolume(MUTE, m_volume);
 }
 
-void Television::unMute(boolean shareInformation)
+void Television::unMute(bool shareInformation)
 {
     if (!m_state || m_locked || !m_volumeMuted || !m_operational)
     {
@@ -164,7 +167,7 @@ void Television::unMute(boolean shareInformation)
         m_display.displayVolume(UNMUTE, m_volume);
 }
 
-void Television::toggleMute(boolean shareInformation)
+void Television::toggleMute(bool shareInformation)
 {
     if (m_volumeMuted)
         unMute();
@@ -173,7 +176,7 @@ void Television::toggleMute(boolean shareInformation)
         mute();
 }
 
-boolean Television::getMute()
+bool Television::getMute()
 {
     return m_volumeMuted;
 }

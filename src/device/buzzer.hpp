@@ -18,7 +18,7 @@ public:
     virtual void doorbellMusic();
 
 protected:
-    int m_pin;
+    const int m_pin;
 };
 
 #endif

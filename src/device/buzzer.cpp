@@ -18,6 +18,9 @@ Buzzer::Buzzer(String friendlyName, int pin): Device(friendlyName), m_pin(pin) {
 
 void Buzzer::setup()
 {
+    if (m_operational)
+        return;
+
     pinMode(m_pin, OUTPUT);
 }
 

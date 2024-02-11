@@ -17,7 +17,7 @@ public:
 
 protected:
     int m_value;
-    int m_pin;
+    const int m_pin;
 };
 
 #endif

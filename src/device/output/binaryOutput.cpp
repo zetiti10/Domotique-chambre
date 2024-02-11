@@ -17,6 +17,9 @@ BinaryOutput::BinaryOutput(String friendlyName, Display &display, int relayPin) 
 
 void BinaryOutput::setup()
 {
+    if (m_operational)
+        return;
+
     Output::setup();
 
     pinMode(m_relayPin, OUTPUT);
@@ -26,7 +29,7 @@ void BinaryOutput::setup()
     sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + m_relayPin + ".");
 }
 
-void BinaryOutput::turnOn(boolean shareInformation)
+void BinaryOutput::turnOn(bool shareInformation)
 {
     if (m_operational && !m_locked && !m_state)
     {
@@ -41,7 +44,7 @@ void BinaryOutput::turnOn(boolean shareInformation)
     }
 }
 
-void BinaryOutput::turnOff(boolean shareInformation)
+void BinaryOutput::turnOff(bool shareInformation)
 {
     if (m_operational && !m_locked && m_state)
     {

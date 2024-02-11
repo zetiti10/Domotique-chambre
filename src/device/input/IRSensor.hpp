@@ -17,7 +17,7 @@ public:
     virtual void loop() override;
 
 protected:
-    int m_pin;
+    const int m_pin;
     IRrecv m_sensor;
     unsigned long m_counter;
 };

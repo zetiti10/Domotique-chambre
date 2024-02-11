@@ -14,10 +14,13 @@
 #include "../buzzer.hpp"
 #include "../../logger.hpp"
 
-BinaryInput::BinaryInput(String friendlyName, int pin, boolean revert, boolean pullup) : Input(friendlyName), m_state(false), m_pin(pin), m_reverted(revert), m_pullup(pullup) {}
+BinaryInput::BinaryInput(String friendlyName, int pin, bool revert, bool pullup) : Input(friendlyName), m_state(false), m_pin(pin), m_reverted(revert), m_pullup(pullup) {}
 
 void BinaryInput::setup()
 {
+    if (m_operational)
+        return;
+
     if (m_pullup)
         pinMode(m_pin, INPUT_PULLUP);
 
@@ -31,7 +34,7 @@ void BinaryInput::setup()
 
 void BinaryInput::loop() {}
 
-boolean BinaryInput::getState()
+bool BinaryInput::getState()
 {
     int previousState = m_state;
 
@@ -47,7 +50,7 @@ boolean BinaryInput::getState()
     return m_state;
 }
 
-WardrobeDoorSensor::WardrobeDoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, BinaryOutput &output) : BinaryInput(friendlyName, pin, revert, pullup), m_output(output), m_activated(true) {}
+WardrobeDoorSensor::WardrobeDoorSensor(String friendlyName, int pin, bool revert, bool pullup, BinaryOutput &output) : BinaryInput(friendlyName, pin, revert, pullup), m_output(output), m_activated(true) {}
 
 void WardrobeDoorSensor::loop()
 {
@@ -75,12 +78,12 @@ void WardrobeDoorSensor::desactivate()
     sendLogMessage(INFO, "Le mode automatique du capteur binaire de porte d'armoire '" + m_friendlyName + "' a été désactivé.");
 }
 
-boolean WardrobeDoorSensor::getActivation() const
+bool WardrobeDoorSensor::getActivation() const
 {
     return m_activated;
 }
 
-DoorSensor::DoorSensor(String friendlyName, int pin, boolean revert, boolean pullup, Alarm &alarm) : BinaryInput(friendlyName, pin, revert, pullup), m_alarm(alarm) {}
+DoorSensor::DoorSensor(String friendlyName, int pin, bool revert, bool pullup, Alarm &alarm) : BinaryInput(friendlyName, pin, revert, pullup), m_alarm(alarm) {}
 
 void DoorSensor::loop()
 {
@@ -92,7 +95,7 @@ void DoorSensor::loop()
     }
 }
 
-Doorbell::Doorbell(String friendlyName, int pin, boolean revert, boolean pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_delay(0) {}
+Doorbell::Doorbell(String friendlyName, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_delay(0) {}
 
 void Doorbell::setup()
 {

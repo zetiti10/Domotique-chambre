@@ -14,7 +14,7 @@
 #include "../logger.hpp"
 #include "../bitmaps.hpp"
 
-Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1) {}
+Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1), m_displayCounter(0) {}
 
 void Display::setup()
 {
@@ -26,8 +26,6 @@ void Display::setup()
         m_display.clearDisplay();
         m_display.cp437(true);
         m_display.setTextColor(WHITE);
-
-        m_displayCounter = 0;
 
         m_operational = true;
 
@@ -66,7 +64,7 @@ void Display::displayMessage(String message, String title)
     m_displayCounter = millis();
 }
 
-void Display::displayVolume(volumeType action, int volume = 0)
+void Display::displayVolume(volumeType action, int volume)
 {
     m_display.clearDisplay();
 
@@ -98,7 +96,7 @@ void Display::displayVolume(volumeType action, int volume = 0)
     m_displayCounter = millis();
 }
 
-void Display::displayAlarmTriggered(boolean colorsInverted)
+void Display::displayAlarmTriggered(bool colorsInverted)
 {
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, alarmTriggeredBitmap, 128, 64, 1);
@@ -132,7 +130,7 @@ void Display::displayAirValues(float temperature, float humidity)
     m_displayCounter = millis();
 }
 
-void Display::displayLuminosityMotionSensorValues(int luminosity, boolean motionDetected)
+void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDetected)
 {
     m_display.clearDisplay();
     m_display.drawBitmap(0, 0, luminosityMotionSensorsBitmap, 128, 64, WHITE);
@@ -177,7 +175,7 @@ void Display::displayLEDState(int r, int g, int b)
     m_displayCounter = millis();
 }
 
-void Display::displayDeviceState(boolean on)
+void Display::displayDeviceState(bool on)
 {
     m_display.clearDisplay();
 
@@ -337,7 +335,7 @@ void Display::displayKeypadMenu()
     m_displayCounter = millis();
 }
 
-void Display::displayTray(boolean shareInformation, boolean on)
+void Display::displayTray(bool shareInformation, bool on)
 {
     if (on)
     {

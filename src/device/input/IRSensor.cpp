@@ -13,10 +13,13 @@
 #include "IRSensor.hpp"
 #include "../../logger.hpp"
 
-IRSensor::IRSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin) {}
+IRSensor::IRSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin), m_counter(0) {}
 
 void IRSensor::setup()
 {
+    if (m_operational)
+        return;
+
     m_sensor.enableIRIn();
 
     m_counter = millis();

@@ -13,10 +13,13 @@
 #include "RGBLEDStrip.hpp"
 #include "../../logger.hpp"
 
-RGBLEDStrip::RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_mode(nullptr) {}
+RGBLEDStrip::RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
 
 void RGBLEDStrip::setup()
 {
+    if (m_operational)
+        return;
+
     Output::setup();
 
     pinMode(m_RPin, OUTPUT);
@@ -28,7 +31,7 @@ void RGBLEDStrip::setup()
     sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est initialisé aux broches " + m_RPin + ", " + m_GPin + " et " + m_BPin + ".");
 }
 
-void RGBLEDStrip::turnOn(boolean shareInformation)
+void RGBLEDStrip::turnOn(bool shareInformation)
 {
     if (!m_operational || m_locked || m_state)
         return;
@@ -49,7 +52,7 @@ void RGBLEDStrip::turnOn(boolean shareInformation)
     sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est allumé avec le mode '" + m_mode->getFriendlyName() + "'.");
 }
 
-void RGBLEDStrip::turnOff(boolean shareInformation)
+void RGBLEDStrip::turnOff(bool shareInformation)
 {
     if (!m_operational || m_locked || !m_state)
         return;
@@ -74,7 +77,7 @@ void RGBLEDStrip::loop()
     m_mode->loop();
 }
 
-void RGBLEDStrip::setMode(RGBLEDStripMode &mode, boolean shareInformation)
+void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
 {
     if (m_locked)
         return;
@@ -143,14 +146,14 @@ void RGBLEDStrip::setColor(int r, int g, int b)
     }
 }
 
-RGBLEDStripMode::RGBLEDStripMode(String friendlyName, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_strip(strip) {}
+RGBLEDStripMode::RGBLEDStripMode(String friendlyName, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_strip(strip), m_activated(false) {}
 
 String RGBLEDStripMode::getFriendlyName() const
 {
     return m_friendlyName;
 }
 
-boolean RGBLEDStripMode::isActivated() const
+bool RGBLEDStripMode::isActivated() const
 {
     return m_activated;
 }
@@ -280,7 +283,7 @@ void RainbowMode::loop()
 
     unsigned long actualTime = millis();
 
-    if ((actualTime - m_counter) < m_delay)
+    if ((actualTime - m_counter) < (unsigned long)m_delay)
         return;
 
     m_counter = actualTime;

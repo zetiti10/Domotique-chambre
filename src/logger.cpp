@@ -13,7 +13,7 @@
 #include "logger.hpp"
 
 // Variables globales.
-boolean loggerEnabled = false;
+bool loggerEnabled = false;
 
 
 /// @brief Cette fonction envoie un message à l'ordinateur s'il est connecté.

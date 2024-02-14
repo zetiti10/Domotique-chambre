@@ -9,6 +9,7 @@
 
 class RGBLEDStripMode;
 
+// Classe gérant un ruban de DEL.
 class RGBLEDStrip : public Output
 {
 public:
@@ -40,6 +41,7 @@ private:
     friend class RainbowMode;
 };
 
+// Classe représentant un mode pour un ruban de DEL.
 class RGBLEDStripMode
 {
 public:
@@ -59,6 +61,7 @@ private:
     friend class RGBLEDStrip;
 };
 
+// Classe du mode couleur unique.
 class ColorMode : public RGBLEDStripMode
 {
 public:
@@ -77,6 +80,7 @@ private:
     friend class RGBLEDStrip;
 };
 
+// Classe du mode de couleur de l'alarme qui sonne.
 class AlarmMode : public RGBLEDStripMode
 {
 public:
@@ -91,6 +95,7 @@ private:
     friend class RGBLEDStrip;
 };
 
+// Classe du mode de couleur arc-en-ciel.
 class RainbowMode : public RGBLEDStripMode
 {
 public:

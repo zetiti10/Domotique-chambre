@@ -13,8 +13,12 @@
 #include "analogInput.hpp"
 #include "../../logger.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param pin La broche liée au capteur.
 AnalogInput::AnalogInput(String friendlyName, int pin) : Input(friendlyName), m_value(0), m_pin(pin) {}
 
+/// @brief Initialise l'objet.
 void AnalogInput::setup()
 {
     if (m_operational)
@@ -24,9 +28,14 @@ void AnalogInput::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le capteur analogique '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
+    //sendLogMessage(INFO, "Le capteur analogique '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
 }
 
+/// @brief Boucle d'exécution des tâches liées au capteur.
+void AnalogInput::loop() {}
+
+/// @brief Méthode permettant de récupérer la valeur actuelle du capteur.
+/// @return La valeur actuelle du capteur.
 int AnalogInput::getValue()
 {
     if (m_operational)
@@ -34,5 +43,3 @@ int AnalogInput::getValue()
 
     return m_value;
 }
-
-void AnalogInput::loop() {}

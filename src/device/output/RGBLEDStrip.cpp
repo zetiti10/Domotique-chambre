@@ -13,8 +13,15 @@
 #include "RGBLEDStrip.hpp"
 #include "../../logger.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param display L'écran à utiliser pour afficher des informations / animations.
+/// @param RPin La broche liée à l'alimentation du rouge des rubans de DEL.
+/// @param GPin La broche liée à l'alimentation du vert des rubans de DEL.
+/// @param BPin La broche liée à l'alimentation du bleu des rubans de DEL.
 RGBLEDStrip::RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
 
+/// @brief Initialise l'objet.
 void RGBLEDStrip::setup()
 {
     if (m_operational)
@@ -28,9 +35,11 @@ void RGBLEDStrip::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est initialisé aux broches " + m_RPin + ", " + m_GPin + " et " + m_BPin + ".");
+    //sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est initialisé aux broches " + m_RPin + ", " + m_GPin + " et " + m_BPin + ".");
 }
 
+/// @brief Met en marche le ruban de DEL RVB.
+/// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void RGBLEDStrip::turnOn(bool shareInformation)
 {
     if (!m_operational || m_locked || m_state)
@@ -38,7 +47,7 @@ void RGBLEDStrip::turnOn(bool shareInformation)
 
     if (m_mode == nullptr)
     {
-        sendLogMessage(ERROR, "Le ruban de DEL RVB '" + m_friendlyName + "' n'a pas pu être allumé car aucun mode n'est sélectionné.");
+        //sendLogMessage(ERROR, "Le ruban de DEL RVB '" + m_friendlyName + "' n'a pas pu être allumé car aucun mode n'est sélectionné.");
         return;
     }
 
@@ -49,9 +58,11 @@ void RGBLEDStrip::turnOn(bool shareInformation)
     if (shareInformation)
         m_display.displayDeviceState(true);
 
-    sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est allumé avec le mode '" + m_mode->getFriendlyName() + "'.");
+    //sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est allumé avec le mode '" + m_mode->getFriendlyName() + "'.");
 }
 
+/// @brief Arrête le ruban de DEL RVB.
+/// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
 void RGBLEDStrip::turnOff(bool shareInformation)
 {
     if (!m_operational || m_locked || !m_state)
@@ -66,9 +77,10 @@ void RGBLEDStrip::turnOff(bool shareInformation)
     if (shareInformation)
         m_display.displayDeviceState(false);
 
-    sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est désactivé.");
+    //sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est éteint.");
 }
 
+/// @brief Méthode d'exécution des tâches liées au ruban de DEL RVB.
 void RGBLEDStrip::loop()
 {
     if (!m_operational || !m_state)
@@ -77,6 +89,9 @@ void RGBLEDStrip::loop()
     m_mode->loop();
 }
 
+/// @brief Change le mode actuel du ruban de DEL RVB.
+/// @param mode Le mode à sélectionner.
+/// @param shareInformation Affichage ou non de l'animation sur l'écran.
 void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
 {
     if (m_locked)
@@ -87,28 +102,36 @@ void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
 
     m_mode = &mode;
 
-    sendLogMessage(INFO, "Le mode du ruban de DEL RVB '" + m_friendlyName + "' a été défini sur '" + m_mode->getFriendlyName() + "'.");
+    //sendLogMessage(INFO, "Le mode du ruban de DEL RVB '" + m_friendlyName + "' a été défini sur '" + m_mode->getFriendlyName() + "'.");
     m_display.displayMessage(m_mode->getFriendlyName(), "Mode");
 
     if (m_operational && m_state)
         m_mode->activate();
 }
 
+/// @brief Méthode renvoyant le mode actuel du ruban de DEL RVB.
+/// @return Le mode actuel du ruban de DEL RVB.
 RGBLEDStripMode &RGBLEDStrip::getMode() const
 {
     return *m_mode;
 }
 
+/// @brief Méthode renvoyant l'intensité actuelle du rouge du ruban de DEL RVB.
+/// @return L'intensité actuelle du rouge du ruban de DEL RVB.
 int RGBLEDStrip::getR() const
 {
     return m_RState;
 }
 
+/// @brief Méthode renvoyant l'intensité actuelle du vert du ruban de DEL RVB.
+/// @return L'intensité actuelle du vert du ruban de DEL RVB.
 int RGBLEDStrip::getG() const
 {
     return m_GState;
 }
 
+/// @brief Méthode renvoyant l'intensité actuelle du bleu du ruban de DEL RVB.
+/// @return L'intensité actuelle du bleu du ruban de DEL RVB.
 int RGBLEDStrip::getB() const
 {
     return m_BState;
@@ -146,13 +169,20 @@ void RGBLEDStrip::setColor(int r, int g, int b)
     }
 }
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param strip Le ruban de DEL utilisé pour l'animation.
 RGBLEDStripMode::RGBLEDStripMode(String friendlyName, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_strip(strip), m_activated(false) {}
 
+/// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
 String RGBLEDStripMode::getFriendlyName() const
 {
     return m_friendlyName;
 }
 
+/// @brief Méthode permettant de savoir si le mode est actuellement activé (en fonctionnement).
+/// @return L'état du mode.
 bool RGBLEDStripMode::isActivated() const
 {
     return m_activated;
@@ -170,8 +200,15 @@ void RGBLEDStripMode::desactivate()
     m_strip.setColor(0, 0, 0);
 }
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param strip Le ruban de DEL utilisé pour l'animation.
 ColorMode::ColorMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_R(0), m_G(0), m_B(0) {}
 
+/// @brief Défini la couleur du ruban de DEL RVB.
+/// @param r L'intensité du rouge.
+/// @param g L'intensité du vert.
+/// @param b L'intesité du bleu.
 void ColorMode::setColor(int r, int g, int b)
 {
     if (r < 0)
@@ -216,6 +253,9 @@ void ColorMode::desactivate()
 
 void ColorMode::loop() {}
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param strip Le ruban de DEL utilisé pour l'animation.
 AlarmMode::AlarmMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_lastTime(0) {}
 
 void AlarmMode::desactivate()
@@ -240,8 +280,13 @@ void AlarmMode::loop()
     }
 }
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param strip Le ruban de DEL utilisé pour l'animation.
 RainbowMode::RainbowMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(0) {}
 
+/// @brief Définit la vitesse de l'animation arc-en-ciel.
+/// @param speed La vitesse, de `0` (lent) à `100` (très rapide).
 void RainbowMode::setAnimationSpeed(int speed)
 {
     if (speed < 0)
@@ -256,6 +301,8 @@ void RainbowMode::setAnimationSpeed(int speed)
     m_delay = map(speed, 0, 100, 100, 5);
 }
 
+/// @brief Méthode permettant de connaître la vitesse actuelle du mode arc-en-ciel.
+/// @return 
 int RainbowMode::getAnimationSpeed()
 {
     return m_speed;

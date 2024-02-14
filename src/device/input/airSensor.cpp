@@ -14,8 +14,12 @@
 #include "airSensor.hpp"
 #include "../../logger.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param pin Broche liée au capteur.
 AirSensor::AirSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
 
+/// @brief Initialise l'objet.
 void AirSensor::setup()
 {
     if (m_operational)
@@ -25,7 +29,9 @@ void AirSensor::setup()
     sensors_event_t event;
     m_sensor.temperature().getEvent(&event);
     if (isnan(event.temperature))
-        sendLogMessage(ERROR, "Le capteur de l'air '" + m_friendlyName + "' n'a pas pu être initialisé à la broche " + m_pin + ".");
+    {
+        //sendLogMessage(ERROR, "Le capteur de l'air '" + m_friendlyName + "' n'a pas pu être initialisé à la broche " + m_pin + ".");
+    }
 
     else
     {
@@ -38,10 +44,11 @@ void AirSensor::setup()
 
         m_lastTime = millis();
 
-        sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a été initialisé à la broche " + m_pin + ".");
+        //sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a été initialisé à la broche " + m_pin + ".");
     }
 }
 
+/// @brief Méthode d'exécution des tâches liées au capteur.
 void AirSensor::loop()
 {
     if (m_operational && ((millis() - m_lastTime) >= 60000))
@@ -52,7 +59,7 @@ void AirSensor::loop()
         {
             m_operational = false;
 
-            sendLogMessage(ERROR, "Une erreur est survenue lors de la lecture du capteur de l'air '" + m_friendlyName + "'. Le préiphérique est désactivé.");
+            //sendLogMessage(ERROR, "Une erreur est survenue lors de la lecture du capteur de l'air '" + m_friendlyName + "'. Le préiphérique est désactivé.");
         }
 
         else
@@ -64,16 +71,20 @@ void AirSensor::loop()
 
             m_lastTime = millis();
 
-            sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a récupéré une température de " + m_temperature + "°C, et une humidité relative de " + m_humidity + "%.");
+            //sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a récupéré une température de " + m_temperature + "°C, et une humidité relative de " + m_humidity + "%.");
         }
     }
 }
 
+/// @brief Méthode permettant de récupérer la température actuelle.
+/// @return La température actuelle.
 float AirSensor::getTemperature() const
 {
     return m_temperature;
 }
 
+/// @brief Méthode permettant de récupérer l'humidité actuelle.
+/// @return L'humidité actuelle.
 float AirSensor::getHumidity() const
 {
     return m_humidity;

@@ -32,7 +32,7 @@ void Tray::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est initialisé aux broches " + m_motorPin1 + " et " + m_motorPin2 + ".");
+    //sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est initialisé aux broches " + m_motorPin1 + " et " + m_motorPin2 + ".");
 }
 
 /// @brief Ouvre le plateau
@@ -53,7 +53,7 @@ void Tray::turnOn(bool shareInformation)
 
         m_state = true;
 
-        sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est ouvert.");
+        //sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est ouvert.");
     }
 }
 
@@ -75,6 +75,6 @@ void Tray::turnOff(bool shareInformation)
 
         m_state = false;
 
-        sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est fermé.");
+        //sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est fermé.");
     }
 }

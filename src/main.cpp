@@ -80,8 +80,8 @@ void setup()
     if (Serial)
         loggerEnabled = true;
 
-    sendLogMessage(INFO, "Journalisation activée.");
-    sendLogMessage(INFO, "Démarrage du système de domotique...");
+    //sendLogMessage(INFO, "Journalisation activée.");
+    //sendLogMessage(INFO, "Démarrage du système de domotique...");
 
     // Initialisation de tous les périphériques de la liste, en comptant les erreurs.
     int errors = 0;
@@ -95,7 +95,7 @@ void setup()
     }
 
     // Compte rendu des informations de l'initialisation du système.
-    sendLogMessage(INFO, "L'initialisation du système de domotique est terminée. Elle a été effectuée en " + String(millis()) + " milliseconde(s), et " + errors + " erreur(s) ont été détectées.");
+    //sendLogMessage(INFO, "L'initialisation du système de domotique est terminée. Elle a été effectuée en " + String(millis()) + " milliseconde(s), et " + errors + " erreur(s) ont été détectées.");
     display.displayUnavailableDevices(deviceList, devicesNumber);
 }
 

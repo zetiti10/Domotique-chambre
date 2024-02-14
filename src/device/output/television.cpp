@@ -33,7 +33,7 @@ void Television::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est initialisé à la broche du servomoteur " + String(m_servomotorPin) + " et à la broche de la DEL infrarouge " + String(m_IRLEDPin) + ".");
+    //sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est initialisé à la broche du servomoteur " + String(m_servomotorPin) + " et à la broche de la DEL infrarouge " + String(m_IRLEDPin) + ".");
 }
 
 /// @brief Met en marche la télévision.
@@ -50,7 +50,7 @@ void Television::turnOn(bool shareInformation)
         if (shareInformation)
             m_display.displayDeviceState(true);
 
-        sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est allumée.");
+        //sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est allumée.");
     }
 }
 
@@ -68,7 +68,7 @@ void Television::turnOff(bool shareInformation)
         if (shareInformation)
             m_display.displayDeviceState(false);
 
-        sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est éteinte.");
+        //sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est éteinte.");
     }
 }
 
@@ -81,12 +81,12 @@ void Television::syncVolume(bool shareInformation)
         if (shareInformation)
             m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
-        sendLogMessage(ERROR, "La calibration du son de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
+        //sendLogMessage(ERROR, "La calibration du son de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
 
         return;
     }
 
-    sendLogMessage(INFO, "Calibration du son de la télévision '" + m_friendlyName + "'...");
+    //sendLogMessage(INFO, "Calibration du son de la télévision '" + m_friendlyName + "'...");
 
     if (shareInformation)
         m_display.displayMessage("Calibration du son...");
@@ -99,7 +99,7 @@ void Television::syncVolume(bool shareInformation)
     if (shareInformation)
         m_display.displayMessage("Calibration terminee !");
     
-    sendLogMessage(INFO, "Calibration du son de la télévision '" + m_friendlyName + "' terminée.");
+    //sendLogMessage(INFO, "Calibration du son de la télévision '" + m_friendlyName + "' terminée.");
 }
 
 /// @brief Augmente le volume de la télévision.
@@ -111,7 +111,7 @@ void Television::increaseVolume(bool shareInformation)
         if (shareInformation)
             m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
-        sendLogMessage(ERROR, "L'augmentation du volume de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
+        //sendLogMessage(ERROR, "L'augmentation du volume de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
 
         return;
     }
@@ -122,7 +122,7 @@ void Television::increaseVolume(bool shareInformation)
     if (shareInformation)
         m_display.displayVolume(INCREASE, m_volume);
 
-    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été augmenté.");
+    //sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été augmenté.");
 }
 
 /// @brief Diminue le volume de la télévision.
@@ -134,7 +134,7 @@ void Television::decreaseVolume(bool shareInformation)
         if (shareInformation)
             m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
-        sendLogMessage(ERROR, "La diminution du volume de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
+        //sendLogMessage(ERROR, "La diminution du volume de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
 
         return;
     }
@@ -145,7 +145,7 @@ void Television::decreaseVolume(bool shareInformation)
     if (shareInformation)
         m_display.displayVolume(DECREASE, m_volume);
 
-    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été diminué.");
+    //sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été diminué.");
 }
 
 /// @brief Méthode permettant de récupérer le volume actuel de la télévision.
@@ -164,7 +164,7 @@ void Television::mute(bool shareInformation)
         if (shareInformation)
             m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
-        sendLogMessage(ERROR, "La coupure du son de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
+        //sendLogMessage(ERROR, "La coupure du son de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
 
         return;
     }
@@ -175,7 +175,7 @@ void Television::mute(bool shareInformation)
     if (shareInformation)
         m_display.displayVolume(MUTE, m_volume);
 
-    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été coupé.");
+    //sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été coupé.");
 }
 
 /// @brief Réetablie le son de la télévision.
@@ -187,7 +187,7 @@ void Television::unMute(bool shareInformation)
         if (shareInformation)
             m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
-        sendLogMessage(ERROR, "Le réetablissement du son de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
+        //sendLogMessage(ERROR, "Le réetablissement du son de la télévision '" + m_friendlyName + "' n'a pas pu être effectuée.");
 
         return;
     }
@@ -198,7 +198,7 @@ void Television::unMute(bool shareInformation)
     if (shareInformation)
         m_display.displayVolume(UNMUTE, m_volume);
 
-    sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été réetabli.");
+    //sendLogMessage(INFO, "Le volume de la télévision '" + m_friendlyName + "' a été réetabli.");
 }
 
 /// @brief Bascule le son de la télévision.

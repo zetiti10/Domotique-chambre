@@ -15,8 +15,20 @@
 #include "../../logger.hpp"
 #include "../buzzer.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param display L'écran à utiliser pour afficher des informations / animations.
+/// @param serial Le port série pour communiquer avec le lecteur de carte NFC.
+/// @param doorLED La DEL rouge de la porte.
+/// @param beacon Le gyrophare.
+/// @param strip Le ruban de DEL RVB.
+/// @param missileLauncherSerial Le port série connecté au lance-missile.
+/// @param buzzer Le buzzer.
+/// @param alarmRelayPin La broche connectée au relais de l'alarme.
+/// @param buzzerState L'activation ou non du son de l'alarme.
 Alarm::Alarm(String friendlyName, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
 
+/// @brief Initialise l'objet.
 void Alarm::setup()
 {
     if (m_operational)
@@ -33,7 +45,7 @@ void Alarm::setup()
 
     if (!m_missileLauncher.begin())
     {
-        sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lance-missile ne répond pas.");
+        //sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lance-missile ne répond pas.");
         return;
     }
 
@@ -45,16 +57,18 @@ void Alarm::setup()
     {
         m_operational = true;
 
-        sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est initialisée.");
+        //sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est initialisée.");
     }
 
     else
     {
-        sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lecteur NFC ne répond pas.");
+        //sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lecteur NFC ne répond pas.");
         return;
     }
 }
 
+/// @brief Mise en marche l'alarme.
+/// @param shareInformation Affiche ou non l'animation d'allumage.
 void Alarm::turnOn(bool shareInformation)
 {
     if (!m_operational || m_locked || m_state || m_cardToStoreState || m_strip.isLocked() || m_beacon.isLocked())
@@ -75,9 +89,11 @@ void Alarm::turnOn(bool shareInformation)
     if (shareInformation)
         m_display.displayDeviceState(true);
 
-    sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est allumée.");
+    //sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est allumée.");
 }
 
+/// @brief Arrête l'alarme.
+/// @param shareInformation Affiche ou non l'animation d'arrêt.
 void Alarm::turnOff(bool shareInformation)
 {
     if (!m_operational || m_locked || !m_state)
@@ -99,24 +115,13 @@ void Alarm::turnOff(bool shareInformation)
     if (shareInformation)
         m_display.displayDeviceState(false);
 
-    sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est éteinte.");
+    //sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est éteinte.");
 }
 
-bool Alarm::checkCard(uint8_t card[4])
-{
-    int storedCardsNumber = EEPROM.read(0);
-
-    for (int i = 0; i < storedCardsNumber; i++)
-    {
-        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3])
-            return true;
-    }
-
-    return false;
-}
-
+/// @brief Méthode d'exécution des tâches liées à l'alarme.
 void Alarm::loop()
 {
+    // Vérification des cartes NFC une fois par seconde.
     if ((millis() - m_lastTimeCardChecked) >= 1000)
     {
         uint8_t uid[] = {0, 0, 0, 0, 0};
@@ -148,44 +153,31 @@ void Alarm::loop()
     if (!m_isRinging)
         return;
 
+    // Gestion de l'arrêt automatique de l'alarme.
     if ((millis() - m_lastTimeAutoTriggerOff) >= 5000)
         stopRinging();
 }
 
+/// @brief Démarre le mode enregistrement de carte.
 void Alarm::storeCard()
 {
     if (!m_operational || m_locked || m_state || m_cardToStoreState)
+    {
+        //sendLogMessage(ERROR, "Impossible d'enregistrer une nouvelle carte pour le moment.");
+        m_display.displayMessage("Action impossible.", "Erreur");
+        m_buzzer.noSound();
+
         return;
+    }
 
     m_cardToStoreState = true;
 
-    sendLogMessage(INFO, "Le système de domotique est prêt a enregistrer une nouvelle carte.");
+    //sendLogMessage(INFO, "Le système de domotique est prêt a enregistrer une nouvelle carte.");
     m_display.displayMessage("Presentez la carte a enregistrer.");
     m_buzzer.yesSound();
 }
 
-void Alarm::storeCard(uint8_t card[4])
-{
-    if (checkCard(card))
-    {
-        sendLogMessage(ERROR, "Cette carte est déjà enregistrée dans le système.");
-        m_display.displayMessage("Cette carte a deja ete enregistree.", "Erreur");
-        m_buzzer.noSound();
-        return;
-    }
-
-    int storeLocation = EEPROM.read(0) * 5 + 11;
-
-    for (int i = 0; i < 4; i++)
-        EEPROM.write(storeLocation + i, card[i]);
-
-    EEPROM.write(0, EEPROM.read(0) + 1);
-
-    sendLogMessage(INFO, "La carte a été enregistrée dans le système.");
-    m_display.displayMessage("La carte a ete enregistree dans le systeme.");
-    m_buzzer.yesSound();
-}
-
+/// @brief Supprime toutes les cartes enregistrées dans le système.
 void Alarm::removeCards()
 {
     int storedCardsNumber = EEPROM.read(0);
@@ -198,11 +190,12 @@ void Alarm::removeCards()
             EEPROM.write(storeLocation + j, 0);
     }
 
-    sendLogMessage(INFO, "Les cartes enregistrées ont été supprimées.");
+    //sendLogMessage(INFO, String(storedCardsNumber) + " cartes enregistrées ont été supprimées.");
     m_display.displayMessage("Les cartes enregistrees ont ete supprimees.");
     m_buzzer.yesSound();
 }
 
+/// @brief Déclenche l'alarme.
 void Alarm::trigger()
 {
     if (m_isRinging)
@@ -214,7 +207,7 @@ void Alarm::trigger()
 
         if (!m_state)
         {
-            sendLogMessage(ERROR, "Impossible de déclencher l'alarme car il est impossible de l'allumer.");
+            //sendLogMessage(ERROR, "Impossible de déclencher l'alarme car il est impossible de l'allumer.");
             return;
         }
     }
@@ -235,6 +228,9 @@ void Alarm::trigger()
     m_isRinging = true;
     m_lastTimeAutoTriggerOff = millis();
 
+    //sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' a été déclenchée.");
+    m_display.displayAlarmTriggered(false);
+
     m_missileLauncher.absoluteMove(BASE, 110);
     m_missileLauncher.absoluteMove(ANGLE, 10);
 
@@ -246,11 +242,9 @@ void Alarm::trigger()
         delay(2000);
 
     m_missileLauncher.launchMissile(3);
-
-    sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' a été déclenchée.");
-    m_display.displayAlarmTriggered(false);
 }
 
+/// @brief Arrête (de sonner) l'alarme.
 void Alarm::stopRinging()
 {
     if (!m_isRinging)
@@ -271,7 +265,45 @@ void Alarm::stopRinging()
     m_isRinging = true;
 }
 
+/// @brief Méthode permettant de récupérer l'objet du lance-missile.
+/// @return Le lance-missile.
 MissileLauncher &Alarm::getMissileLauncher()
 {
     return m_missileLauncher;
+}
+
+bool Alarm::checkCard(uint8_t card[4]) const
+{
+    int storedCardsNumber = EEPROM.read(0);
+
+    for (int i = 0; i < storedCardsNumber; i++)
+    {
+        if (EEPROM.read(i * 5 + 11) == card[0] && EEPROM.read(i * 5 + 12) == card[1] && EEPROM.read(i * 5 + 13) == card[2] && EEPROM.read(i * 5 + 14) == card[3])
+            return true;
+    }
+
+    return false;
+}
+
+void Alarm::storeCard(uint8_t card[4])
+{
+    if (checkCard(card))
+    {
+        //sendLogMessage(ERROR, "Cette carte est déjà enregistrée dans le système.");
+        m_display.displayMessage("Cette carte a deja ete enregistree.", "Erreur");
+        m_buzzer.noSound();
+        
+        return;
+    }
+
+    int storeLocation = EEPROM.read(0) * 5 + 11;
+
+    for (int i = 0; i < 4; i++)
+        EEPROM.write(storeLocation + i, card[i]);
+
+    EEPROM.write(0, EEPROM.read(0) + 1);
+
+    //sendLogMessage(INFO, "La carte a été enregistrée dans le système.");
+    m_display.displayMessage("La carte a ete enregistree dans le systeme.");
+    m_buzzer.yesSound();
 }

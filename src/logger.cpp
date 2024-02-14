@@ -27,26 +27,26 @@ void sendLogMessage(messageType type, String message)
         switch (type)
         {
         case INFO:
-            messageToSend = "[I] ";
+            messageToSend = F("[I] ");
             messageToSend += message;
             break;
 
         case WARN:
-            messageToSend = "\033[1;31m[W] ";
+            messageToSend = F("\033[1;31m[W] ");
             messageToSend += message;
-            messageToSend += "\033[0m";
+            messageToSend += F("\033[0m");
             break;
 
         case ERROR:
-            messageToSend = "\033[1;33m[E] ";
+            messageToSend = F("\033[1;33m[E] ");
             messageToSend += message;
-            messageToSend += "\033[0m";
+            messageToSend += F("\033[0m");
             break;
 
         case HIGHLIGHT:
-            messageToSend = "\033[1;36m[E] ";
+            messageToSend = F("\033[1;36m[E] ");
             messageToSend += message;
-            messageToSend += "\033[0m";
+            messageToSend += F("\033[0m");
             break;
 
         default:

@@ -7,6 +7,7 @@
 // Autres fichiers du programme.
 #include "../device.hpp"
 
+// Classe mère à tous les capteurs du système de domotique.
 class Input : public Device
 {
 public:

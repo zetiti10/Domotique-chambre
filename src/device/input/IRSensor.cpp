@@ -13,8 +13,12 @@
 #include "IRSensor.hpp"
 #include "../../logger.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param pin La broche de l'Arduino liée au capteur infrarouge.
 IRSensor::IRSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
 
+/// @brief Initialise l'objet.
 void IRSensor::setup()
 {
     if (m_operational)
@@ -26,9 +30,10 @@ void IRSensor::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le capteur d'ondes infrarouges '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
+    //sendLogMessage(INFO, "Le capteur d'ondes infrarouges '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
 }
 
+/// @brief Boucle d'exécution des tâches liées au capteur.
 void IRSensor::loop()
 {
     if (m_operational && m_sensor.decode() && ((millis() - m_lastTime) >= 250))

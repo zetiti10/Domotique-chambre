@@ -7,6 +7,7 @@
 // Autres fichiers du programme.
 #include "input.hpp"
 
+// Classe représentant un capteur dont la valeur mesurée est analogique.
 class AnalogInput : public Input
 {
 public:

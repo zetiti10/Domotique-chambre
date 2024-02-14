@@ -14,6 +14,7 @@
 #include "RGBLEDStrip.hpp"
 #include "../buzzer.hpp"
 
+// Classe intégrant toutes les fonctionnalités nécessaires au fonctionnement d'une alarme.
 class Alarm : public Output
 {
 public:
@@ -29,7 +30,7 @@ public:
     virtual MissileLauncher &getMissileLauncher();
 
 protected:
-    virtual bool checkCard(uint8_t card[4]);
+    virtual bool checkCard(uint8_t card[4]) const;
     virtual void storeCard(uint8_t card[4]);
 
     PN532_HSU m_pn532hsu;

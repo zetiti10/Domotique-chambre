@@ -24,7 +24,9 @@ void Output::setup()
     m_display.setup();
 
     if (!m_display.getAvailability())
-        sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation du périphérique de sortie '" + m_friendlyName + "'.");
+    {
+        //sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation du périphérique de sortie '" + m_friendlyName + "'.");
+    }
 }
 
 /// @brief Bascule l'état de l'objet.
@@ -53,7 +55,7 @@ void Output::lock()
 {
     m_locked = true;
 
-    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été bloqué.");
+    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été bloqué.");
 }
 
 /// @brief Débloque le périphérique.
@@ -61,7 +63,7 @@ void Output::unLock()
 {
     m_locked = false;
 
-    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
+    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
 }
 
 /// @brief Méthode permettant de connaître l'état de blocage du périphérique.

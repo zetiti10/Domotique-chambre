@@ -31,39 +31,39 @@ void BinaryOutput::setup()
 
     m_operational = true;
 
-    sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + String(m_relayPin) + ".");
+    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + String(m_relayPin) + ".");
 }
 
 /// @brief Met en marche le périphérique.
 /// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void BinaryOutput::turnOn(bool shareInformation)
 {
-    if (m_operational && !m_locked && !m_state)
-    {
-        digitalWrite(m_relayPin, HIGH);
+    if (!m_operational || m_locked || m_state)
+        return;
 
-        m_state = true;
+    digitalWrite(m_relayPin, HIGH);
 
-        if (shareInformation)
-            m_display.displayDeviceState(true);
+    m_state = true;
 
-        sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est allumé.");
-    }
+    if (shareInformation)
+        m_display.displayDeviceState(true);
+
+    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est allumé.");
 }
 
 /// @brief Arrête le périphérique.
 /// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
 void BinaryOutput::turnOff(bool shareInformation)
 {
-    if (m_operational && !m_locked && m_state)
-    {
-        digitalWrite(m_relayPin, LOW);
+    if (!m_operational || m_locked || !m_state)
+        return;
 
-        m_state = false;
+    digitalWrite(m_relayPin, LOW);
 
-        if (shareInformation)
-            m_display.displayDeviceState(false);
+    m_state = false;
 
-        sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est éteint.");
-    }
+    if (shareInformation)
+        m_display.displayDeviceState(false);
+
+    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est éteint.");
 }

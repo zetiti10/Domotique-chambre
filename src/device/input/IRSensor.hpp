@@ -9,6 +9,7 @@
 // Autres fichiers du programme.
 #include "input.hpp"
 
+// Classe implémentant la gestion d'un capteur infrarouge.
 class IRSensor : public Input
 {
 public:

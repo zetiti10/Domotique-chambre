@@ -8,6 +8,7 @@
 // Autres fichiers du programme.
 #include "input.hpp"
 
+// Classe permettant d'interagir avec un capteur d'air DHT22.
 class AirSensor : public Input
 {
 public:

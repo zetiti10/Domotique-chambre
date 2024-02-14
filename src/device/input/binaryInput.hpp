@@ -11,6 +11,7 @@
 #include "../display.hpp"
 #include "../buzzer.hpp"
 
+// Classe représentant un capteur dont la valeur mesurée est binaire.
 class BinaryInput : public Input
 {
 public:
@@ -26,10 +27,12 @@ protected:
     const bool m_pullup;
 };
 
+// Classe représentant un capteur de porte d'armoire.
 class WardrobeDoorSensor : public BinaryInput
 {
 public:
     WardrobeDoorSensor(String friendlyName, int pin, bool revert, bool pullup, BinaryOutput &output);
+    virtual void setup() override;
     virtual void loop() override;
     virtual void activate();
     virtual void desactivate();
@@ -40,16 +43,19 @@ protected:
     bool m_activated;
 };
 
+// Classe représentant un capteur de porte de chambre.
 class DoorSensor : public BinaryInput
 {
 public:
     DoorSensor(String friendlyName, int pin, bool revert, bool pullup, Alarm &alarm);
+    virtual void setup() override;
     virtual void loop();
 
 protected:
     Alarm &m_alarm;
 };
 
+// Classe représentant un bouton de sonnette.
 class Doorbell : public BinaryInput
 {
 public:

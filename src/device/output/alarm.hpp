@@ -28,6 +28,9 @@ public:
     virtual void trigger();
     virtual void stopRinging();
     virtual MissileLauncher &getMissileLauncher();
+    virtual void disableBuzzer();
+    virtual void enableBuzzer();
+    virtual bool getBuzzerState() const;
 
 protected:
     virtual bool checkCard(uint8_t card[4]) const;

@@ -11,6 +11,7 @@
 #include <IRremote.hpp>
 #include <missileLauncher.hpp>
 #include <Adafruit_Keypad.h>
+#include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
@@ -26,6 +27,7 @@
 #include "device/input/binaryInput.hpp"
 #include "device/input/IRSensor.hpp"
 #include "logger.hpp"
+#include "EEPROM.hpp"
 
 // Instanciation des périphériques du système.
 // Périphériques de sortie.
@@ -40,8 +42,8 @@ BinaryOutput street("Maquette de rue", display, PIN_STREET_RELAY);
 BinaryOutput deskLight("Lampe du bureau", display, PIN_DESK_LIGHT_RELAY);
 BinaryOutput doorLED("DEL de la porte", display, PIN_DOOR_LED);
 RGBLEDStrip LEDStrip("Ruban de DEL", display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
-Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, true);
-Television television("Télévision", display, PIN_SCREEN_SERVO, PIN_IR_LED);
+Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
+Television television("Télévision", display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
 
 // Création d'une liste contenant des références vers tous les actionneurs.
 Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television};
@@ -63,7 +65,7 @@ int inputsNumber = 9;
 
 // Modes du ruban de DEL.
 ColorMode colorMode("Mode couleur unique", LEDStrip);
-RainbowMode rainbowMode("Mode arc-en-ciel", LEDStrip);
+RainbowMode rainbowMode("Mode arc-en-ciel", LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
 // Mode son-réaction.
 
 // Création d'une liste contenant des références vers tous les périphériques du système.

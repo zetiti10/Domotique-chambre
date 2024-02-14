@@ -283,7 +283,8 @@ void AlarmMode::loop()
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-RainbowMode::RainbowMode(String friendlyName, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(0) {}
+/// @param speed La vitesse de l'animation.
+RainbowMode::RainbowMode(String friendlyName, RGBLEDStrip &strip, int speed) : RGBLEDStripMode(friendlyName, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(speed) {}
 
 /// @brief Définit la vitesse de l'animation arc-en-ciel.
 /// @param speed La vitesse, de `0` (lent) à `100` (très rapide).

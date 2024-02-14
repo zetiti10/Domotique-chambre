@@ -8,17 +8,20 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
+#include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "television.hpp"
 #include "../../logger.hpp"
+#include "../../EEPROM.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
-Television::Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin) : Output(friendlyName, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(0), m_volumeMuted(false) {}
+/// @param volume Le volume récupéré de l'EEPROM.
+Television::Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Television::setup()
@@ -31,9 +34,21 @@ void Television::setup()
     pinMode(m_servomotorPin, OUTPUT);
     m_IRSender.begin(m_IRLEDPin);
 
+    m_lastTime = millis();
+
     m_operational = true;
 
     //sendLogMessage(INFO, "La télévision '" + m_friendlyName + "' est initialisé à la broche du servomoteur " + String(m_servomotorPin) + " et à la broche de la DEL infrarouge " + String(m_IRLEDPin) + ".");
+}
+
+void Television::loop()
+{
+    if ((millis() - m_lastTime) >= 60000)
+    {
+        EEPROM.update(EEPROM_VOLUME, m_volume);
+
+        m_lastTime = millis();
+    }
 }
 
 /// @brief Met en marche la télévision.

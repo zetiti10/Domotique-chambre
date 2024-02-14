@@ -99,7 +99,7 @@ private:
 class RainbowMode : public RGBLEDStripMode
 {
 public:
-    RainbowMode(String friendlyName, RGBLEDStrip &strip);
+    RainbowMode(String friendlyName, RGBLEDStrip &strip, int speed);
     virtual void setAnimationSpeed(int speed);
     virtual int getAnimationSpeed();
 

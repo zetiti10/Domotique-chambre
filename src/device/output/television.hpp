@@ -12,8 +12,9 @@
 class Television : public Output
 {
 public:
-    Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin);
+    Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin, int volume);
     virtual void setup() override;
+    virtual void loop();
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
     virtual void syncVolume(bool shareInformation = false);
@@ -33,6 +34,7 @@ protected:
     IRsend m_IRSender;
     int m_volume;
     bool m_volumeMuted;
+    unsigned long m_lastTime;
 };
 
 #endif

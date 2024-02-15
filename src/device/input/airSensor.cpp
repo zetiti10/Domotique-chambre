@@ -6,13 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-#include <DHT_U.h>
-
 // Autres fichiers du programme.
 #include "airSensor.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -28,12 +23,7 @@ void AirSensor::setup()
     m_sensor.begin();
     sensors_event_t event;
     m_sensor.temperature().getEvent(&event);
-    if (isnan(event.temperature))
-    {
-        //sendLogMessage(ERROR, "Le capteur de l'air '" + m_friendlyName + "' n'a pas pu être initialisé à la broche " + m_pin + ".");
-    }
-
-    else
+    if (!isnan(event.temperature))
     {
         m_operational = true;
 
@@ -43,8 +33,6 @@ void AirSensor::setup()
         m_humidity = event.relative_humidity;
 
         m_lastTime = millis();
-
-        //sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a été initialisé à la broche " + m_pin + ".");
     }
 }
 
@@ -56,11 +44,7 @@ void AirSensor::loop()
         sensors_event_t event;
         m_sensor.temperature().getEvent(&event);
         if (isnan(event.temperature))
-        {
             m_operational = false;
-
-            //sendLogMessage(ERROR, "Une erreur est survenue lors de la lecture du capteur de l'air '" + m_friendlyName + "'. Le préiphérique est désactivé.");
-        }
 
         else
         {
@@ -70,8 +54,6 @@ void AirSensor::loop()
             m_humidity = event.relative_humidity;
 
             m_lastTime = millis();
-
-            //sendLogMessage(INFO, "Le capteur de l'air '" + m_friendlyName + "' a récupéré une température de " + m_temperature + "°C, et une humidité relative de " + m_humidity + "%.");
         }
     }
 }

@@ -17,7 +17,6 @@ public:
     virtual void turnOff(bool shareInformation = false);
 
 protected:
-    
 };
 
 #endif

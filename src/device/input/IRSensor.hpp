@@ -2,7 +2,6 @@
 #define IR_SENSOR_DEFINITIONS
 
 // Ajout des bibliothèques au programme.
-#include <Arduino.h>
 #define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
 #include <IRremote.hpp>
 

@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "binaryOutput.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -30,8 +26,6 @@ void BinaryOutput::setup()
     pinMode(m_relayPin, OUTPUT);
 
     m_operational = true;
-
-    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est initialisé à la broche " + String(m_relayPin) + ".");
 }
 
 /// @brief Met en marche le périphérique.
@@ -47,8 +41,6 @@ void BinaryOutput::turnOn(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(true);
-
-    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est allumé.");
 }
 
 /// @brief Arrête le périphérique.
@@ -64,6 +56,4 @@ void BinaryOutput::turnOff(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(false);
-
-    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' est éteint.");
 }

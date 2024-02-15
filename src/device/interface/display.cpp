@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "display.hpp"
-#include "../../logger.hpp"
 #include "../../bitmaps.hpp"
 
 /// @brief Constructeur de la classe.
@@ -31,13 +27,6 @@ void Display::setup()
         m_display.setTextColor(WHITE);
 
         m_operational = true;
-
-        //sendLogMessage(INFO, "L'écran '" + m_friendlyName + "' est initialisé sur le port I2C.");
-    }
-
-    else
-    {
-        //sendLogMessage(ERROR, "La communication avec l'écran '" + m_friendlyName + "' n'a pas pu être est initialisée sur le port I2C.");
     }
 }
 
@@ -84,8 +73,6 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
 
         m_lastTime = millis();
     }
-
-    //sendLogMessage(INFO, "Affichage de la liste des périphériques indisponibles à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche un pictogramme de cloche à l'écran.
@@ -98,8 +85,6 @@ void Display::displayBell()
     m_display.drawBitmap(0, 0, bellBitmap, 128, 64, WHITE);
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage du pictogramme de cloche à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche un message à l'écran avec un gros titre.
@@ -122,8 +107,6 @@ void Display::displayMessage(String message, String title)
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage du message '" + title + "' - '" + message + "' à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche le volume actuel.
@@ -164,8 +147,6 @@ void Display::displayVolume(VolumeType action, int volume)
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage du volume à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche un pictogramme d'alerte (point d'exclamation).
@@ -186,8 +167,6 @@ void Display::displayAlarmTriggered(bool colorsInverted)
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage du pictogramme d'alerte à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche les valeurs des capteurs de température et d'humidité, avec deux pictogrammes.
@@ -215,8 +194,6 @@ void Display::displayAirValues(float temperature, float humidity)
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage des valeurs du capteur de l'air à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche les valeurs des capteurs de luminosité et de mouvement, avec deux pictogrammes.
@@ -244,8 +221,6 @@ void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDet
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage des valeurs du capteur de luminosité et du capteur de mouvement à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche trois jauges correspondant à l'intensité des trois couleurs.
@@ -277,8 +252,6 @@ void Display::displayLEDState(int r, int g, int b)
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage de l'état du ruban de DEL à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche une animation illustrant la mise en marche ou l'arrêt d'un périphérique.
@@ -287,8 +260,6 @@ void Display::displayDeviceState(bool on)
 {
     if (!m_operational)
         return;
-
-    //sendLogMessage(INFO, "Affichage de l'animation bouton à l'écran '" + m_friendlyName + "'.");
 
     m_display.clearDisplay();
 
@@ -452,8 +423,6 @@ void Display::displayKeypadMenu()
 
     m_display.display();
     m_lastTime = millis();
-
-    //sendLogMessage(INFO, "Affichage des informations sur un menu à l'écran '" + m_friendlyName + "'.");
 }
 
 /// @brief Affiche l'animation d'ouverture ou de fermeture du plateau.
@@ -463,8 +432,6 @@ void Display::displayTray(bool on, bool shareInformation)
 {
     if (!m_operational)
         return;
-
-    //sendLogMessage(INFO, "Affichage de l'animation du plateau à l'écran '" + m_friendlyName + "'.");
 
     if (on)
     {
@@ -512,7 +479,5 @@ void Display::loop()
         m_lastTime = 0;
         m_display.clearDisplay();
         m_display.display();
-
-        //sendLogMessage(INFO, "Mise en veille de l'écran.");
     }
 }

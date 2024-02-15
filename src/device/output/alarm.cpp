@@ -7,12 +7,10 @@
  */
 
 // Ajout des bibilothèques au programme.
-#include <Arduino.h>
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "alarm.hpp"
-#include "../../logger.hpp"
 #include "../interface/buzzer.hpp"
 #include "../../EEPROM.hpp"
 
@@ -45,27 +43,17 @@ void Alarm::setup()
     m_buzzer.setup();
 
     if (!m_missileLauncher.begin())
-    {
-        // sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lance-missile ne répond pas.");
         return;
-    }
 
     m_nfcReader.begin();
     m_nfcReader.SAMConfig();
     uint32_t versiondata = m_nfcReader.getFirmwareVersion();
 
     if (versiondata)
-    {
         m_operational = true;
 
-        // sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est initialisée.");
-    }
-
     else
-    {
-        // sendLogMessage(ERROR, "L'alarme '" + m_friendlyName + "' n'a pas pu être initialisée car le lecteur NFC ne répond pas.");
         return;
-    }
 }
 
 /// @brief Mise en marche l'alarme.
@@ -89,8 +77,6 @@ void Alarm::turnOn(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(true);
-
-    // sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est allumée.");
 }
 
 /// @brief Arrête l'alarme.
@@ -115,8 +101,6 @@ void Alarm::turnOff(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(false);
-
-    // sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' est éteinte.");
 }
 
 /// @brief Méthode d'exécution des tâches liées à l'alarme.
@@ -164,7 +148,6 @@ void Alarm::storeCard()
 {
     if (!m_operational || m_locked || m_state || m_cardToStoreState)
     {
-        // sendLogMessage(ERROR, "Impossible d'enregistrer une nouvelle carte pour le moment.");
         m_display.displayMessage("Action impossible.", "Erreur");
         m_buzzer.noSound();
 
@@ -173,7 +156,6 @@ void Alarm::storeCard()
 
     m_cardToStoreState = true;
 
-    // sendLogMessage(INFO, "Le système de domotique est prêt a enregistrer une nouvelle carte.");
     m_display.displayMessage("Presentez la carte a enregistrer.");
     m_buzzer.yesSound();
 }
@@ -191,7 +173,6 @@ void Alarm::removeCards()
             EEPROM.write(storeLocation + j, 0);
     }
 
-    // sendLogMessage(INFO, String(storedCardsNumber) + " cartes enregistrées ont été supprimées.");
     m_display.displayMessage("Les cartes enregistrees ont ete supprimees.");
     m_buzzer.yesSound();
 }
@@ -207,10 +188,7 @@ void Alarm::trigger()
         turnOn();
 
         if (!m_state)
-        {
-            // sendLogMessage(ERROR, "Impossible de déclencher l'alarme car il est impossible de l'allumer.");
             return;
-        }
     }
 
     if (m_buzzerState)
@@ -229,7 +207,6 @@ void Alarm::trigger()
     m_isRinging = true;
     m_lastTimeAutoTriggerOff = millis();
 
-    // sendLogMessage(INFO, "L'alarme '" + m_friendlyName + "' a été déclenchée.");
     m_display.displayAlarmTriggered(false);
 
     m_missileLauncher.absoluteMove(BASE, 110);
@@ -291,7 +268,7 @@ void Alarm::enableBuzzer()
         return;
 
     m_buzzerState = true;
-    
+
     EEPROM.update(EEPROM_ALARM_BUZZER_STATE, m_buzzerState);
 }
 
@@ -319,7 +296,6 @@ void Alarm::storeCard(uint8_t card[4])
 {
     if (checkCard(card))
     {
-        // sendLogMessage(ERROR, "Cette carte est déjà enregistrée dans le système.");
         m_display.displayMessage("Cette carte a deja ete enregistree.", "Erreur");
         m_buzzer.noSound();
 
@@ -333,7 +309,6 @@ void Alarm::storeCard(uint8_t card[4])
 
     EEPROM.write(EEPROM_STORED_CARD_COUNTER, EEPROM.read(EEPROM_STORED_CARD_COUNTER) + 1);
 
-    // sendLogMessage(INFO, "La carte a été enregistrée dans le système.");
     m_display.displayMessage("La carte a ete enregistree dans le systeme.");
     m_buzzer.yesSound();
 }

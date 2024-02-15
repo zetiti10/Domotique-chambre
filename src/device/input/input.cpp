@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "input.hpp"
-#include "../device.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.

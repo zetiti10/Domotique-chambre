@@ -2,7 +2,6 @@
 #define AIR_SENSOR_DEFINITIONS
 
 // Ajout des bibliothèques au programme.
-#include <Arduino.h>
 #include <DHT_U.h>
 
 // Autres fichiers du programme.

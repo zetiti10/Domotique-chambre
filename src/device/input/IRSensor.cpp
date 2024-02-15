@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "IRSensor.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -29,8 +25,6 @@ void IRSensor::setup()
     m_lastTime = millis();
 
     m_operational = true;
-
-    //sendLogMessage(INFO, "Le capteur d'ondes infrarouges '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
 }
 
 /// @brief Boucle d'exécution des tâches liées au capteur.

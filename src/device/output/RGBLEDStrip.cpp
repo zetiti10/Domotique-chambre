@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "RGBLEDStrip.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -34,8 +30,6 @@ void RGBLEDStrip::setup()
     pinMode(m_BPin, OUTPUT);
 
     m_operational = true;
-
-    //sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est initialisé aux broches " + m_RPin + ", " + m_GPin + " et " + m_BPin + ".");
 }
 
 /// @brief Met en marche le ruban de DEL RVB.
@@ -47,7 +41,6 @@ void RGBLEDStrip::turnOn(bool shareInformation)
 
     if (m_mode == nullptr)
     {
-        //sendLogMessage(ERROR, "Le ruban de DEL RVB '" + m_friendlyName + "' n'a pas pu être allumé car aucun mode n'est sélectionné.");
         return;
     }
 
@@ -57,8 +50,6 @@ void RGBLEDStrip::turnOn(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(true);
-
-    //sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est allumé avec le mode '" + m_mode->getFriendlyName() + "'.");
 }
 
 /// @brief Arrête le ruban de DEL RVB.
@@ -76,8 +67,6 @@ void RGBLEDStrip::turnOff(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(false);
-
-    //sendLogMessage(INFO, "Le ruban de DEL RVB '" + m_friendlyName + "' est éteint.");
 }
 
 /// @brief Méthode d'exécution des tâches liées au ruban de DEL RVB.
@@ -102,7 +91,6 @@ void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
 
     m_mode = &mode;
 
-    //sendLogMessage(INFO, "Le mode du ruban de DEL RVB '" + m_friendlyName + "' a été défini sur '" + m_mode->getFriendlyName() + "'.");
     m_display.displayMessage(m_mode->getFriendlyName(), "Mode");
 
     if (m_operational && m_state)
@@ -303,7 +291,7 @@ void RainbowMode::setAnimationSpeed(int speed)
 }
 
 /// @brief Méthode permettant de connaître la vitesse actuelle du mode arc-en-ciel.
-/// @return 
+/// @return
 int RainbowMode::getAnimationSpeed()
 {
     return m_speed;

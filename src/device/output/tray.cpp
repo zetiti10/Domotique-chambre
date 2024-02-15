@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "tray.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -31,8 +27,6 @@ void Tray::setup()
     pinMode(m_motorPin2, OUTPUT);
 
     m_operational = true;
-
-    //sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est initialisé aux broches " + m_motorPin1 + " et " + m_motorPin2 + ".");
 }
 
 /// @brief Ouvre le plateau
@@ -52,8 +46,6 @@ void Tray::turnOn(bool shareInformation)
         analogWrite(m_speedPin, 120);
 
         m_state = true;
-
-        //sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est ouvert.");
     }
 }
 
@@ -74,7 +66,5 @@ void Tray::turnOff(bool shareInformation)
         analogWrite(m_speedPin, 120);
 
         m_state = false;
-
-        //sendLogMessage(INFO, "Le plateau '" + m_friendlyName + "' est fermé.");
     }
 }

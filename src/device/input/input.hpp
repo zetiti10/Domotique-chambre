@@ -1,9 +1,6 @@
 #ifndef INPUT_DEFINITIONS
 #define INPUT_DEFINITIONS
 
-// Ajout des bibliothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "../device.hpp"
 

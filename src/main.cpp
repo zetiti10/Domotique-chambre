@@ -26,7 +26,6 @@
 #include "device/input/analogInput.hpp"
 #include "device/input/binaryInput.hpp"
 #include "device/input/IRSensor.hpp"
-#include "logger.hpp"
 #include "EEPROM.hpp"
 
 // Instanciation des périphériques du système.
@@ -84,13 +83,6 @@ void setup()
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
 
-    // Activation du mode journalisation si un ordinateur est connecté.
-    if (Serial)
-        loggerEnabled = true;
-
-    //sendLogMessage(INFO, "Journalisation activée.");
-    //sendLogMessage(INFO, "Démarrage du système de domotique...");
-
     // Initialisation de tous les périphériques de la liste, en comptant les erreurs.
     int errors = 0;
 
@@ -103,7 +95,6 @@ void setup()
     }
 
     // Compte rendu des informations de l'initialisation du système.
-    //sendLogMessage(INFO, "L'initialisation du système de domotique est terminée. Elle a été effectuée en " + String(millis()) + " milliseconde(s), et " + errors + " erreur(s) ont été détectées.");
     display.displayUnavailableDevices(deviceList, devicesNumber);
 }
 

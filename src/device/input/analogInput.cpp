@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "analogInput.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -27,8 +23,6 @@ void AnalogInput::setup()
     pinMode(m_pin, INPUT);
 
     m_operational = true;
-
-    //sendLogMessage(INFO, "Le capteur analogique '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
 }
 
 /// @brief Boucle d'exécution des tâches liées au capteur.

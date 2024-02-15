@@ -6,13 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "binaryInput.hpp"
-#include "../interface/buzzer.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -34,8 +29,6 @@ void BinaryInput::setup()
         pinMode(m_pin, INPUT);
 
     m_operational = true;
-
-    //sendLogMessage(INFO, "Le capteur binaire '" + m_friendlyName + "' est initialisé à la broche " + m_pin + ".");
 }
 
 /// @brief Méthode d'exécution des tâches liées au capteur.
@@ -47,18 +40,11 @@ void BinaryInput::loop()
 // Retourne l'état actuel du capteur.
 bool BinaryInput::getState()
 {
-    int previousState = m_state;
-
     if (m_reverted)
         m_state = !digitalRead(m_pin);
 
     else
         m_state = digitalRead(m_pin);
-
-    if (previousState != m_state)
-    {
-        //sendLogMessage(INFO, "Le capteur binaire '" + m_friendlyName + "' a changé d'état : " + m_state + ".");
-    }
 
     return m_state;
 }
@@ -96,16 +82,12 @@ void WardrobeDoorSensor::loop()
 void WardrobeDoorSensor::activate()
 {
     m_activated = true;
-
-    //sendLogMessage(INFO, "Le mode automatique du capteur binaire de porte d'armoire '" + m_friendlyName + "' a été activé.");
 }
 
 /// @brief Désactive la gestion automatique de l'armoire.
 void WardrobeDoorSensor::desactivate()
 {
     m_activated = false;
-
-    //sendLogMessage(INFO, "Le mode automatique du capteur binaire de porte d'armoire '" + m_friendlyName + "' a été désactivé.");
 }
 
 /// @brief Méthode permettant de savoir si le mode automatique est activé ou non.
@@ -127,7 +109,7 @@ DoorSensor::DoorSensor(String friendlyName, int pin, bool revert, bool pullup, A
 void DoorSensor::setup()
 {
     BinaryInput::setup();
-    
+
     m_alarm.setup();
 }
 
@@ -135,11 +117,7 @@ void DoorSensor::setup()
 void DoorSensor::loop()
 {
     if (getState() && m_alarm.getAvailability() && m_alarm.getState())
-    {
         m_alarm.trigger();
-
-        //sendLogMessage(INFO, "L'alarme '" + m_alarm.getFriendlyName() + "' a été déclenchée par le capteur de porte '" + m_friendlyName + "'.");
-    }
 }
 
 /// @brief Constructeur de la classe.
@@ -160,11 +138,6 @@ void Doorbell::setup()
     m_buzzer.setup();
 
     m_lastTime = millis();
-
-    if (!m_display.getAvailability())
-    {
-        //sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation de la sonnette '" + m_friendlyName + "'.");
-    }
 }
 
 /// @brief Méthode d'exécution des tâches liées au capteur.
@@ -176,7 +149,5 @@ void Doorbell::loop()
         m_buzzer.doorbellMusic();
 
         m_lastTime = millis();
-
-        //sendLogMessage(INFO, "La sonnette '" + m_buzzer.getFriendlyName() + "' a été déclenchée par le bouton de sonnette '" + m_friendlyName + "'.");
     }
 }

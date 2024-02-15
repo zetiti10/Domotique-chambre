@@ -1,9 +1,6 @@
 #ifndef OUTPUT_DEFINITIONS
 #define OUTPUT_DEFINITIONS
 
-// Ajout des bibliothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "../device.hpp"
 #include "../interface/display.hpp"

@@ -11,8 +11,8 @@
 #include "output.hpp"
 #include "binaryOutput.hpp"
 #include "../interface/display.hpp"
-#include "RGBLEDStrip.hpp"
 #include "../interface/buzzer.hpp"
+#include "RGBLEDStrip.hpp"
 
 // Classe intégrant toutes les fonctionnalités nécessaires au fonctionnement d'une alarme.
 class Alarm : public Output

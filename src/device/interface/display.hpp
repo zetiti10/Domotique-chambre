@@ -2,7 +2,6 @@
 #define DISPLAY_DEFINITIONS
 
 // Ajout des bibilothèques au programme.
-#include <Arduino.h>
 #include <Adafruit_SSD1306.h>
 
 // Autres fichiers du programme.

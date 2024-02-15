@@ -6,12 +6,8 @@
  * @date 2024-01-20
  */
 
-// Ajout des bibilothèques au programme.
-#include <Arduino.h>
-
 // Autres fichiers du programme.
 #include "output.hpp"
-#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -22,11 +18,6 @@ Output::Output(String friendlyName, Display &display) : Device(friendlyName), m_
 void Output::setup()
 {
     m_display.setup();
-
-    if (!m_display.getAvailability())
-    {
-        //sendLogMessage(WARN, "L'écran '" + m_display.getFriendlyName() + "' n'a pas pu être initialisé lors de l'initialisation du périphérique de sortie '" + m_friendlyName + "'.");
-    }
 }
 
 /// @brief Bascule l'état de l'objet.
@@ -54,16 +45,12 @@ bool Output::getState() const
 void Output::lock()
 {
     m_locked = true;
-
-    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été bloqué.");
 }
 
 /// @brief Débloque le périphérique.
 void Output::unLock()
 {
     m_locked = false;
-
-    //sendLogMessage(INFO, "Le périphérique '" + m_friendlyName + "' a été débloqué.");
 }
 
 /// @brief Méthode permettant de connaître l'état de blocage du périphérique.

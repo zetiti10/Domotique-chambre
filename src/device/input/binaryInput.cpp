@@ -11,7 +11,7 @@
 
 // Autres fichiers du programme.
 #include "binaryInput.hpp"
-#include "../buzzer.hpp"
+#include "../interface/buzzer.hpp"
 #include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
@@ -85,10 +85,10 @@ void WardrobeDoorSensor::loop()
     if (m_activated && m_output.getAvailability() && (getState() != m_output.getState()))
     {
         if (getState())
-            m_output.turnOn();
+            m_output.turnOn(true);
 
         else
-            m_output.turnOff();
+            m_output.turnOff(true);
     }
 }
 

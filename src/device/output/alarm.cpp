@@ -13,7 +13,7 @@
 // Autres fichiers du programme.
 #include "alarm.hpp"
 #include "../../logger.hpp"
-#include "../buzzer.hpp"
+#include "../interface/buzzer.hpp"
 #include "../../EEPROM.hpp"
 
 /// @brief Constructeur de la classe.

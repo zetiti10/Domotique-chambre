@@ -8,8 +8,8 @@
 #include "input.hpp"
 #include "../output/binaryOutput.hpp"
 #include "../output/alarm.hpp"
-#include "../display.hpp"
-#include "../buzzer.hpp"
+#include "../interface/display.hpp"
+#include "../interface/buzzer.hpp"
 
 // Classe représentant un capteur dont la valeur mesurée est binaire.
 class BinaryInput : public Input

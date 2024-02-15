@@ -16,8 +16,8 @@
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
 #include "device/device.hpp"
-#include "device/display.hpp"
-#include "device/buzzer.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/buzzer.hpp"
 #include "device/output/binaryOutput.hpp"
 #include "device/output/tray.hpp"
 #include "device/output/alarm.hpp"
@@ -30,9 +30,11 @@
 #include "EEPROM.hpp"
 
 // Instanciation des périphériques du système.
-// Périphériques de sortie.
+// Interfaces.
 Display display("Écran");
 Buzzer buzzer("Buzzer", PIN_BUZZER);
+
+// Périphériques de sortie.
 Tray tray("Plateau", display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
 BinaryOutput LEDCube("Cube de DEL", display, PIN_LED_CUBE_RELAY);
 BinaryOutput disco("Lampes discothèque", display, PIN_DISCO_RELAY);
@@ -44,6 +46,10 @@ BinaryOutput doorLED("DEL de la porte", display, PIN_DOOR_LED);
 RGBLEDStrip LEDStrip("Ruban de DEL", display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
 Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
 Television television("Télévision", display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
+// Lumières du plafond.
+// Lampe canapé.
+// Lampe de chevet.
+// Caméra (lumière, redémarrer).
 
 // Création d'une liste contenant des références vers tous les actionneurs.
 Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television};

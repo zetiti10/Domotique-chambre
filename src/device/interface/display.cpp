@@ -1,5 +1,5 @@
 /**
- * @file device/display.cpp
+ * @file device/interface/display.cpp
  * @author Louis L
  * @brief Classe représentant l'écran du système de domotique.
  * @version 2.0 dev
@@ -11,8 +11,8 @@
 
 // Autres fichiers du programme.
 #include "display.hpp"
-#include "../logger.hpp"
-#include "../bitmaps.hpp"
+#include "../../logger.hpp"
+#include "../../bitmaps.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.

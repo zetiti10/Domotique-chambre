@@ -1,5 +1,5 @@
 /**
- * @file device/buzzer.cpp
+ * @file device/interface/buzzer.cpp
  * @author Louis L
  * @brief Classe représentant le buzzer du système de domotique.
  * @version 2.0 dev
@@ -12,7 +12,7 @@
 
 // Autres fichiers du programme.
 #include "buzzer.hpp"
-#include "../logger.hpp"
+#include "../../logger.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.

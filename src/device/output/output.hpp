@@ -6,7 +6,7 @@
 
 // Autres fichiers du programme.
 #include "../device.hpp"
-#include "../display.hpp"
+#include "../interface/display.hpp"
 
 // Classe commune à tous les périphériques de sortie (actionneurs).
 class Output : public Device

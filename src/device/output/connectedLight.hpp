@@ -8,7 +8,7 @@
 #include "output.hpp"
 
 // Classe représentant une lampe contrôlée depuis le réseau.
-class ConnectedLight
+class ConnectedLight : public Output
 {
 public:
     ConnectedLight(String friendlyName);
@@ -17,6 +17,53 @@ public:
     virtual void turnOff(bool shareInformation = false);
 
 protected:
+    const int uniqueId;
+
+private:
+    virtual void updateOn(bool shareInformation = false);
+    virtual void updateOff(bool shareInformation = false);
+};
+
+// Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
+class ConnectedTemperatureVariableLight : public ConnectedLight
+{
+public:
+    ConnectedTemperatureVariableLight(String friendlyName);
+    virtual void setup();
+    virtual void turnOn(bool shareInformation = false);
+    virtual void turnOff(bool shareInformation = false);
+    virtual void setColorTemperature(int temperature, bool shareInformation = false);
+    virtual void setLuminosity(int luminosity, bool shareInformation = false);
+
+protected:
+    const int uniqueId;
+
+private:
+    virtual void updateOn(bool shareInformation = false);
+    virtual void updateOff(bool shareInformation = false);
+    virtual void setColorTemperature(int temperature, bool shareInformation = false);
+    virtual void setLuminosity(int luminosity, bool shareInformation = false);
+};
+
+// Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
+class ConnectedColorVariableLight : public ConnectedLight
+{
+public:
+    ConnectedColorVariableLight(String friendlyName);
+    virtual void setup();
+    virtual void turnOn(bool shareInformation = false);
+    virtual void turnOff(bool shareInformation = false);
+    virtual void setColorTemperature(int temperature, bool shareInformation = false);
+    virtual void setLuminosity(int luminosity, bool shareInformation = false);
+
+protected:
+    const int uniqueId;
+
+private:
+    virtual void updateOn(bool shareInformation = false);
+    virtual void updateOff(bool shareInformation = false);
+    virtual void setColorTemperature(int temperature, bool shareInformation = false);
+    virtual void setLuminosity(int luminosity, bool shareInformation = false);
 };
 
 #endif

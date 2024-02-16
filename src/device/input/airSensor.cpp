@@ -12,7 +12,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param pin Broche liée au capteur.
-AirSensor::AirSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
+AirSensor::AirSensor(String friendlyName, int ID, int pin) : Input(friendlyName, ID), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void AirSensor::setup()

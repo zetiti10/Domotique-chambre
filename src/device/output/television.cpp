@@ -19,7 +19,7 @@
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
+Television::Television(String friendlyName, int ID, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Television::setup()

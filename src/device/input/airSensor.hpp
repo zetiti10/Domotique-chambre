@@ -11,7 +11,7 @@
 class AirSensor : public Input
 {
 public:
-    AirSensor(String friendlyName, int pin);
+    AirSensor(String friendlyName, int ID, int pin);
     virtual void setup() override;
     virtual void loop() override;
     virtual float getTemperature() const;

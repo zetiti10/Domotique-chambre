@@ -9,7 +9,7 @@
 class Output : public Device
 {
 public:
-    Output(String friendlyName, Display &display);
+    Output(String friendlyName, int ID, Display &display);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) = 0;
     virtual void turnOff(bool shareInformation = false) = 0;

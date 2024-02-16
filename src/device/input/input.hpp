@@ -8,7 +8,7 @@
 class Input : public Device
 {
 public:
-    Input(String friendlyName);
+    Input(String friendlyName, int ID);
     virtual void loop() = 0;
 };
 

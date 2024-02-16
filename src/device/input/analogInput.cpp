@@ -12,7 +12,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param pin La broche liée au capteur.
-AnalogInput::AnalogInput(String friendlyName, int pin) : Input(friendlyName), m_value(0), m_pin(pin) {}
+AnalogInput::AnalogInput(String friendlyName, int ID, int pin) : Input(friendlyName, ID), m_value(0), m_pin(pin) {}
 
 /// @brief Initialise l'objet.
 void AnalogInput::setup()

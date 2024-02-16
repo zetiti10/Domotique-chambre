@@ -15,7 +15,7 @@
 /// @param RPin La broche liée à l'alimentation du rouge des rubans de DEL.
 /// @param GPin La broche liée à l'alimentation du vert des rubans de DEL.
 /// @param BPin La broche liée à l'alimentation du bleu des rubans de DEL.
-RGBLEDStrip::RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
+RGBLEDStrip::RGBLEDStrip(String friendlyName, int ID, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, ID, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
 
 /// @brief Initialise l'objet.
 void RGBLEDStrip::setup()

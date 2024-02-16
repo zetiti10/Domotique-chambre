@@ -12,7 +12,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-Output::Output(String friendlyName, Display &display) : Device(friendlyName), m_display(display), m_state(false), m_locked(false) {}
+Output::Output(String friendlyName, int ID, Display &display) : Device(friendlyName, ID), m_display(display), m_state(false), m_locked(false) {}
 
 /// @brief Initialise l'objet.
 void Output::setup()

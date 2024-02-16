@@ -12,7 +12,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param pin La broche de l'Arduino liée au capteur infrarouge.
-IRSensor::IRSensor(String friendlyName, int pin) : Input(friendlyName), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
+IRSensor::IRSensor(String friendlyName, int ID, int pin) : Input(friendlyName, ID), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void IRSensor::setup()

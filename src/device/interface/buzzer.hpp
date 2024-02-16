@@ -8,7 +8,7 @@
 class Buzzer : public Device
 {
 public:
-    Buzzer(String friendlyName, int pin);
+    Buzzer(String friendlyName, int ID, int pin);
     virtual void setup() override;
     virtual void clickSound();
     virtual void yesSound();

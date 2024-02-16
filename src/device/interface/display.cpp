@@ -12,7 +12,7 @@
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
-Display::Display(String friendlyName) : Device(friendlyName), m_display(128, 64, &Wire, -1), m_lastTime(0) {}
+Display::Display(String friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()

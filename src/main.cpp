@@ -30,21 +30,21 @@
 
 // Instanciation des périphériques du système.
 // Interfaces.
-Display display("Écran");
-Buzzer buzzer("Buzzer", PIN_BUZZER);
+Display display("Écran", 00);
+Buzzer buzzer("Buzzer", 00, PIN_BUZZER);
 
 // Périphériques de sortie.
-Tray tray("Plateau", display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
-BinaryOutput LEDCube("Cube de DEL", display, PIN_LED_CUBE_RELAY);
-BinaryOutput disco("Lampes discothèque", display, PIN_DISCO_RELAY);
-BinaryOutput beacon("Gyrophare", display, PIN_BEACON_RELAY);
-BinaryOutput wardrobeLights("Lumière armoire", display, PIN_WARDROBE_LIGHTS_RELAY);
-BinaryOutput street("Maquette de rue", display, PIN_STREET_RELAY);
-BinaryOutput deskLight("Lampe du bureau", display, PIN_DESK_LIGHT_RELAY);
-BinaryOutput doorLED("DEL de la porte", display, PIN_DOOR_LED);
-RGBLEDStrip LEDStrip("Ruban de DEL", display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
-Alarm alarm("Alarme", display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
-Television television("Télévision", display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
+Tray tray("Plateau", 1, display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
+BinaryOutput LEDCube("Cube de DEL", 2, display, PIN_LED_CUBE_RELAY);
+BinaryOutput disco("Lampes discothèque", 3, display, PIN_DISCO_RELAY);
+BinaryOutput beacon("Gyrophare", 4, display, PIN_BEACON_RELAY);
+BinaryOutput wardrobeLights("Lumière armoire", 5, display, PIN_WARDROBE_LIGHTS_RELAY);
+BinaryOutput street("Maquette de rue", 6, display, PIN_STREET_RELAY);
+BinaryOutput deskLight("Lampe du bureau", 7, display, PIN_DESK_LIGHT_RELAY);
+BinaryOutput doorLED("DEL de la porte", 8, display, PIN_DOOR_LED);
+RGBLEDStrip LEDStrip("Ruban de DEL", 9, display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
+Alarm alarm("Alarme", 10, display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
+Television television("Télévision", 11, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
 // Lumières du plafond.
 // Lampe canapé.
 // Lampe de chevet.
@@ -55,14 +55,14 @@ Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &stre
 int outputsNumber = 11;
 
 // Périphériques d'entrée.
-WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
-DoorSensor doorSensor("Capteur de la porte de la chambre", PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
-BinaryInput presenceSensor("Capteur de présence", PIN_MOTION_SENSOR, false, false);
-Doorbell doorbell("Sonnette", PIN_DOORBELL_BUTTON, false, false, display, buzzer);
-AnalogInput lightSensor("Capteur de luminosité", PIN_LIGHT_SENSOR);
-AnalogInput microphone("Microphone", PIN_MICROPHONE);
-AirSensor airSensor("Capteur de l'air", PIN_AIR_SENSOR);
-IRSensor iRSensor("Capteur infrarouge", PIN_IR_SENSOR);
+WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", 12, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
+DoorSensor doorSensor("Capteur de la porte de la chambre", 13, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
+BinaryInput presenceSensor("Capteur de présence", 14, PIN_MOTION_SENSOR, false, false);
+Doorbell doorbell("Sonnette", 15, PIN_DOORBELL_BUTTON, false, false, display, buzzer);
+AnalogInput lightSensor("Capteur de luminosité", 16, PIN_LIGHT_SENSOR);
+AnalogInput microphone("Microphone", 17, PIN_MICROPHONE);
+AirSensor airSensor("Capteur de l'air", 18, PIN_AIR_SENSOR);
+IRSensor iRSensor("Capteur infrarouge", 19, PIN_IR_SENSOR);
 
 // Création d'une liste contenant des références vers tous les capteurs.
 Input *inputList[] = {&wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &lightSensor, &microphone, &airSensor, &iRSensor};

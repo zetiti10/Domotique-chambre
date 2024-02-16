@@ -11,4 +11,4 @@
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
-Input::Input(String friendlyName) : Device(friendlyName) {}
+Input::Input(String friendlyName, int ID) : Device(friendlyName, ID) {}

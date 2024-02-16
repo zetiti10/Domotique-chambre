@@ -15,7 +15,7 @@
 /// @param motorPin1 La broche 1 liée au contrôleur du moteur.
 /// @param motorPin2 La broche 2 liée au contrôleur du moteur.
 /// @param speedPin La broche liée au contrôleur du moteur, gérant sa vitesse.
-Tray::Tray(String friendlyName, Display &display, int motorPin1, int motorPin2, int speedPin) : Output(friendlyName, display), m_motorPin1(motorPin1), m_motorPin2(motorPin2), m_speedPin(speedPin) {}
+Tray::Tray(String friendlyName, int ID, Display &display, int motorPin1, int motorPin2, int speedPin) : Output(friendlyName, ID, display), m_motorPin1(motorPin1), m_motorPin2(motorPin2), m_speedPin(speedPin) {}
 
 /// @brief Initialise l'objet.
 void Tray::setup()

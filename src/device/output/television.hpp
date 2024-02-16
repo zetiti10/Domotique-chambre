@@ -12,7 +12,7 @@
 class Television : public Output
 {
 public:
-    Television(String friendlyName, Display &display, int servomotorPin, int IRLEDPin, int volume);
+    Television(String friendlyName, int ID, Display &display, int servomotorPin, int IRLEDPin, int volume);
     virtual void setup() override;
     virtual void loop();
     virtual void turnOn(bool shareInformation = false) override;

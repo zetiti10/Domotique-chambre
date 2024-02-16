@@ -13,7 +13,7 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param relayPin La broche de l'Arduino liée au relai qui contrôle le périphérique.
-BinaryOutput::BinaryOutput(String friendlyName, Display &display, int relayPin) : Output(friendlyName, display), m_relayPin(relayPin) {}
+BinaryOutput::BinaryOutput(String friendlyName, int ID, Display &display, int relayPin) : Output(friendlyName, ID, display), m_relayPin(relayPin) {}
 
 /// @brief Initialise l'objet.
 void BinaryOutput::setup()

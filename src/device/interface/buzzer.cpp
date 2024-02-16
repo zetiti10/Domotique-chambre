@@ -15,7 +15,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param pin La broche reliée au buzzer du système de domotique.
-Buzzer::Buzzer(String friendlyName, int pin) : Device(friendlyName), m_pin(pin) {}
+Buzzer::Buzzer(String friendlyName, int ID, int pin) : Device(friendlyName, ID), m_pin(pin) {}
 
 /// @brief Initialise l'objet.
 void Buzzer::setup()

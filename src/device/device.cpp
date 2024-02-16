@@ -11,13 +11,18 @@
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
-Device::Device(String friendlyName) : m_friendlyName(friendlyName), m_operational(false) {}
+Device::Device(String friendlyName, int ID) : m_friendlyName(friendlyName), m_ID(ID), m_operational(false) {}
 
 /// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
 String Device::getFriendlyName() const
 {
     return m_friendlyName;
+}
+
+int Device::getID() const
+{
+    return m_ID;
 }
 
 /// @brief Méthode permettant de savoir si le périphérique est opérationnel.

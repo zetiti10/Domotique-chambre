@@ -8,7 +8,7 @@
 class AnalogInput : public Input
 {
 public:
-    AnalogInput(String friendlyName, int pin);
+    AnalogInput(String friendlyName, int ID, int pin);
     virtual void setup() override;
     virtual void loop() override;
     virtual int getValue();

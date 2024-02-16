@@ -11,7 +11,7 @@
 class Tray : public Output
 {
 public:
-    Tray(String friendlyName, Display &display, int motorPin1, int motorPin2, int speedPin);
+    Tray(String friendlyName, int ID, Display &display, int motorPin1, int motorPin2, int speedPin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

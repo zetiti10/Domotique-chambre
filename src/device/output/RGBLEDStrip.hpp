@@ -13,7 +13,7 @@ class RGBLEDStripMode;
 class RGBLEDStrip : public Output
 {
 public:
-    RGBLEDStrip(String friendlyName, Display &display, int RPin, int GPin, int BPin);
+    RGBLEDStrip(String friendlyName, int ID, Display &display, int RPin, int GPin, int BPin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

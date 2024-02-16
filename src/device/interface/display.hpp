@@ -20,7 +20,7 @@ enum VolumeType
 class Display : public Device
 {
 public:
-    Display(String friendlyName);
+    Display(String friendlyName, int ID);
     virtual void setup() override;
     virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
     virtual void displayBell();

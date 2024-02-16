@@ -12,7 +12,7 @@
 class IRSensor : public Input
 {
 public:
-    IRSensor(String friendlyName, int pin);
+    IRSensor(String friendlyName, int ID, int pin);
     virtual void setup() override;
     virtual void loop() override;
 

@@ -33,7 +33,7 @@
 // Interfaces.
 Display display("Écran", 0);
 Buzzer buzzer("Buzzer", 0, PIN_BUZZER);
-HomeAssistant HomeAssistantConnection(Serial1);
+HomeAssistant HomeAssistantConnection("Connexion à HA", 0, Serial1);
 
 // Périphériques de sortie.
 Tray tray("Plateau", 1, display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
@@ -47,6 +47,8 @@ BinaryOutput doorLED("DEL de la porte", 8, display, PIN_DOOR_LED);
 RGBLEDStrip LEDStrip("Ruban de DEL", 9, display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
 Alarm alarm("Alarme", 10, display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
 Television television("Télévision", 11, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
+
+// Périphériques de sortie à distance.
 // Lumières du plafond.
 // Lampe canapé.
 // Lampe de chevet.
@@ -76,8 +78,16 @@ RainbowMode rainbowMode("Mode arc-en-ciel", LEDStrip, EEPROM.read(EEPROM_RAINBOW
 // Mode son-réaction.
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
-Device *deviceList[] = {&display, &buzzer, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
-int devicesNumber = 21;
+Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
+int devicesNumber = 22;
+
+// Liste des périphériques connectés à Home Assistant.
+Output *HADeviceList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &LEDStrip, &alarm, &television};
+int HADevicesNumber = 10;
+
+// Liste des périphériques importés de Home Assistant.
+Output *HARemoteDeviceList[] = {};
+int HARemoteDevicesNumber = 0;
 
 // Initialisation du système.
 void setup()
@@ -85,18 +95,12 @@ void setup()
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
 
-    // Initialisation de tous les périphériques de la liste, en comptant les erreurs.
-    int errors = 0;
+    // Définition des périphériques utilisés dans la connextion à Home Assistant.
+    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, HARemoteDeviceList, HADevicesNumber, colorMode, rainbowMode);
 
+    // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)
-    {
         deviceList[i]->setup();
-
-        if (!deviceList[i]->getAvailability())
-            errors++;
-    }
-
-    HomeAssistantConnection.setup();
 
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);

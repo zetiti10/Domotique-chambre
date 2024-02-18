@@ -5,25 +5,43 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "../device.hpp"
+#include "device/device.hpp"
+#include "../output/RGBLEDStrip.hpp"
 
 #define UART_WAITING_TIME 320 / 115200 + 1
 
 // Classe de gestion de la communication avec l'ESP.
-class HomeAssistant
+class HomeAssistant : public Device
 {
 public:
-    HomeAssistant(HardwareSerial &serial);
-    virtual void setDevices(Device *deviceList[], int &devicesNumber, Device *remoteDeviceList[], int &remoteDeviceNumber);
+    HomeAssistant(String friendlyName, int ID, HardwareSerial &serial);
+    virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode);
     virtual void setup();
     virtual void loop();
+    virtual void setConnectedTemperatureVariableLightTemperature(int ID, int temperature);
+    virtual void setConnectedTemperatureVariableLightLuminosity(int ID, int luminosity);
+    virtual void setConnectedColorVariableLightColor(int ID, int r, int g, int b);
+    virtual void setConnectedColorVariableLightTemperature(int ID, int temperature);
+    virtual void setConnectedColorVariableLightLuminosity(int ID, int luminosity);
+    virtual void updateDeviceAvailability(int ID, bool availability);
+    virtual void updateOutputDeviceState(int ID, bool state);
+    virtual void updateRGBLEDStripMode(int ID, int mode, int r = 0, int g = 0, int b = 0);
+    virtual void updateAlarmTriggeredState(int ID, bool state);
+    virtual void updateTelevisionVolume(int ID, int mode, int volume = 0);
+    virtual void updateBinaryInput(int ID, bool state);
+    virtual void updateAnalogInput(int ID, int state);
+    virtual void updateAirSensor(int ID, float temperature, float humidity);
 
 protected:
+    virtual String addZeros(int number, int length);
+    virtual Output *getDeviceFromID(int ID);
     HardwareSerial &m_serial;
-    Device **m_deviceList;
+    Output **m_deviceList;
     int m_devicesNumber;
-    Device **m_remoteDeviceList;
+    Output **m_remoteDeviceList;
     int m_remoteDeviceNumber;
+    ColorMode *m_colorMode;
+    RainbowMode *m_rainbowMode;
 };
 
 #endif

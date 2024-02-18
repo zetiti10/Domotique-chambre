@@ -22,8 +22,8 @@ void HomeAssistant::setDevices(Device *deviceList[], int &devicesNumber, Device 
 
 void HomeAssistant::setup()
 {
-    if (m_devicesNumber == 0 || m_remoteDeviceNumber == 0)
-        return;
+    //if (m_devicesNumber == 0 || m_remoteDeviceNumber == 0)
+    //    return;
 
     m_serial.begin(9600);
 }
@@ -66,4 +66,6 @@ void HomeAssistant::loop()
 
         m_serial.println(receivedMessage);
     }
+
+    delay(10);
 }

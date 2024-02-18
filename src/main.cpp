@@ -96,6 +96,8 @@ void setup()
             errors++;
     }
 
+    HomeAssistantConnection.setup();
+
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);
 }
@@ -111,4 +113,5 @@ void loop()
     display.loop();
     alarm.loop();
     LEDStrip.loop();
+    HomeAssistantConnection.loop();
 }

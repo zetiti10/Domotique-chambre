@@ -18,6 +18,7 @@
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/buzzer.hpp"
+#include "device/interface/HomeAssistant.hpp"
 #include "device/output/binaryOutput.hpp"
 #include "device/output/tray.hpp"
 #include "device/output/alarm.hpp"
@@ -30,8 +31,9 @@
 
 // Instanciation des périphériques du système.
 // Interfaces.
-Display display("Écran", 00);
-Buzzer buzzer("Buzzer", 00, PIN_BUZZER);
+Display display("Écran", 0);
+Buzzer buzzer("Buzzer", 0, PIN_BUZZER);
+HomeAssistant HomeAssistantConnection(Serial1);
 
 // Périphériques de sortie.
 Tray tray("Plateau", 1, display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);

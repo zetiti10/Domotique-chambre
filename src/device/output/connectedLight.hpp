@@ -8,7 +8,7 @@
 #include "output.hpp"
 
 // Classe représentant une lampe contrôlée depuis le réseau.
-class ConnectedLight : public Output
+/*class ConnectedLight : public Output
 {
 public:
     ConnectedLight(String friendlyName, int ID);
@@ -21,7 +21,7 @@ private:
     virtual void updateOff(bool shareInformation = false);
 };
 
-/*// Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
+// Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
 class ConnectedTemperatureVariableLight : public ConnectedLight
 {
 public:

@@ -55,7 +55,7 @@ bool BinaryInput::getState()
 /// @param revert Inversionou non de l'état du capteur.
 /// @param pullup Activation ou non du mode `PULLUP`.
 /// @param output L'armoire à contrôler
-WardrobeDoorSensor::WardrobeDoorSensor(String friendlyName, int ID, int pin, bool revert, bool pullup, BinaryOutput &output) : BinaryInput(friendlyName, pin, revert, pullup), m_output(output), m_activated(true) {}
+WardrobeDoorSensor::WardrobeDoorSensor(String friendlyName, int ID, int pin, bool revert, bool pullup, BinaryOutput &output) : BinaryInput(friendlyName, ID, pin, revert, pullup), m_output(output), m_activated(true) {}
 
 /// @brief Initialise l'objet.
 void WardrobeDoorSensor::setup()
@@ -103,7 +103,7 @@ bool WardrobeDoorSensor::getActivation() const
 /// @param revert Inversionou non de l'état du capteur.
 /// @param pullup Activation ou non du mode `PULLUP`.
 /// @param alarm L'alarme liée au capteur.
-DoorSensor::DoorSensor(String friendlyName, int ID, int pin, bool revert, bool pullup, Alarm &alarm) : BinaryInput(friendlyName, pin, revert, pullup), m_alarm(alarm) {}
+DoorSensor::DoorSensor(String friendlyName, int ID, int pin, bool revert, bool pullup, Alarm &alarm) : BinaryInput(friendlyName, ID, pin, revert, pullup), m_alarm(alarm) {}
 
 /// @brief Initialise l'objet.
 void DoorSensor::setup()
@@ -127,7 +127,7 @@ void DoorSensor::loop()
 /// @param pullup Activation ou non du mode `PULLUP`.
 /// @param display L'écran utilisé pour l'animation.
 /// @param buzzer Le buzzer à faire sonner.
-Doorbell::Doorbell(String friendlyName, int ID, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_lastTime(0) {}
+Doorbell::Doorbell(String friendlyName, int ID, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, ID, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Doorbell::setup()

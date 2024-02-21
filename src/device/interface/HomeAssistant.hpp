@@ -7,6 +7,8 @@
 // Autres fichiers du programme.
 #include "device/device.hpp"
 #include "../output/RGBLEDStrip.hpp"
+#include "../output/alarm.hpp"
+#include "../output/television.hpp"
 
 #define UART_WAITING_TIME 320 / 115200 + 1
 

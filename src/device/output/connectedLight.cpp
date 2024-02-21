@@ -9,3 +9,24 @@
 // Autres fichiers du programme.
 #include "connectedLight.hpp"
 
+ConnectedLight::ConnectedLight(String friendlyName, int ID, Display &display) : Output(friendlyName, ID, display) {}
+
+void ConnectedLight::setup()
+{
+}
+
+void ConnectedLight::turnOn(bool shareInformation)
+{
+}
+
+void ConnectedLight::turnOff(bool shareInformation)
+{
+}
+
+void ConnectedLight::updateOn(bool shareInformation)
+{
+}
+
+void ConnectedLight::updateOff(bool shareInformation)
+{
+}

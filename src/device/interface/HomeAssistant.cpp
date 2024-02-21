@@ -9,8 +9,20 @@
 // Autres fichiers du programme.
 #include "HomeAssistant.hpp"
 
+
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique de l'instance.
+/// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
 HomeAssistant::HomeAssistant(String friendlyName, int ID, HardwareSerial &serial) : Device(friendlyName, ID), m_serial(serial), m_deviceList(nullptr), m_devicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDeviceNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr) {}
 
+/// @brief Initialise la liste des périphériques connectés.
+/// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
+/// @param devicesNumber Le nombre d'élements de la liste `deviceList`.
+/// @param remoteDeviceList La liste des périphériques de sortie distants (provenant de Home Assistant).
+/// @param remoteDevicesNumber Le nombre d'élements de la liste `remoteDeviceList`.
+/// @param colorMode Le mode de couleur unique utilisé pour le ruban de DEL.
+/// @param colorMode Le mode multicolore utilisé pour le ruban de DEL.
 void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode)
 {
     m_deviceList = deviceList;
@@ -23,6 +35,7 @@ void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output 
     m_rainbowMode = &rainbowMode;
 }
 
+/// @brief Initialise la communication avec Home Assistant. Nécessite d'avoir défini les périphériques connectés auparavant. Méthode à exécuter avant d'initialiser les autres périphériques du système de domotique.
 void HomeAssistant::setup()
 {
     if (m_devicesNumber == 0 || m_remoteDeviceNumber == 0)
@@ -30,6 +43,7 @@ void HomeAssistant::setup()
 
     m_serial.begin(9600);
 
+    // Vérification de la connexion.
     m_serial.println("2");
 
     unsigned long initialTime = millis();
@@ -51,6 +65,7 @@ void HomeAssistant::setup()
     m_operational = true;
 }
 
+/// @brief Boucle d'exécution des tâches liées à la communication avec l'ESP : réception et traitement des messages.
 void HomeAssistant::loop()
 {
     if (!m_operational)
@@ -59,6 +74,7 @@ void HomeAssistant::loop()
     if (!m_serial.available())
         return;
 
+    // Réception du message sous forme d'un String pour pouvoir le traiter.
     delay(UART_WAITING_TIME);
 
     String receivedMessage;
@@ -72,10 +88,13 @@ void HomeAssistant::loop()
         receivedMessage += letter;
     }
 
-    Serial.println(receivedMessage);
+    // Récupération du périphérique. à partir de son ID.
+    Output *output = this->getDeviceFromID(((receivedMessage.charAt(1) - '0') * 10) + (receivedMessage.charAt(2) - '0'));
 
-    int ID = ((receivedMessage.charAt(1) - '0') * 10) + (receivedMessage.charAt(2) - '0');
+    if (output == nullptr)
+        return;
 
+    // Traitement du message reçu afin d'exécuter l'action demandée.
     if (receivedMessage.charAt(0) == '0')
     {
         if (receivedMessage.charAt(3) == '0')
@@ -83,15 +102,15 @@ void HomeAssistant::loop()
             switch (receivedMessage.charAt(4))
             {
             case '0':
-                this->getDeviceFromID(ID)->turnOff(true);
+                output->turnOff(true);
                 break;
 
             case '1':
-                this->getDeviceFromID(ID)->turnOn(true);
+                output->turnOn(true);
                 break;
 
             case '2':
-                this->getDeviceFromID(ID)->toggle(true);
+                output->toggle(true);
                 break;
 
             default:
@@ -101,7 +120,7 @@ void HomeAssistant::loop()
             return;
         }
 
-        RGBLEDStrip *strip = dynamic_cast<RGBLEDStrip *>(this->getDeviceFromID(ID));
+        RGBLEDStrip *strip = dynamic_cast<RGBLEDStrip *>(output);
         if (strip)
         {
             if (receivedMessage.charAt(3) == '0')
@@ -109,9 +128,9 @@ void HomeAssistant::loop()
                 switch (receivedMessage.charAt(4))
                 {
                 case '0':
-                    int r = ((receivedMessage.charAt(5) - '0') * 100) + ((receivedMessage.charAt(6) - '0') * 10) + (receivedMessage.charAt(7) - '0');
-                    int g = ((receivedMessage.charAt(8) - '0') * 100) + ((receivedMessage.charAt(9) - '0') * 10) + (receivedMessage.charAt(10) - '0');
-                    int b = ((receivedMessage.charAt(11) - '0') * 100) + ((receivedMessage.charAt(12) - '0') * 10) + (receivedMessage.charAt(13) - '0');
+                    int r = this->getIntFromString(receivedMessage, 5, 3);
+                    int g = this->getIntFromString(receivedMessage, 8, 3);
+                    int b = this->getIntFromString(receivedMessage, 11, 3);
                     m_colorMode->setColor(r, g, b);
                     strip->setMode(*dynamic_cast<RGBLEDStripMode *>(m_colorMode), true);
                     break;
@@ -121,8 +140,8 @@ void HomeAssistant::loop()
                     break;
 
                 case '2':
-                    //strip->setMode(*dynamic_cast<RGBLEDStripMode *>(m_rainbowMode), true);
-                    // Mode son-réaction.
+                    // strip->setMode(*dynamic_cast<RGBLEDStripMode *>(m_rainbowMode), true);
+                    //  Mode son-réaction.
                     break;
 
                 default:
@@ -326,4 +345,14 @@ Output *HomeAssistant::getDeviceFromID(int ID)
     }
 
     return nullptr;
+}
+
+int HomeAssistant::getIntFromString(String &string, int position, int lenght)
+{
+    int result = 0;
+
+    for (int i = 0; i < lenght; i++)
+        result += (string.charAt(position + i) - '0') * pow(10, ((lenght - i) - 1));
+
+    return result;
 }

@@ -35,6 +35,7 @@ public:
 protected:
     virtual String addZeros(int number, int length);
     virtual Output *getDeviceFromID(int ID);
+    virtual int getIntFromString(String &string, int position, int lenght);
     HardwareSerial &m_serial;
     Output **m_deviceList;
     int m_devicesNumber;

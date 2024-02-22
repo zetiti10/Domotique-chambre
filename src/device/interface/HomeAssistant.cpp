@@ -94,11 +94,16 @@ void HomeAssistant::loop()
         return;
 
     // Traitement du message reçu afin d'exécuter l'action demandée.
-    if (receivedMessage.charAt(0) == '0')
+    switch (getIntFromString(receivedMessage, 0, 1))
     {
-        switch (receivedMessage.charAt(3))
+    // Requête d'un ordre.
+    case 0:
+    {
+        switch (getIntFromString(receivedMessage, 3, 2))
         {
-        case '0':
+        // Gestion de l'alimentation.
+        case 0:
+        {
             switch (receivedMessage.charAt(4))
             {
             case '0':
@@ -112,14 +117,13 @@ void HomeAssistant::loop()
             case '2':
                 output->toggle(true);
                 break;
-
-            default:
-                break;
             }
 
             break;
+        }
 
-        case '1':
+        case 1:
+        {
             RGBLEDStrip *strip = static_cast<RGBLEDStrip *>(output);
             switch (receivedMessage.charAt(4))
             {
@@ -129,24 +133,26 @@ void HomeAssistant::loop()
                 int g = this->getIntFromString(receivedMessage, 8, 3);
                 int b = this->getIntFromString(receivedMessage, 11, 3);
                 m_colorMode->setColor(r, g, b);
-                strip->setMode(*dynamic_cast<RGBLEDStripMode *>(m_colorMode), true);
+                strip->setMode(*static_cast<RGBLEDStripMode *>(m_colorMode), true);
                 break;
             }
 
             case '1':
-                strip->setMode(*dynamic_cast<RGBLEDStripMode *>(m_rainbowMode), true);
+                strip->setMode(*static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
                 break;
 
             case '2':
-                // strip->setMode(*dynamic_cast<RGBLEDStripMode *>(m_rainbowMode), true);
+                // strip->setMode(*static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
                 // Mode son-réaction.
                 break;
 
             default:
                 break;
             }
+        }
 
-        case '2':
+        case 2:
+        {
             Alarm *alarm = static_cast<Alarm *>(output);
             switch (receivedMessage.charAt(4))
             {
@@ -161,8 +167,10 @@ void HomeAssistant::loop()
             default:
                 break;
             }
+        }
 
-        case '3':
+        case 3:
+        {
             Television *television = static_cast<Television *>(output);
             switch (receivedMessage.charAt(4))
             {
@@ -190,6 +198,10 @@ void HomeAssistant::loop()
                 break;
             }
         }
+        }
+
+        break;
+    }
     }
 
     // Mise à jour de l'état (pour afficher les animations sur l'écran) des périphériques de Home Assistant.

@@ -6,68 +6,62 @@
 
 // Autres fichiers du programme.
 #include "output.hpp"
+#include "../interface/HomeAssistant.hpp"
 
 // Classe représentant une lampe contrôlée depuis le réseau.
-class ConnectedLight : public Output
+class ConnectedOutput : public Output
 {
 public:
-    ConnectedLight(String friendlyName, int ID, Display &display);
+    ConnectedOutput(String friendlyName, int ID, Display &display, HomeAssistant &connection);
     virtual void setup();
     virtual void turnOn(bool shareInformation = false);
     virtual void turnOff(bool shareInformation = false);
 
-private:
+protected:
     virtual void updateOn(bool shareInformation = false);
     virtual void updateOff(bool shareInformation = false);
+    HomeAssistant &m_connection;
+    friend class HomeAssistant;
 };
 
 // Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
-class ConnectedTemperatureVariableLight : public ConnectedLight
+class ConnectedTemperatureVariableLight : public ConnectedOutput
 {
 public:
-    ConnectedTemperatureVariableLight(String friendlyName, int ID, Display &display);
-    virtual void setup() override;
-    virtual void turnOn(bool shareInformation = false) override;
-    virtual void turnOff(bool shareInformation = false) override;
+    ConnectedTemperatureVariableLight(String friendlyName, int ID, Display &display, HomeAssistant &connection, int minimalColorTemperature, int maximalColorTemperature);
     virtual void setColorTemperature(int temperature, bool shareInformation = false);
     virtual void setLuminosity(int luminosity, bool shareInformation = false);
     virtual int getColorTemperature();
     virtual int getLuminosity();
 
-private:
-    virtual void updateOn(bool shareInformation = false) override;
-    virtual void updateOff(bool shareInformation = false) override;
+protected:
     virtual void updateColorTemperature(int temperature, bool shareInformation = false);
     virtual void updateLuminosity(int luminosity, bool shareInformation = false);
+    int m_minimalColorTemperature;
+    int m_maximalColorTemperature;
     int m_colorTemperature;
     int m_luminosity;
+    friend class HomeAssistant;
 };
 
 // Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
 class ConnectedColorVariableLight : public ConnectedTemperatureVariableLight
 {
 public:
-    ConnectedColorVariableLight(String friendlyName, int ID, Display &display);
-    virtual void setup() override;
-    virtual void turnOn(bool shareInformation = false) override;
-    virtual void turnOff(bool shareInformation = false) override;
-    virtual void setColor(int temperature, bool shareInformation = false);
+    ConnectedColorVariableLight(String friendlyName, int ID, Display &display, HomeAssistant &connection, int minimalColorTemperature, int maximalColorTemperature);
+    virtual void setColor(int r, int g, int b, bool shareInformation = false);
     virtual void setColorTemperature(int temperature, bool shareInformation = false) override;
     virtual void setLuminosity(int luminosity, bool shareInformation = false) override;
     virtual int getRLuminosity();
     virtual int getGLuminosity();
     virtual int getBLuminosity();
-    virtual int getColorTemperature();
-    virtual int getLuminosity();
 
-
-private:
-    virtual void updateOn(bool shareInformation = false) override;
-    virtual void updateOff(bool shareInformation = false) override;
-    virtual void updateColor(int r, int g, int b, boolean shareInformation = false);
-    virtual void updateColorTemperature(int temperature, bool shareInformation = false);
-    virtual void updateLuminosity(int luminosity, bool shareInformation = false);
-    int m_color;
+protected:
+    virtual void updateColor(int r, int g, int b, bool shareInformation = false);
+    int m_RColor;
+    int m_GColor;
+    int m_BColor;
+    friend class HomeAssistant;
 };
 
 #endif

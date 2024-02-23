@@ -33,6 +33,8 @@ public:
     virtual void displayDeviceState(bool on);
     virtual void displayKeypadMenu();
     virtual void displayTray(bool on, bool shareInformation = false);
+    virtual void displayLightColorTemperature(int minimum, int maximum, int temperature);
+    virtual void displayLuminosity(int luminosity);
     virtual void loop();
 
 protected:

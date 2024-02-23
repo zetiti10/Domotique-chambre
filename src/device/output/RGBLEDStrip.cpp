@@ -40,9 +40,7 @@ void RGBLEDStrip::turnOn(bool shareInformation)
         return;
 
     if (m_mode == nullptr)
-    {
         return;
-    }
 
     m_mode->activate();
 
@@ -127,34 +125,34 @@ int RGBLEDStrip::getB() const
 
 void RGBLEDStrip::setColor(int r, int g, int b)
 {
-    if (m_operational && m_state)
-    {
-        if (r < 0)
-            r = 0;
+    if (!m_operational || !m_state)
+        return;
 
-        if (r > 255)
-            r = 255;
+    if (r < 0)
+        r = 0;
 
-        if (g < 0)
-            g = 0;
+    if (r > 255)
+        r = 255;
 
-        if (g > 255)
-            g = 255;
+    if (g < 0)
+        g = 0;
 
-        if (b < 0)
-            b = 0;
+    if (g > 255)
+        g = 255;
 
-        if (b > 255)
-            b = 255;
+    if (b < 0)
+        b = 0;
 
-        m_RState = r;
-        m_GState = g;
-        m_BState = b;
+    if (b > 255)
+        b = 255;
 
-        analogWrite(m_RPin, r);
-        analogWrite(m_GPin, g);
-        analogWrite(m_BPin, b);
-    }
+    m_RState = r;
+    m_GState = g;
+    m_BState = b;
+
+    analogWrite(m_RPin, r);
+    analogWrite(m_GPin, g);
+    analogWrite(m_BPin, b);
 }
 
 /// @brief Constructeur de la classe.

@@ -23,6 +23,7 @@
 #include "device/output/tray.hpp"
 #include "device/output/alarm.hpp"
 #include "device/output/television.hpp"
+#include "device/output/connectedOutput.hpp"
 #include "device/input/airSensor.hpp"
 #include "device/input/analogInput.hpp"
 #include "device/input/binaryInput.hpp"
@@ -49,14 +50,14 @@ Alarm alarm("Alarme", 10, display, Serial2, doorLED, beacon, LEDStrip, Serial3, 
 Television television("Télévision", 11, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
 
 // Périphériques de sortie à distance.
-// Lumières du plafond.
-// Lampe canapé.
-// Lampe de chevet.
-// Caméra (lumière, redémarrer).
+ConnectedOutput mainLights("Lumières du plafond", 99, display, HomeAssistantConnection);
+ConnectedTemperatureVariableLight sofaLight("Lampe du canapé", 98, display, HomeAssistantConnection, 2000, 6000); // Changer les températures.
+ConnectedColorVariableLight bedLight("Lampe de chevet", 97, display, HomeAssistantConnection, 2000, 5000); // Changer les températures.
+ConnectedOutput cameraLight("Lumière de la caméra", 96, display, HomeAssistantConnection);
 
 // Création d'une liste contenant des références vers tous les actionneurs.
-Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television};
-int outputsNumber = 11;
+Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
+int outputsNumber = 15;
 
 // Périphériques d'entrée.
 WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", 12, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
@@ -78,16 +79,16 @@ RainbowMode rainbowMode("Mode arc-en-ciel", LEDStrip, EEPROM.read(EEPROM_RAINBOW
 // Mode son-réaction.
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
-Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
-int devicesNumber = 22;
+Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
+int devicesNumber = 26;
 
 // Liste des périphériques connectés à Home Assistant.
 Output *HADeviceList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &LEDStrip, &alarm, &television};
 int HADevicesNumber = 10;
 
 // Liste des périphériques importés de Home Assistant.
-Output *HARemoteDeviceList[] = {};
-int HARemoteDevicesNumber = 0;
+Output *HARemoteDeviceList[] = {&mainLights, &sofaLight, &bedLight, &cameraLight};
+int HARemoteDevicesNumber = 4;
 
 // Initialisation du système.
 void setup()

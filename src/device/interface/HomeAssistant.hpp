@@ -9,6 +9,7 @@
 #include "../output/RGBLEDStrip.hpp"
 #include "../output/alarm.hpp"
 #include "../output/television.hpp"
+#include "../output/connectedOutput.hpp"
 
 #define UART_WAITING_TIME 320 / 115200 + 1
 
@@ -20,6 +21,9 @@ public:
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode);
     virtual void setup();
     virtual void loop();
+    virtual void turnOnConnectedDevice(int ID);
+    virtual void turnOffConnectedDevice(int ID);
+    virtual void toggleConnectedDevice(int ID);
     virtual void setConnectedTemperatureVariableLightTemperature(int ID, int temperature);
     virtual void setConnectedTemperatureVariableLightLuminosity(int ID, int luminosity);
     virtual void setConnectedColorVariableLightColor(int ID, int r, int g, int b);
@@ -37,12 +41,13 @@ public:
 protected:
     virtual String addZeros(int number, int length);
     virtual Output *getDeviceFromID(int ID);
+    virtual ConnectedOutput *getRemoteDeviceFromID(int ID);
     virtual int getIntFromString(String &string, int position, int lenght);
     HardwareSerial &m_serial;
     Output **m_deviceList;
     int m_devicesNumber;
     Output **m_remoteDeviceList;
-    int m_remoteDeviceNumber;
+    int m_remoteDevicesNumber;
     ColorMode *m_colorMode;
     RainbowMode *m_rainbowMode;
 };

@@ -6,7 +6,6 @@
 
 // Autres fichiers du programme.
 #include "output.hpp"
-#include "../interface/HomeAssistant.hpp"
 
 // Classe représentant une lampe contrôlée depuis le réseau.
 class ConnectedOutput : public Output
@@ -20,7 +19,8 @@ public:
 protected:
     virtual void updateOn(bool shareInformation = false);
     virtual void updateOff(bool shareInformation = false);
-    HomeAssistant &m_connection;
+    virtual void setAvailable();
+    virtual void setUnavailable();
     friend class HomeAssistant;
 };
 

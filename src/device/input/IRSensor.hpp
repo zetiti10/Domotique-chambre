@@ -2,6 +2,7 @@
 #define IR_SENSOR_DEFINITIONS
 
 // Ajout des bibliothèques au programme.
+#include <Arduino.h>
 #define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
 #include <IRremote.hpp>
 
@@ -12,7 +13,7 @@
 class IRSensor : public Input
 {
 public:
-    IRSensor(String friendlyName, int ID, int pin);
+    IRSensor(String friendlyName, int ID, HomeAssistant connection, int pin);
     virtual void setup() override;
     virtual void loop() override;
 

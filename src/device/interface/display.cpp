@@ -6,8 +6,13 @@
  * @date 2024-01-20
  */
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+#include <Adafruit_SSD1306.h>
+
 // Autres fichiers du programme.
 #include "display.hpp"
+#include "../device.hpp"
 #include "../../bitmaps.hpp"
 
 /// @brief Constructeur de la classe.
@@ -469,6 +474,65 @@ void Display::displayTray(bool on, bool shareInformation)
         if (shareInformation)
             m_lastTime = millis();
     }
+}
+
+/// @brief Affiche la température de couleur actuelle d'une ampoule.
+/// @param minimum La température minimum en kelvin.
+/// @param maximum La température maximum en kelvin.
+/// @param temperature La température actuelle en kelvin.
+void Display::displayLightColorTemperature(int minimum, int maximum, int temperature)
+{
+    if (!m_operational)
+        return;
+
+    m_display.clearDisplay();
+
+    // m_display.drawBitmap(0, 0, temperatureBitmap, 128, 64, WHITE);
+
+    m_display.drawRect(50, 52, 27, 3, WHITE);
+
+    if (temperature > minimum)
+        m_display.drawLine(51, 53, 51 + map(temperature, minimum, maximum, 0, 25), 53, WHITE);
+
+    m_display.setTextSize(1);
+    m_display.setCursor(58, 57);
+    m_display.print(temperature);
+    m_display.print('K');
+    m_display.setCursor(5, 57);
+    m_display.print(minimum);
+    m_display.print('K');
+    m_display.setCursor(103, 57);
+    m_display.print(maximum);
+    m_display.print('K');
+
+    m_display.display();
+    m_lastTime = millis();
+}
+
+/// @brief Affiche la luminosité actuelle d'une ampoule.
+/// @param luminosity La luminosité de `0` à `255`.
+void Display::displayLuminosity(int luminosity)
+{
+    if (!m_operational)
+        return;
+
+    m_display.clearDisplay();
+
+    // m_display.drawBitmap(0, 0, luminosityBitmap, 128, 64, WHITE);
+
+    m_display.drawRect(50, 52, 27, 3, WHITE);
+
+    if (luminosity > 0)
+        m_display.drawLine(51, 53, 51 + map(luminosity, 0, 255, 0, 25), 53, WHITE);
+
+    m_display.setTextSize(1);
+    m_display.setCursor(58, 57);
+    m_display.print(map(luminosity, 0, 255, 0, 100));
+    // Code pour insérer un "%".
+    m_display.write(0x25);
+
+    m_display.display();
+    m_lastTime = millis();
 }
 
 /// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps.

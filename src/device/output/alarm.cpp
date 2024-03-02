@@ -7,11 +7,19 @@
  */
 
 // Ajout des bibilothèques au programme.
+#include <Arduino.h>
+#include <PN532_HSU.h>
+#include <PN532.h>
+#include <missileLauncher.hpp>
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "alarm.hpp"
+#include "output.hpp"
+#include "../interface/display.hpp"
 #include "../interface/buzzer.hpp"
+#include "binaryOutput.hpp"
+#include "RGBLEDStrip.hpp"
 #include "../../EEPROM.hpp"
 
 /// @brief Constructeur de la classe.
@@ -25,7 +33,7 @@
 /// @param buzzer Le buzzer.
 /// @param alarmRelayPin La broche connectée au relais de l'alarme.
 /// @param buzzerState L'activation ou non du son de l'alarme.
-Alarm::Alarm(String friendlyName, int ID, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
+Alarm::Alarm(String friendlyName, int ID, Display &display, HomeAssistant &connection, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, display, connection), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", 3, m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
 
 /// @brief Initialise l'objet.
 void Alarm::setup()
@@ -49,11 +57,12 @@ void Alarm::setup()
     m_nfcReader.SAMConfig();
     uint32_t versiondata = m_nfcReader.getFirmwareVersion();
 
-    if (versiondata)
-        m_operational = true;
-
-    else
+    if (!versiondata)
         return;
+
+    m_operational = true;
+
+    m_connection.updateDeviceAvailability(m_ID, true);
 }
 
 /// @brief Mise en marche l'alarme.
@@ -74,6 +83,8 @@ void Alarm::turnOn(bool shareInformation)
     m_strip.lock();
 
     m_state = true;
+
+    m_connection.updateOutputDeviceState(m_ID, true);
 
     if (shareInformation)
         m_display.displayDeviceState(true);
@@ -98,6 +109,8 @@ void Alarm::turnOff(bool shareInformation)
     m_doorLED.turnOff();
 
     m_state = false;
+
+    m_connection.updateOutputDeviceState(m_ID, false);
 
     if (shareInformation)
         m_display.displayDeviceState(false);
@@ -181,7 +194,11 @@ void Alarm::removeCards()
 void Alarm::trigger()
 {
     if (m_isRinging)
+    {
+        m_lastTimeAutoTriggerOff = millis();
+
         return;
+    }
 
     if (!m_state)
     {
@@ -205,9 +222,10 @@ void Alarm::trigger()
     m_strip.lock();
 
     m_isRinging = true;
-    m_lastTimeAutoTriggerOff = millis();
 
     m_display.displayAlarmTriggered(false);
+
+    m_connection.updateAlarmTriggeredState(m_ID, true);
 
     m_missileLauncher.absoluteMove(BASE, 110);
     m_missileLauncher.absoluteMove(ANGLE, 10);
@@ -240,7 +258,9 @@ void Alarm::stopRinging()
     m_beacon.lock();
     m_strip.lock();
 
-    m_isRinging = true;
+    m_isRinging = false;
+
+    m_connection.updateAlarmTriggeredState(m_ID, false);
 }
 
 /// @brief Méthode permettant de récupérer l'objet du lance-missile.

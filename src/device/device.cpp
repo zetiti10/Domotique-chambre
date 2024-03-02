@@ -6,6 +6,9 @@
  * @date 2024-01-20
  */
 
+// Ajout des bibliothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "device.hpp"
 

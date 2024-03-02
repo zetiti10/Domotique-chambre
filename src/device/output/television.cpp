@@ -7,11 +7,14 @@
  */
 
 // Ajout des bibilothèques au programme.
+#include <Arduino.h>
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "television.hpp"
 #include "../../EEPROM.hpp"
+#include "output.hpp"
+#include "../interface/display.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -19,7 +22,7 @@
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(String friendlyName, int ID, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
+Television::Television(String friendlyName, int ID, Display &display, HomeAssistant &connection, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, display, connection), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Television::setup()
@@ -35,6 +38,8 @@ void Television::setup()
     m_lastTime = millis();
 
     m_operational = true;
+
+    m_connection.updateDeviceAvailability(m_ID, true);
 }
 
 void Television::loop()
@@ -51,32 +56,36 @@ void Television::loop()
 /// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void Television::turnOn(bool shareInformation)
 {
-    if (m_operational && !m_locked && !m_state)
-    {
-        switchDisplay();
-        m_IRSender.sendNEC(0x44C1, 0x87, 3);
+    if (!m_operational || m_locked || m_state)
+        return;
 
-        m_state = true;
+    m_connection.updateOutputDeviceState(m_ID, true);
 
-        if (shareInformation)
-            m_display.displayDeviceState(true);
-    }
+    switchDisplay();
+    m_IRSender.sendNEC(0x44C1, 0x87, 3);
+
+    m_state = true;
+
+    if (shareInformation)
+        m_display.displayDeviceState(true);
 }
 
 /// @brief Arrête la télévision.
 /// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
 void Television::turnOff(bool shareInformation)
 {
-    if (m_operational && !m_locked && m_state)
-    {
-        switchDisplay();
-        m_IRSender.sendNEC(0x44C1, 0x87, 3);
+    if (!m_operational || m_locked || !m_state)
+        return;
 
-        m_state = false;
+    m_connection.updateOutputDeviceState(m_ID, false);
 
-        if (shareInformation)
-            m_display.displayDeviceState(false);
-    }
+    switchDisplay();
+    m_IRSender.sendNEC(0x44C1, 0x87, 3);
+
+    m_state = false;
+
+    if (shareInformation)
+        m_display.displayDeviceState(false);
 }
 
 /// @brief Synchronise le volume virtuel avec celui de la sono.
@@ -118,6 +127,8 @@ void Television::increaseVolume(bool shareInformation)
     m_IRSender.sendNEC(0x44C1, 0x47, 2);
     m_volume++;
 
+    m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
+
     if (shareInformation)
         m_display.displayVolume(INCREASE, m_volume);
 }
@@ -136,6 +147,8 @@ void Television::decreaseVolume(bool shareInformation)
 
     m_IRSender.sendNEC(0x44C1, 0xC7, 2);
     m_volume--;
+
+    m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
 
     if (shareInformation)
         m_display.displayVolume(DECREASE, m_volume);
@@ -163,6 +176,8 @@ void Television::mute(bool shareInformation)
     m_IRSender.sendNEC(0x44C1, 0x77, 3);
     m_volumeMuted = true;
 
+    m_connection.updateTelevisionVolume(m_ID, 1);
+
     if (shareInformation)
         m_display.displayVolume(MUTE, m_volume);
 }
@@ -181,6 +196,8 @@ void Television::unMute(bool shareInformation)
 
     m_IRSender.sendNEC(0x44C1, 0x77, 3);
     m_volumeMuted = false;
+
+    m_connection.updateTelevisionVolume(m_ID, 2);
 
     if (shareInformation)
         m_display.displayVolume(UNMUTE, m_volume);

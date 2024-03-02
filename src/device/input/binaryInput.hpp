@@ -1,6 +1,9 @@
 #ifndef BINARY_INPUT_DEFINITIONS
 #define BINARY_INPUT_DEFINITIONS
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "input.hpp"
 #include "../output/binaryOutput.hpp"
@@ -12,7 +15,7 @@
 class BinaryInput : public Input
 {
 public:
-    BinaryInput(String friendlyName, int ID, int pin, bool revert = false, bool pullup = false);
+    BinaryInput(String friendlyName, int ID, HomeAssistant connection, int pin, bool revert = false, bool pullup = false);
     virtual void setup() override;
     virtual void loop() override;
     virtual bool getState();
@@ -28,7 +31,7 @@ protected:
 class WardrobeDoorSensor : public BinaryInput
 {
 public:
-    WardrobeDoorSensor(String friendlyName, int ID, int pin, bool revert, bool pullup, BinaryOutput &output);
+    WardrobeDoorSensor(String friendlyName, int ID, HomeAssistant connection, int pin, bool revert, bool pullup, BinaryOutput &output);
     virtual void setup() override;
     virtual void loop() override;
     virtual void activate();
@@ -44,7 +47,7 @@ protected:
 class DoorSensor : public BinaryInput
 {
 public:
-    DoorSensor(String friendlyName, int ID, int pin, bool revert, bool pullup, Alarm &alarm);
+    DoorSensor(String friendlyName, int ID, HomeAssistant connection, int pin, bool revert, bool pullup, Alarm &alarm);
     virtual void setup() override;
     virtual void loop();
 
@@ -56,7 +59,7 @@ protected:
 class Doorbell : public BinaryInput
 {
 public:
-    Doorbell(String friendlyName, int ID, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer);
+    Doorbell(String friendlyName, int ID, HomeAssistant connection, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer);
     virtual void setup() override;
     virtual void loop() override;
 

@@ -1,15 +1,19 @@
 #ifndef OUTPUT_DEFINITIONS
 #define OUTPUT_DEFINITIONS
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "../device.hpp"
 #include "../interface/display.hpp"
+#include "../interface/HomeAssistant.hpp"
 
 // Classe commune à tous les périphériques de sortie (actionneurs).
 class Output : public Device
 {
 public:
-    Output(String friendlyName, int ID, Display &display);
+    Output(String friendlyName, int ID, Display &display, HomeAssistant &connection);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) = 0;
     virtual void turnOff(bool shareInformation = false) = 0;
@@ -21,6 +25,7 @@ public:
 
 protected:
     Display &m_display;
+    HomeAssistant &m_connection;
     bool m_state;
     bool m_locked;
 };

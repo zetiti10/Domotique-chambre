@@ -8,12 +8,19 @@
 
 // Autres fichiers du programme.
 #include "HomeAssistant.hpp"
+#include "../output/alarm.hpp"
+#include "../output/binaryOutput.hpp"
+#include "../output/connectedOutput.hpp"
+#include "../output/output.hpp"
+#include "../output/RGBLEDStrip.hpp"
+#include "../output/television.hpp"
+#include "../output/tray.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique de l'instance.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
-HomeAssistant::HomeAssistant(String friendlyName, int ID, HardwareSerial &serial) : Device(friendlyName, ID), m_serial(serial), m_deviceList(nullptr), m_devicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr) {}
+HomeAssistant::HomeAssistant(String friendlyName, int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
@@ -62,6 +69,8 @@ void HomeAssistant::setup()
             break;
     }
 
+    m_display.setup();
+
     m_operational = true;
 }
 
@@ -94,7 +103,7 @@ void HomeAssistant::loop()
     // Requête d'un ordre.
     case 0:
     {
-        // Récupération du périphérique. à partir de son ID.
+        // Récupération du périphérique de sortie à partir de son ID.
         Output *output = this->getDeviceFromID(this->getIntFromString(receivedMessage, 1, 2));
 
         if (output == nullptr)
@@ -127,17 +136,13 @@ void HomeAssistant::loop()
         case 1:
         {
             RGBLEDStrip *strip = static_cast<RGBLEDStrip *>(output);
+
             switch (getIntFromString(receivedMessage, 5, 1))
             {
             case 0:
-            {
-                int r = this->getIntFromString(receivedMessage, 5, 3);
-                int g = this->getIntFromString(receivedMessage, 8, 3);
-                int b = this->getIntFromString(receivedMessage, 11, 3);
-                m_colorMode->setColor(r, g, b);
+                m_colorMode->setColor(this->getIntFromString(receivedMessage, 5, 3), this->getIntFromString(receivedMessage, 8, 3), this->getIntFromString(receivedMessage, 11, 3));
                 strip->setMode(*static_cast<RGBLEDStripMode *>(m_colorMode), true);
                 break;
-            }
 
             case 1:
                 strip->setMode(*static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
@@ -156,6 +161,7 @@ void HomeAssistant::loop()
         case 2:
         {
             Alarm *alarm = static_cast<Alarm *>(output);
+
             switch (getIntFromString(receivedMessage, 5, 1))
             {
             case 0:
@@ -174,6 +180,7 @@ void HomeAssistant::loop()
         case 3:
         {
             Television *television = static_cast<Television *>(output);
+
             switch (getIntFromString(receivedMessage, 5, 1))
             {
             case 0:
@@ -204,9 +211,10 @@ void HomeAssistant::loop()
         break;
     }
 
+    // Mise à jour d'un état.
     case 1:
     {
-        // Récupération du périphérique. à partir de son ID.
+        // Récupération du périphérique distant à partir de son ID.
         ConnectedOutput *output = this->getRemoteDeviceFromID(this->getIntFromString(receivedMessage, 1, 2));
 
         if (output == nullptr)
@@ -214,6 +222,23 @@ void HomeAssistant::loop()
 
         switch (getIntFromString(receivedMessage, 3, 2))
         {
+        // Mise à jour de la disponibilité.
+        case 0:
+        {
+            switch (getIntFromString(receivedMessage, 5, 1))
+            {
+            case 0:
+                output->setUnavailable();
+                break;
+
+            case 1:
+                output->setAvailable();
+                break;
+            }
+
+            break;
+        }
+
         // Gestion de l'alimentation.
         case 1:
         {
@@ -235,6 +260,7 @@ void HomeAssistant::loop()
         case 5:
         {
             ConnectedTemperatureVariableLight *light = static_cast<ConnectedTemperatureVariableLight *>(output);
+
             switch (getIntFromString(receivedMessage, 5, 1))
             {
             case 2:
@@ -253,6 +279,7 @@ void HomeAssistant::loop()
         case 6:
         {
             ConnectedColorVariableLight *light = static_cast<ConnectedColorVariableLight *>(output);
+
             switch (getIntFromString(receivedMessage, 5, 1))
             {
             case 2:
@@ -270,6 +297,23 @@ void HomeAssistant::loop()
 
             break;
         }
+        }
+
+        break;
+    }
+
+    // Affichage d'un message sur l'écran.
+    case 2:
+    {
+        // Détection du "/" qui délimite le titre du message.
+        for (unsigned int i = 0; i < receivedMessage.length(); i ++)
+        {
+            if (receivedMessage.charAt(i) == '/')
+            {
+                m_display.displayMessage(receivedMessage.substring(i + 1), receivedMessage.substring(1, i - 1));
+                
+                break;
+            }
         }
 
         break;

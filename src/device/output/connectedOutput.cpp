@@ -6,10 +6,13 @@
  * @date 2024-01-20
  */
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "connectedOutput.hpp"
 
-ConnectedOutput::ConnectedOutput(String friendlyName, int ID, Display &display, HomeAssistant &connection) : Output(friendlyName, ID, display), m_connection(connection) {}
+ConnectedOutput::ConnectedOutput(String friendlyName, int ID, Display &display, HomeAssistant &connection) : Output(friendlyName, ID, display, connection) {}
 
 void ConnectedOutput::setup()
 {
@@ -19,11 +22,7 @@ void ConnectedOutput::setup()
     Output::setup();
 
     m_connection.setup();
-
-    m_operational = true;
 }
-
-// NOTE : m_operational en fonction de ce que Home Assistant renvoie.
 
 void ConnectedOutput::turnOn(bool shareInformation)
 {
@@ -61,6 +60,16 @@ void ConnectedOutput::updateOff(bool shareInformation)
 
     if (shareInformation)
         m_display.displayDeviceState(false);
+}
+
+void ConnectedOutput::setAvailable()
+{
+    m_operational = true;
+}
+
+void ConnectedOutput::setUnavailable()
+{
+    m_operational = false;
 }
 
 ConnectedTemperatureVariableLight::ConnectedTemperatureVariableLight(String friendlyName, int ID, Display &display, HomeAssistant &connection, int minimalColorTemperature, int maximalColorTemperature) : ConnectedOutput(friendlyName, ID, display, connection), m_minimalColorTemperature(minimalColorTemperature), m_maximalColorTemperature(maximalColorTemperature), m_colorTemperature(m_minimalColorTemperature), m_luminosity(255) {}

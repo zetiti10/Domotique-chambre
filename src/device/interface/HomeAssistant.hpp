@@ -5,19 +5,27 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/device.hpp"
-#include "../output/RGBLEDStrip.hpp"
-#include "../output/alarm.hpp"
-#include "../output/television.hpp"
-#include "../output/connectedOutput.hpp"
+#include "../device.hpp"
+#include "display.hpp"
 
 #define UART_WAITING_TIME 320 / 115200 + 1
+
+class Output;
+class ColorMode;
+class RainbowMode;
+class RGBLEDStrip;
+class RGBLEDStripMode;
+class Alarm;
+class Television;
+class ConnectedOutput;
+class ConnectedTemperatureVariableLight;
+class ConnectedColorVariableLight;
 
 // Classe de gestion de la communication avec l'ESP.
 class HomeAssistant : public Device
 {
 public:
-    HomeAssistant(String friendlyName, int ID, HardwareSerial &serial);
+    HomeAssistant(String friendlyName, int ID, HardwareSerial &serial, Display &display);
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode);
     virtual void setup();
     virtual void loop();
@@ -44,6 +52,7 @@ protected:
     virtual ConnectedOutput *getRemoteDeviceFromID(int ID);
     virtual int getIntFromString(String &string, int position, int lenght);
     HardwareSerial &m_serial;
+    Display &m_display;
     Output **m_deviceList;
     int m_devicesNumber;
     Output **m_remoteDeviceList;

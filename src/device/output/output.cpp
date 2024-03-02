@@ -6,18 +6,24 @@
  * @date 2024-01-20
  */
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "output.hpp"
+#include "../device.hpp"
+#include "../interface/display.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-Output::Output(String friendlyName, int ID, Display &display) : Device(friendlyName, ID), m_display(display), m_state(false), m_locked(false) {}
+Output::Output(String friendlyName, int ID, Display &display, HomeAssistant &connection) : Device(friendlyName, ID), m_display(display), m_connection(connection), m_state(false), m_locked(false) {}
 
 /// @brief Initialise l'objet.
 void Output::setup()
 {
     m_display.setup();
+    m_connection.setup();
 }
 
 /// @brief Bascule l'état de l'objet.
@@ -45,12 +51,16 @@ bool Output::getState() const
 void Output::lock()
 {
     m_locked = true;
+
+    m_connection.updateDeviceAvailability(m_ID, false);
 }
 
 /// @brief Débloque le périphérique.
 void Output::unLock()
 {
     m_locked = false;
+
+    m_connection.updateDeviceAvailability(m_ID, true);
 }
 
 /// @brief Méthode permettant de connaître l'état de blocage du périphérique.

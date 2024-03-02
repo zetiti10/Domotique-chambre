@@ -1,6 +1,9 @@
 #ifndef ANALOG_INPUT_DEFINITIONS
 #define ANALOG_INPUT_DEFINITIONS
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "input.hpp"
 
@@ -8,7 +11,7 @@
 class AnalogInput : public Input
 {
 public:
-    AnalogInput(String friendlyName, int ID, int pin);
+    AnalogInput(String friendlyName, int ID, HomeAssistant connection, int pin);
     virtual void setup() override;
     virtual void loop() override;
     virtual int getValue();

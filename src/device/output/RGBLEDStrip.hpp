@@ -6,14 +6,13 @@
 
 // Autres fichiers du programme.
 #include "output.hpp"
-
-class RGBLEDStripMode;
+#include "../interface/display.hpp"
 
 // Classe gérant un ruban de DEL.
 class RGBLEDStrip : public Output
 {
 public:
-    RGBLEDStrip(String friendlyName, int ID, Display &display, int RPin, int GPin, int BPin);
+    RGBLEDStrip(String friendlyName, int ID, Display &display, HomeAssistant &connection, int RPin, int GPin, int BPin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
@@ -45,15 +44,17 @@ private:
 class RGBLEDStripMode
 {
 public:
-    RGBLEDStripMode(String friendlyName, RGBLEDStrip &strip);
+    RGBLEDStripMode(String friendlyName, int ID, RGBLEDStrip &strip);
     virtual String getFriendlyName() const;
     virtual bool isActivated() const;
+    virtual int getID() const;
 
 protected:
     virtual void activate();
     virtual void desactivate();
     virtual void loop() = 0;
     String m_friendlyName;
+    int m_ID;
     RGBLEDStrip &m_strip;
     bool m_activated;
 
@@ -65,10 +66,11 @@ private:
 class ColorMode : public RGBLEDStripMode
 {
 public:
-    ColorMode(String friendlyName, RGBLEDStrip &strip);
+    ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection);
     virtual void setColor(int r, int g, int b);
 
 protected:
+    HomeAssistant &m_connection;
     int m_R;
     int m_G;
     int m_B;
@@ -84,7 +86,7 @@ private:
 class AlarmMode : public RGBLEDStripMode
 {
 public:
-    AlarmMode(String friendlyName, RGBLEDStrip &strip);
+    AlarmMode(String friendlyName, int ID, RGBLEDStrip &strip);
 
 protected:
     unsigned long m_lastTime;
@@ -99,7 +101,7 @@ private:
 class RainbowMode : public RGBLEDStripMode
 {
 public:
-    RainbowMode(String friendlyName, RGBLEDStrip &strip, int speed);
+    RainbowMode(String friendlyName, int ID, RGBLEDStrip &strip, int speed);
     virtual void setAnimationSpeed(int speed);
     virtual int getAnimationSpeed();
 

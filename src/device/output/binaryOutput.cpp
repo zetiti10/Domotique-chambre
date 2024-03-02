@@ -6,14 +6,19 @@
  * @date 2024-01-20
  */
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "binaryOutput.hpp"
+#include "output.hpp"
+#include "../interface/display.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param relayPin La broche de l'Arduino liée au relai qui contrôle le périphérique.
-BinaryOutput::BinaryOutput(String friendlyName, int ID, Display &display, int relayPin) : Output(friendlyName, ID, display), m_relayPin(relayPin) {}
+BinaryOutput::BinaryOutput(String friendlyName, int ID, Display &display, HomeAssistant &connection, int relayPin) : Output(friendlyName, ID, display, connection), m_relayPin(relayPin) {}
 
 /// @brief Initialise l'objet.
 void BinaryOutput::setup()
@@ -26,6 +31,8 @@ void BinaryOutput::setup()
     pinMode(m_relayPin, OUTPUT);
 
     m_operational = true;
+
+    m_connection.updateDeviceAvailability(m_ID, true);
 }
 
 /// @brief Met en marche le périphérique.
@@ -38,6 +45,8 @@ void BinaryOutput::turnOn(bool shareInformation)
     digitalWrite(m_relayPin, HIGH);
 
     m_state = true;
+
+    m_connection.updateOutputDeviceState(m_ID, true);
 
     if (shareInformation)
         m_display.displayDeviceState(true);
@@ -53,6 +62,8 @@ void BinaryOutput::turnOff(bool shareInformation)
     digitalWrite(m_relayPin, LOW);
 
     m_state = false;
+
+    m_connection.updateOutputDeviceState(m_ID, false);
 
     if (shareInformation)
         m_display.displayDeviceState(false);

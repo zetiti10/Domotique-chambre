@@ -1,6 +1,9 @@
 #ifndef BUZZER_DEFINITIONS
 #define BUZZER_DEFINITIONS
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
 #include "../device.hpp"
 

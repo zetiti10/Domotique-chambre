@@ -5,8 +5,8 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "../device.hpp"
-#include "../interface/HomeAssistant.hpp"
+#include "device/device.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe mère à tous les capteurs du système de domotique.
 class Input : public Device

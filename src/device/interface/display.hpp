@@ -6,9 +6,9 @@
 #include <Adafruit_SSD1306.h>
 
 // Autres fichiers du programme.
-#include "../device.hpp"
+#include "device/device.hpp"
 
-// Types d'affichages pour le volume de la télévision.
+// Types d'affichages du volume de la télévision.
 enum VolumeType
 {
     INCREASE,

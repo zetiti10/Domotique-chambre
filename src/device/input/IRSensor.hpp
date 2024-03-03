@@ -7,7 +7,8 @@
 #include <IRremote.hpp>
 
 // Autres fichiers du programme.
-#include "input.hpp"
+#include "device/input/input.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe implémentant la gestion d'un capteur infrarouge.
 class IRSensor : public Input

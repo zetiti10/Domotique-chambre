@@ -14,16 +14,19 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
-#include "alarm.hpp"
-#include "output.hpp"
-#include "../interface/display.hpp"
-#include "../interface/buzzer.hpp"
-#include "binaryOutput.hpp"
-#include "RGBLEDStrip.hpp"
-#include "../../EEPROM.hpp"
+#include "device/output/alarm.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/buzzer.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/RGBLEDStrip.hpp"
+#include "device/interface/HomeAssistant.hpp"
+#include "EEPROM.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param serial Le port série pour communiquer avec le lecteur de carte NFC.
 /// @param doorLED La DEL rouge de la porte.
@@ -33,7 +36,7 @@
 /// @param buzzer Le buzzer.
 /// @param alarmRelayPin La broche connectée au relais de l'alarme.
 /// @param buzzerState L'activation ou non du son de l'alarme.
-Alarm::Alarm(String friendlyName, int ID, Display &display, HomeAssistant &connection, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, display, connection), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", 3, m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
+Alarm::Alarm(String friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + m_friendlyName + "'", 3, m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
 
 /// @brief Initialise l'objet.
 void Alarm::setup()

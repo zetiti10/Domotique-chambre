@@ -11,18 +11,21 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
-#include "television.hpp"
-#include "../../EEPROM.hpp"
-#include "output.hpp"
-#include "../interface/display.hpp"
+#include "device/output/television.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
+#include "EEPROM.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(String friendlyName, int ID, Display &display, HomeAssistant &connection, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, display, connection), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
+Television::Television(String friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Television::setup()

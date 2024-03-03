@@ -11,11 +11,14 @@
 #include <DHT_U.h>
 
 // Autres fichiers du programme.
-#include "airSensor.hpp"
-#include "input.hpp"
+#include "device/input/airSensor.hpp"
+#include "device/input/input.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin Broche liée au capteur.
 AirSensor::AirSensor(String friendlyName, int ID, HomeAssistant connection, int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
 

@@ -5,11 +5,12 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "../device.hpp"
-#include "display.hpp"
+#include "device/device.hpp"
+#include "device/interface/display.hpp"
 
 #define UART_WAITING_TIME 320 / 115200 + 1
 
+// Déclaration des classes utilisées par la classe HomeAssistant.
 class Output;
 class ColorMode;
 class RainbowMode;

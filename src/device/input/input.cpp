@@ -10,11 +10,14 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "input.hpp"
-#include "../device.hpp"
+#include "device/input/input.hpp"
+#include "device/device.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 Input::Input(String friendlyName, int ID, HomeAssistant connection) : Device(friendlyName, ID), m_connection(connection) {}
 
 void Input::setup()

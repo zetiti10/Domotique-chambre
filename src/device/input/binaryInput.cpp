@@ -10,15 +10,18 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "binaryInput.hpp"
-#include "input.hpp"
-#include "../output/binaryOutput.hpp"
-#include "../output/alarm.hpp"
-#include "../interface/display.hpp"
-#include "../interface/buzzer.hpp"
+#include "device/input/binaryInput.hpp"
+#include "device/input/input.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/alarm.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
+#include "device/interface/buzzer.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche liée au capteur.
 /// @param revert Inversionou non de l'état du capteur.
 /// @param pullup Activation ou non du mode `PULLUP`.

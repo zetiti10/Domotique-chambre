@@ -1,7 +1,7 @@
 /**
  * @file device/interface/display.cpp
  * @author Louis L
- * @brief Classe représentant l'écran du système de domotique.
+ * @brief Classe gérant l'écran du système de domotique.
  * @version 2.0 dev
  * @date 2024-01-20
  */
@@ -11,12 +11,13 @@
 #include <Adafruit_SSD1306.h>
 
 // Autres fichiers du programme.
-#include "display.hpp"
-#include "../device.hpp"
-#include "../../bitmaps.hpp"
+#include "device/interface/display.hpp"
+#include "device/device.hpp"
+#include "bitmaps.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 Display::Display(String friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.

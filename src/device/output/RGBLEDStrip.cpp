@@ -10,17 +10,20 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "RGBLEDStrip.hpp"
-#include "output.hpp"
-#include "../interface/display.hpp"
+#include "device/output/RGBLEDStrip.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param RPin La broche liée à l'alimentation du rouge des rubans de DEL.
 /// @param GPin La broche liée à l'alimentation du vert des rubans de DEL.
 /// @param BPin La broche liée à l'alimentation du bleu des rubans de DEL.
-RGBLEDStrip::RGBLEDStrip(String friendlyName, int ID, Display &display, HomeAssistant &connection, int RPin, int GPin, int BPin) : Output(friendlyName, ID, display, connection), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
+RGBLEDStrip::RGBLEDStrip(String friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, ID, connection, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
 
 /// @brief Initialise l'objet.
 void RGBLEDStrip::setup()

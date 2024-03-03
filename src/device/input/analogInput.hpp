@@ -5,7 +5,8 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "input.hpp"
+#include "device/input/input.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe représentant un capteur dont la valeur mesurée est analogique.
 class AnalogInput : public Input

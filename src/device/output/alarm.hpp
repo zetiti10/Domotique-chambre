@@ -8,17 +8,18 @@
 #include <missileLauncher.hpp>
 
 // Autres fichiers du programme.
-#include "output.hpp"
-#include "../interface/display.hpp"
-#include "../interface/buzzer.hpp"
-#include "binaryOutput.hpp"
-#include "RGBLEDStrip.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
+#include "device/interface/buzzer.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/RGBLEDStrip.hpp"
 
 // Classe intégrant toutes les fonctionnalités nécessaires au fonctionnement d'une alarme.
 class Alarm : public Output
 {
 public:
-    Alarm(String friendlyName, int ID, Display &display, HomeAssistant &connection, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
+    Alarm(String friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

@@ -6,7 +6,8 @@
 #include <DHT_U.h>
 
 // Autres fichiers du programme.
-#include "input.hpp"
+#include "device/input/input.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe permettant d'interagir avec un capteur d'air DHT22.
 class AirSensor : public Input

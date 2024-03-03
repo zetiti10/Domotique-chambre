@@ -6,19 +6,23 @@
  * @date 2024-01-20
  */
 
+// Ajout des bibilothèques au programme.
+#include <Arduino.h>
+
 // Autres fichiers du programme.
-#include "HomeAssistant.hpp"
-#include "../output/alarm.hpp"
-#include "../output/binaryOutput.hpp"
-#include "../output/connectedOutput.hpp"
-#include "../output/output.hpp"
-#include "../output/RGBLEDStrip.hpp"
-#include "../output/television.hpp"
-#include "../output/tray.hpp"
+#include "device/interface/HomeAssistant.hpp"
+#include "device/interface/display.hpp"
+#include "device/output/alarm.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/connectedOutput.hpp"
+#include "device/output/output.hpp"
+#include "device/output/RGBLEDStrip.hpp"
+#include "device/output/television.hpp"
+#include "device/output/tray.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
-/// @param ID L'identifiant unique de l'instance.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
 HomeAssistant::HomeAssistant(String friendlyName, int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr) {}
 

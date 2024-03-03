@@ -5,14 +5,15 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "output.hpp"
-#include "../interface/display.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe gérant un ruban de DEL.
 class RGBLEDStrip : public Output
 {
 public:
-    RGBLEDStrip(String friendlyName, int ID, Display &display, HomeAssistant &connection, int RPin, int GPin, int BPin);
+    RGBLEDStrip(String friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

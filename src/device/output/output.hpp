@@ -5,15 +5,15 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "../device.hpp"
-#include "../interface/display.hpp"
-#include "../interface/HomeAssistant.hpp"
+#include "device/device.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe commune à tous les périphériques de sortie (actionneurs).
 class Output : public Device
 {
 public:
-    Output(String friendlyName, int ID, Display &display, HomeAssistant &connection);
+    Output(String friendlyName, int ID, HomeAssistant &connection, Display &display);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) = 0;
     virtual void turnOff(bool shareInformation = false) = 0;

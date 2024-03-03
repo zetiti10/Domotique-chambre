@@ -10,15 +10,18 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "binaryOutput.hpp"
-#include "output.hpp"
-#include "../interface/display.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param relayPin La broche de l'Arduino liée au relai qui contrôle le périphérique.
-BinaryOutput::BinaryOutput(String friendlyName, int ID, Display &display, HomeAssistant &connection, int relayPin) : Output(friendlyName, ID, display, connection), m_relayPin(relayPin) {}
+BinaryOutput::BinaryOutput(String friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin) : Output(friendlyName, ID, connection, display), m_relayPin(relayPin) {}
 
 /// @brief Initialise l'objet.
 void BinaryOutput::setup()

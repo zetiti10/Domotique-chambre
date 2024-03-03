@@ -10,17 +10,20 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "tray.hpp"
-#include "output.hpp"
-#include "../interface/display.hpp"
+#include "device/output/tray.hpp"
+#include "device/output/output.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param motorPin1 La broche 1 liée au contrôleur du moteur.
 /// @param motorPin2 La broche 2 liée au contrôleur du moteur.
 /// @param speedPin La broche liée au contrôleur du moteur, gérant sa vitesse.
-Tray::Tray(String friendlyName, int ID, Display &display, HomeAssistant &connection, int motorPin1, int motorPin2, int speedPin) : Output(friendlyName, ID, display, connection), m_motorPin1(motorPin1), m_motorPin2(motorPin2), m_speedPin(speedPin) {}
+Tray::Tray(String friendlyName, int ID, HomeAssistant &connection, Display &display, int motorPin1, int motorPin2, int speedPin) : Output(friendlyName, ID, connection, display), m_motorPin1(motorPin1), m_motorPin2(motorPin2), m_speedPin(speedPin) {}
 
 /// @brief Initialise l'objet.
 void Tray::setup()

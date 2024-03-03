@@ -10,11 +10,14 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "analogInput.hpp"
-#include "input.hpp"
+#include "device/input/analogInput.hpp"
+#include "device/input/input.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche liée au capteur.
 AnalogInput::AnalogInput(String friendlyName, int ID, HomeAssistant connection, int pin) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin) {}
 

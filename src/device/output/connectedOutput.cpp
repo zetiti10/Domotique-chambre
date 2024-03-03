@@ -10,9 +10,10 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "connectedOutput.hpp"
+#include "device/output/connectedOutput.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
-ConnectedOutput::ConnectedOutput(String friendlyName, int ID, Display &display, HomeAssistant &connection) : Output(friendlyName, ID, display, connection) {}
+ConnectedOutput::ConnectedOutput(String friendlyName, int ID, HomeAssistant &connection, Display &display) : Output(friendlyName, ID, connection, display) {}
 
 void ConnectedOutput::setup()
 {
@@ -72,7 +73,7 @@ void ConnectedOutput::setUnavailable()
     m_operational = false;
 }
 
-ConnectedTemperatureVariableLight::ConnectedTemperatureVariableLight(String friendlyName, int ID, Display &display, HomeAssistant &connection, int minimalColorTemperature, int maximalColorTemperature) : ConnectedOutput(friendlyName, ID, display, connection), m_minimalColorTemperature(minimalColorTemperature), m_maximalColorTemperature(maximalColorTemperature), m_colorTemperature(m_minimalColorTemperature), m_luminosity(255) {}
+ConnectedTemperatureVariableLight::ConnectedTemperatureVariableLight(String friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature) : ConnectedOutput(friendlyName, ID, connection, display), m_minimalColorTemperature(minimalColorTemperature), m_maximalColorTemperature(maximalColorTemperature), m_colorTemperature(m_minimalColorTemperature), m_luminosity(255) {}
 
 void ConnectedTemperatureVariableLight::setColorTemperature(int temperature, bool shareInformation)
 {
@@ -134,7 +135,7 @@ void ConnectedTemperatureVariableLight::updateLuminosity(int luminosity, bool sh
         m_display.displayLuminosity(m_luminosity);
 }
 
-ConnectedColorVariableLight::ConnectedColorVariableLight(String friendlyName, int ID, Display &display, HomeAssistant &connection, int minimalColorTemperature, int maximalColorTemperature) : ConnectedTemperatureVariableLight(friendlyName, ID, display, connection, minimalColorTemperature, maximalColorTemperature) {}
+ConnectedColorVariableLight::ConnectedColorVariableLight(String friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature) : ConnectedTemperatureVariableLight(friendlyName, ID, connection, display, minimalColorTemperature, maximalColorTemperature) {}
 
 void ConnectedColorVariableLight::setColor(int r, int g, int b, bool shareInformation)
 {

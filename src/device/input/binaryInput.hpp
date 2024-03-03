@@ -5,11 +5,12 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "input.hpp"
-#include "../output/binaryOutput.hpp"
-#include "../output/alarm.hpp"
-#include "../interface/display.hpp"
-#include "../interface/buzzer.hpp"
+#include "device/input/input.hpp"
+#include "device/output/binaryOutput.hpp"
+#include "device/output/alarm.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/buzzer.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 // Classe représentant un capteur dont la valeur mesurée est binaire.
 class BinaryInput : public Input

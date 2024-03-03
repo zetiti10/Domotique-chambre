@@ -5,7 +5,7 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "../device.hpp"
+#include "device/device.hpp"
 
 // Classe intégrant les méthodes nécessaires pour émettre des sons avec le buzzer.
 class Buzzer : public Device

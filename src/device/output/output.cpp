@@ -10,14 +10,15 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "output.hpp"
-#include "../device.hpp"
-#include "../interface/display.hpp"
+#include "device/output/output.hpp"
+#include "device/device.hpp"
+#include "device/interface/display.hpp"
+#include "device/interface/HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-Output::Output(String friendlyName, int ID, Display &display, HomeAssistant &connection) : Device(friendlyName, ID), m_display(display), m_connection(connection), m_state(false), m_locked(false) {}
+Output::Output(String friendlyName, int ID, HomeAssistant &connection, Display &display) : Device(friendlyName, ID), m_display(display), m_connection(connection), m_state(false), m_locked(false) {}
 
 /// @brief Initialise l'objet.
 void Output::setup()

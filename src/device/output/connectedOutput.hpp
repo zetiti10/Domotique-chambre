@@ -14,9 +14,9 @@ class ConnectedOutput : public Output
 {
 public:
     ConnectedOutput(String friendlyName, int ID, HomeAssistant &connection, Display &display);
-    virtual void setup();
-    virtual void turnOn(bool shareInformation = false);
-    virtual void turnOff(bool shareInformation = false);
+    virtual void setup() override;
+    virtual void turnOn(bool shareInformation = false) override;
+    virtual void turnOff(bool shareInformation = false) override;
 
 protected:
     virtual void updateOn(bool shareInformation = false);

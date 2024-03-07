@@ -135,7 +135,7 @@ void ConnectedTemperatureVariableLight::updateLuminosity(int luminosity, bool sh
         m_display.displayLuminosity(m_luminosity);
 }
 
-ConnectedColorVariableLight::ConnectedColorVariableLight(String friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature) : ConnectedTemperatureVariableLight(friendlyName, ID, connection, display, minimalColorTemperature, maximalColorTemperature) {}
+ConnectedColorVariableLight::ConnectedColorVariableLight(String friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature) : ConnectedTemperatureVariableLight(friendlyName, ID, connection, display, minimalColorTemperature, maximalColorTemperature), m_RColor(0), m_BColor(0), m_GColor(0) {}
 
 void ConnectedColorVariableLight::setColor(int r, int g, int b, bool shareInformation)
 {

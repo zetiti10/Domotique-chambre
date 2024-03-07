@@ -14,7 +14,7 @@
 class IRSensor : public Input
 {
 public:
-    IRSensor(String friendlyName, int ID, HomeAssistant connection, int pin);
+    IRSensor(String friendlyName, int ID, HomeAssistant &connection, int pin);
     virtual void setup() override;
     virtual void loop() override;
 

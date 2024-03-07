@@ -13,7 +13,7 @@
 class AirSensor : public Input
 {
 public:
-    AirSensor(String friendlyName, int ID, HomeAssistant connection, int pin);
+    AirSensor(String friendlyName, int ID, HomeAssistant &connection, int pin);
     virtual void setup() override;
     virtual void loop() override;
     virtual float getTemperature() const;

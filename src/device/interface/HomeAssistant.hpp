@@ -28,7 +28,7 @@ class HomeAssistant : public Device
 public:
     HomeAssistant(String friendlyName, int ID, HardwareSerial &serial, Display &display);
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode);
-    virtual void setup();
+    virtual void setup() override;
     virtual void loop();
     virtual void turnOnConnectedDevice(int ID);
     virtual void turnOffConnectedDevice(int ID);

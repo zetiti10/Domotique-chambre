@@ -12,7 +12,7 @@
 class Input : public Device
 {
 public:
-    Input(String friendlyName, int ID, HomeAssistant connection);
+    Input(String friendlyName, int ID, HomeAssistant &connection);
     virtual void setup() override;
     virtual void loop() = 0;
 

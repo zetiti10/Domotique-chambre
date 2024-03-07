@@ -12,7 +12,7 @@
 class AnalogInput : public Input
 {
 public:
-    AnalogInput(String friendlyName, int ID, HomeAssistant connection, int pin);
+    AnalogInput(String friendlyName, int ID, HomeAssistant &connection, int pin);
     virtual void setup() override;
     virtual void loop() override;
     virtual int getValue();

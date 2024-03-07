@@ -8,7 +8,7 @@
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 
-#define UART_WAITING_TIME 320 / 115200 + 1
+#define UART_WAITING_TIME 10
 
 // Déclaration des classes utilisées par la classe HomeAssistant.
 class Output;

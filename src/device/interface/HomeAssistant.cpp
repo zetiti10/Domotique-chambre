@@ -49,7 +49,7 @@ void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output 
 /// @brief Initialise la communication avec Home Assistant. Nécessite d'avoir défini les périphériques connectés auparavant. Méthode à exécuter avant d'initialiser les autres périphériques du système de domotique.
 void HomeAssistant::setup()
 {
-    if (m_devicesNumber == 0 || m_remoteDevicesNumber == 0)
+    if (m_devicesNumber == 0 || m_remoteDevicesNumber == 0 || m_operational)
         return;
 
     m_serial.begin(9600);

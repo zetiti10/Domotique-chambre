@@ -19,7 +19,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche liée au capteur.
-AnalogInput::AnalogInput(String friendlyName, int ID, HomeAssistant &connection, int pin) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin) {}
+AnalogInput::AnalogInput(String friendlyName, int ID, HomeAssistant &connection, int pin, bool connected) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin), m_connected(connected) {}
 
 /// @brief Initialise l'objet.
 void AnalogInput::setup()
@@ -37,7 +37,15 @@ void AnalogInput::setup()
 }
 
 /// @brief Boucle d'exécution des tâches liées au capteur.
-void AnalogInput::loop() {}
+void AnalogInput::loop()
+{
+    if (m_connected && ((millis() - m_lastTime) >= 10000))
+    {
+        m_connection.updateAnalogInput(m_ID, getValue());
+
+        m_lastTime = millis();
+    }
+}
 
 /// @brief Méthode permettant de récupérer la valeur actuelle du capteur.
 /// @return La valeur actuelle du capteur.

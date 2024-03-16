@@ -57,16 +57,33 @@ void BinaryInput::loop()
         m_connection.updateBinaryInput(m_ID, m_state);
 }
 
-// Retourne l'état actuel du capteur.
+/// @brief Méthode permettant de lire l'état de l'entrée, en mettant à jour son état. Une protection anti-erreur est intégrée.
+/// @return L'état actuel de l'entrée.
 bool BinaryInput::getState()
 {
-    if (m_reverted)
-        m_state = !digitalRead(m_pin);
+    bool previous_state = m_state;
 
-    else
-        m_state = digitalRead(m_pin);
+    while (1)
+    {
+        bool new_state;
 
-    return m_state;
+        if (m_reverted)
+            new_state = !digitalRead(m_pin);
+
+        else
+            new_state = digitalRead(m_pin);
+
+        if (new_state == previous_state)
+        {
+            m_state = new_state;
+
+            return m_state;
+        }
+
+        previous_state = new_state;
+
+        delay(1);
+    }
 }
 
 /// @brief Constructeur de la classe.
@@ -88,9 +105,11 @@ void WardrobeDoorSensor::setup()
 /// @brief Méthode d'exécution des tâches liées au capteur.
 void WardrobeDoorSensor::loop()
 {
+    bool previousState = m_state;
+
     BinaryInput::loop();
 
-    if (m_activated && m_output.getAvailability() && (m_state != m_output.getState()))
+    if ((previousState != m_state) && m_activated && m_output.getAvailability())
     {
         if (m_state)
             m_output.turnOn(true);
@@ -164,15 +183,19 @@ void Doorbell::setup()
     m_lastTime = millis();
 }
 
-/// @brief Méthode d'exécution des tâches liées au capteur.
+/// @brief Méthode d'exécution des tâches liées au capteur. Envoi à Home Assistant de l'état lorque la sonnette est déclenchée.
 void Doorbell::loop()
 {
-    BinaryInput::loop();
+    getState();
 
     if (m_state && ((millis() - m_lastTime) >= 10000))
     {
+        m_connection.updateBinaryInput(m_ID, true);
+
         m_display.displayBell();
         m_buzzer.doorbellMusic();
+
+        m_connection.updateBinaryInput(m_ID, false);
 
         m_lastTime = millis();
     }

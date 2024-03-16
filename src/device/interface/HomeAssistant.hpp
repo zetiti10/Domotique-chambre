@@ -48,10 +48,10 @@ public:
     virtual void updateAirSensor(int ID, float temperature, float humidity);
 
 protected:
-    virtual String addZeros(int number, int length);
     virtual Output *getDeviceFromID(int ID);
     virtual ConnectedOutput *getRemoteDeviceFromID(int ID);
-    virtual int getIntFromString(String &string, int position, int lenght);
+    static String addZeros(int number, int length);
+    static int getIntFromString(String &string, int position, int lenght);
     HardwareSerial &m_serial;
     Display &m_display;
     Output **m_deviceList;

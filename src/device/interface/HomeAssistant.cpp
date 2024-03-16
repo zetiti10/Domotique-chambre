@@ -54,25 +54,6 @@ void HomeAssistant::setup()
 
     m_serial.begin(9600);
 
-    // Vérification de la connexion.
-    m_serial.println("2");
-
-    unsigned long initialTime = millis();
-
-    while (!m_serial.available())
-    {
-        if ((millis() - initialTime) >= 5000)
-            return;
-    }
-
-    while (m_serial.available() > 0)
-    {
-        char letter = m_serial.read();
-
-        if (letter == '\n')
-            break;
-    }
-
     m_display.setup();
 
     m_operational = true;
@@ -537,16 +518,6 @@ void HomeAssistant::updateAirSensor(int ID, float temperature, float humidity)
     m_serial.println(hum);
 }
 
-String HomeAssistant::addZeros(int number, int length)
-{
-    String result = String(number);
-    while (result.length() < (unsigned int)length)
-    {
-        result = "0" + result;
-    }
-    return result;
-}
-
 Output *HomeAssistant::getDeviceFromID(int ID)
 {
     for (int i = 0; i < m_devicesNumber; i++)
@@ -567,6 +538,16 @@ ConnectedOutput *HomeAssistant::getRemoteDeviceFromID(int ID)
     }
 
     return nullptr;
+}
+
+String HomeAssistant::addZeros(int number, int length)
+{
+    String result = String(number);
+    while (result.length() < (unsigned int)length)
+    {
+        result = "0" + result;
+    }
+    return result;
 }
 
 int HomeAssistant::getIntFromString(String &string, int position, int lenght)

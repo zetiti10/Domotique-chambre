@@ -19,11 +19,11 @@
 #define ID_DOORBELL 15
 #define ID_LIGHT_SENSOR 16
 #define ID_MICROPHONE 17
-#define ID_AIR_SENSOR 18
-#define ID_IR_SENSOR 19
-#define ID_DISPLAY 20
-#define ID_BUZZER 21
-#define ID_HA 22
+#define ID_AIR_SENSOR 18 // 18 : température ; 19 : humidité.
+#define ID_IR_SENSOR 20
+#define ID_DISPLAY 21
+#define ID_BUZZER 22
+#define ID_HA 23
 
 // Périphériques distants.
 #define ID_MAIN_LIGHTS 96

@@ -52,7 +52,7 @@ void Tray::turnOn(bool shareInformation)
     digitalWrite(m_motorPin1, LOW);
     digitalWrite(m_motorPin2, HIGH);
 
-    m_display.displayTray(shareInformation, true);
+    m_display.displayTray(true, shareInformation);
 
     digitalWrite(m_motorPin1, HIGH);
     digitalWrite(m_motorPin2, HIGH);
@@ -70,15 +70,15 @@ void Tray::turnOff(bool shareInformation)
 
     m_connection.updateOutputDeviceState(m_ID, false);
 
-    analogWrite(m_speedPin, 120);
+    analogWrite(m_speedPin, 140);
     digitalWrite(m_motorPin1, HIGH);
     digitalWrite(m_motorPin2, LOW);
 
-    m_display.displayTray(shareInformation, false);
+    m_display.displayTray(false, shareInformation);
 
     digitalWrite(m_motorPin1, HIGH);
     digitalWrite(m_motorPin2, HIGH);
-    analogWrite(m_speedPin, 120);
+    analogWrite(m_speedPin, 140);
 
     m_state = false;
 }

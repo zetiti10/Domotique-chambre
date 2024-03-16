@@ -501,7 +501,7 @@ void HomeAssistant::updateAnalogInput(int ID, int state)
     m_serial.print(this->addZeros(ID, 2));
     m_serial.print(0);
     m_serial.print(8);
-    m_serial.println(state);
+    m_serial.println(this->addZeros(state, 4));
 }
 
 void HomeAssistant::updateAirSensor(int ID, float temperature, float humidity)

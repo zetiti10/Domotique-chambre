@@ -83,8 +83,8 @@ Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &tray, &LED
 int devicesNumber = 26;
 
 // Liste des périphériques connectés à Home Assistant.
-Output *HADeviceList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &LEDStrip, &alarm, &television};
-int HADevicesNumber = 10;
+Output *HADeviceList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television};
+int HADevicesNumber = 11;
 
 // Liste des périphériques importés de Home Assistant.
 Output *HARemoteDeviceList[] = {&mainLights, &sofaLight, &bedLight, &cameraLight};

@@ -64,8 +64,8 @@ WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", ID_WARD
 DoorSensor doorSensor("Capteur de la porte de la chambre", ID_DOOR_SENSOR, HomeAssistantConnection, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
 BinaryInput presenceSensor("Capteur de présence", ID_PRESENCE_SENSOR, HomeAssistantConnection, PIN_MOTION_SENSOR, false, false);
 Doorbell doorbell("Sonnette", ID_DOORBELL, HomeAssistantConnection, PIN_DOORBELL_BUTTON, false, false, display, buzzer);
-AnalogInput lightSensor("Capteur de luminosité", ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR);
-AnalogInput microphone("Microphone", ID_MICROPHONE, HomeAssistantConnection, PIN_MICROPHONE);
+AnalogInput lightSensor("Capteur de luminosité", ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR, true);
+AnalogInput microphone("Microphone", ID_MICROPHONE, HomeAssistantConnection, PIN_MICROPHONE, false);
 AirSensor airSensor("Capteur de l'air", ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
 IRSensor iRSensor("Capteur infrarouge", ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
 

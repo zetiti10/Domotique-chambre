@@ -127,11 +127,11 @@ void HomeAssistant::processMessage()
             {
             case 0:
                 m_colorMode->setColor(this->getIntFromString(m_receivedMessage, 5, 3), this->getIntFromString(m_receivedMessage, 8, 3), this->getIntFromString(m_receivedMessage, 11, 3));
-                strip->setMode(*static_cast<RGBLEDStripMode *>(m_colorMode), true);
+                strip->setMode(static_cast<RGBLEDStripMode *>(m_colorMode), true);
                 break;
 
             case 1:
-                strip->setMode(*static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
+                strip->setMode(static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
                 break;
 
             case 2:

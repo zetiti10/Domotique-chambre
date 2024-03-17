@@ -75,7 +75,7 @@ void Alarm::turnOn(bool shareInformation)
     if (!m_operational || m_locked || m_state || m_cardToStoreState || m_strip.isLocked() || m_beacon.isLocked())
         return;
 
-    m_previousMode = &m_strip.getMode();
+    m_previousMode = m_strip.getMode();
 
     m_doorLED.turnOn();
     m_beacon.turnOff();
@@ -107,7 +107,7 @@ void Alarm::turnOff(bool shareInformation)
     m_beacon.unLock();
     m_strip.unLock();
 
-    m_strip.setMode(*m_previousMode);
+    m_strip.setMode(m_previousMode);
 
     m_doorLED.turnOff();
 
@@ -218,7 +218,7 @@ void Alarm::trigger()
     m_strip.unLock();
 
     m_beacon.turnOn();
-    m_strip.setMode(m_alarmStripMode);
+    m_strip.setMode(&m_alarmStripMode);
     m_strip.turnOn();
 
     m_beacon.lock();
@@ -229,8 +229,11 @@ void Alarm::trigger()
     m_display.displayAlarmTriggered(false);
 
     m_connection.updateAlarmTriggeredState(m_ID, true);
+    m_connection.sayMessage("Une intrusion à été détectée ! Vous êtes prié de quitter les lieux immédiatement.");
 
-    m_missileLauncher.absoluteMove(BASE, 110);
+    m_lastTimeAutoTriggerOff = millis();
+
+    m_missileLauncher.absoluteMove(BASE, 150);
     m_missileLauncher.absoluteMove(ANGLE, 10);
 
     int baseAngle = 0;

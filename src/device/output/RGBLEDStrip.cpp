@@ -93,7 +93,7 @@ void RGBLEDStrip::loop()
 /// @brief Change le mode actuel du ruban de DEL RVB.
 /// @param mode Le mode à sélectionner.
 /// @param shareInformation Affichage ou non de l'animation sur l'écran.
-void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
+void RGBLEDStrip::setMode(RGBLEDStripMode *mode, bool shareInformation)
 {
     if (m_locked)
         return;
@@ -101,7 +101,10 @@ void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
     if (m_mode != nullptr && m_operational && m_state)
         m_mode->desactivate();
 
-    m_mode = &mode;
+    m_mode = mode;
+
+    if (m_mode == nullptr)
+        return;
 
     if (shareInformation)
         m_display.displayMessage(m_mode->getFriendlyName(), "Mode");
@@ -114,9 +117,9 @@ void RGBLEDStrip::setMode(RGBLEDStripMode &mode, bool shareInformation)
 
 /// @brief Méthode renvoyant le mode actuel du ruban de DEL RVB.
 /// @return Le mode actuel du ruban de DEL RVB.
-RGBLEDStripMode &RGBLEDStrip::getMode() const
+RGBLEDStripMode *RGBLEDStrip::getMode() const
 {
-    return *m_mode;
+    return m_mode;
 }
 
 /// @brief Méthode renvoyant l'intensité actuelle du rouge du ruban de DEL RVB.
@@ -279,13 +282,13 @@ void AlarmMode::desactivate()
 
 void AlarmMode::loop()
 {
-    if ((millis() - m_lastTime) >= 200 && (millis() - m_lastTime) <= 300)
+    if ((millis() - m_lastTime) >= 500 && (millis() - m_lastTime) <= 600)
     {
-        m_lastTime += 100;
+        m_lastTime -= 100;
         m_strip.setColor(255, 0, 0);
     }
 
-    else if ((millis() - m_lastTime) >= 400)
+    else if ((millis() - m_lastTime) >= 1000)
     {
         m_lastTime = millis();
         m_strip.setColor(0, 0, 0);

@@ -18,8 +18,8 @@ public:
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
     virtual void loop();
-    virtual void setMode(RGBLEDStripMode &mode, bool shareInformation = false);
-    virtual RGBLEDStripMode &getMode() const;
+    virtual void setMode(RGBLEDStripMode *mode, bool shareInformation = false);
+    virtual RGBLEDStripMode *getMode() const;
     virtual int getR() const;
     virtual int getG() const;
     virtual int getB() const;

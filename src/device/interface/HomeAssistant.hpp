@@ -8,8 +8,6 @@
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 
-#define UART_WAITING_TIME 10
-
 // Déclaration des classes utilisées par la classe HomeAssistant.
 class Output;
 class ColorMode;
@@ -30,6 +28,7 @@ public:
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode);
     virtual void setup() override;
     virtual void loop();
+    virtual void processMessage();
     virtual void turnOnConnectedDevice(int ID);
     virtual void turnOffConnectedDevice(int ID);
     virtual void toggleConnectedDevice(int ID);
@@ -46,6 +45,7 @@ public:
     virtual void updateBinaryInput(int ID, bool state);
     virtual void updateAnalogInput(int ID, int state);
     virtual void updateAirSensor(int ID, float temperature, float humidity);
+    virtual void sayMessage(String message);
 
 protected:
     virtual Output *getDeviceFromID(int ID);
@@ -53,6 +53,7 @@ protected:
     static String addZeros(int number, int length);
     static int getIntFromString(String &string, int position, int lenght);
     HardwareSerial &m_serial;
+    String m_receivedMessage;
     Display &m_display;
     Output **m_deviceList;
     int m_devicesNumber;

@@ -59,47 +59,48 @@ void HomeAssistant::setup()
     m_operational = true;
 }
 
-/// @brief Boucle d'exécution des tâches liées à la communication avec l'ESP : réception et traitement des messages.
+/// @brief Boucle d'exécution des tâches liées à la communication avec l'ESP : réception des messages.
 void HomeAssistant::loop()
 {
     if (!m_operational)
         return;
 
-    if (!m_serial.available())
-        return;
-
-    // Réception du message sous forme d'un String pour pouvoir le traiter.
-    delay(UART_WAITING_TIME);
-
-    String receivedMessage;
     while (m_serial.available() > 0)
     {
         char letter = m_serial.read();
 
+        if (letter == '\r')
+            continue;
+
         if (letter == '\n')
-            break;
+            processMessage();
 
-        receivedMessage += letter;
+        else
+            m_receivedMessage += letter;
     }
+}
 
+/// @brief Traitement des messages reçus
+void HomeAssistant::processMessage()
+{
     // Traitement du message reçu afin d'exécuter l'action demandée.
-    switch (getIntFromString(receivedMessage, 0, 1))
+    switch (getIntFromString(m_receivedMessage, 0, 1))
     {
     // Requête d'un ordre.
     case 0:
     {
         // Récupération du périphérique de sortie à partir de son ID.
-        Output *output = this->getDeviceFromID(this->getIntFromString(receivedMessage, 1, 2));
+        Output *output = this->getDeviceFromID(this->getIntFromString(m_receivedMessage, 1, 2));
 
         if (output == nullptr)
             return;
 
-        switch (getIntFromString(receivedMessage, 3, 2))
+        switch (getIntFromString(m_receivedMessage, 3, 2))
         {
         // Gestion de l'alimentation.
         case 0:
         {
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
                 output->turnOff(true);
@@ -122,10 +123,10 @@ void HomeAssistant::loop()
         {
             RGBLEDStrip *strip = static_cast<RGBLEDStrip *>(output);
 
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
-                m_colorMode->setColor(this->getIntFromString(receivedMessage, 5, 3), this->getIntFromString(receivedMessage, 8, 3), this->getIntFromString(receivedMessage, 11, 3));
+                m_colorMode->setColor(this->getIntFromString(m_receivedMessage, 5, 3), this->getIntFromString(m_receivedMessage, 8, 3), this->getIntFromString(m_receivedMessage, 11, 3));
                 strip->setMode(*static_cast<RGBLEDStripMode *>(m_colorMode), true);
                 break;
 
@@ -147,7 +148,7 @@ void HomeAssistant::loop()
         {
             Alarm *alarm = static_cast<Alarm *>(output);
 
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
                 alarm->stopRinging();
@@ -166,7 +167,7 @@ void HomeAssistant::loop()
         {
             Television *television = static_cast<Television *>(output);
 
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
                 television->decreaseVolume(true);
@@ -200,17 +201,17 @@ void HomeAssistant::loop()
     case 1:
     {
         // Récupération du périphérique distant à partir de son ID.
-        ConnectedOutput *output = this->getRemoteDeviceFromID(this->getIntFromString(receivedMessage, 1, 2));
+        ConnectedOutput *output = this->getRemoteDeviceFromID(this->getIntFromString(m_receivedMessage, 1, 2));
 
         if (output == nullptr)
             return;
 
-        switch (getIntFromString(receivedMessage, 3, 2))
+        switch (getIntFromString(m_receivedMessage, 3, 2))
         {
         // Mise à jour de la disponibilité.
         case 0:
         {
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
                 output->setUnavailable();
@@ -227,7 +228,7 @@ void HomeAssistant::loop()
         // Gestion de l'alimentation.
         case 1:
         {
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
                 output->updateOff(true);
@@ -246,14 +247,14 @@ void HomeAssistant::loop()
         {
             ConnectedTemperatureVariableLight *light = static_cast<ConnectedTemperatureVariableLight *>(output);
 
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 2:
-                light->updateColorTemperature(this->getIntFromString(receivedMessage, 6, 4), true);
+                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), true);
                 break;
 
             case 3:
-                light->updateLuminosity(this->getIntFromString(receivedMessage, 6, 3), true);
+                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), true);
                 break;
             }
 
@@ -265,18 +266,18 @@ void HomeAssistant::loop()
         {
             ConnectedColorVariableLight *light = static_cast<ConnectedColorVariableLight *>(output);
 
-            switch (getIntFromString(receivedMessage, 5, 1))
+            switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 2:
-                light->updateColor(this->getIntFromString(receivedMessage, 6, 3), this->getIntFromString(receivedMessage, 9, 3), this->getIntFromString(receivedMessage, 12, 3), true);
+                light->updateColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3), true);
                 break;
 
             case 3:
-                light->updateColorTemperature(this->getIntFromString(receivedMessage, 6, 4), true);
+                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), true);
                 break;
 
             case 4:
-                light->updateLuminosity(this->getIntFromString(receivedMessage, 6, 3), true);
+                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), true);
                 break;
             }
 
@@ -291,12 +292,12 @@ void HomeAssistant::loop()
     case 2:
     {
         // Détection du "/" qui délimite le titre du message.
-        for (unsigned int i = 0; i < receivedMessage.length(); i ++)
+        for (unsigned int i = 0; i < m_receivedMessage.length(); i++)
         {
-            if (receivedMessage.charAt(i) == '/')
+            if (m_receivedMessage.charAt(i) == '/')
             {
-                m_display.displayMessage(receivedMessage.substring(i + 1), receivedMessage.substring(1, i - 1));
-                
+                m_display.displayMessage(m_receivedMessage.substring(i + 1), m_receivedMessage.substring(1, i));
+
                 break;
             }
         }
@@ -304,6 +305,8 @@ void HomeAssistant::loop()
         break;
     }
     }
+
+    m_receivedMessage = "";
 }
 
 void HomeAssistant::turnOnConnectedDevice(int ID)
@@ -516,6 +519,12 @@ void HomeAssistant::updateAirSensor(int ID, float temperature, float humidity)
 
     m_serial.print(temp);
     m_serial.println(hum);
+}
+
+void HomeAssistant::sayMessage(String message)
+{
+    m_serial.print(2);
+    m_serial.println(message);
 }
 
 Output *HomeAssistant::getDeviceFromID(int ID)

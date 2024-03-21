@@ -93,7 +93,7 @@ void HomeAssistant::processMessage()
         Output *output = this->getDeviceFromID(this->getIntFromString(m_receivedMessage, 1, 2));
 
         if (output == nullptr)
-            return;
+            break;
 
         switch (getIntFromString(m_receivedMessage, 3, 2))
         {
@@ -204,7 +204,7 @@ void HomeAssistant::processMessage()
         ConnectedOutput *output = this->getRemoteDeviceFromID(this->getIntFromString(m_receivedMessage, 1, 2));
 
         if (output == nullptr)
-            return;
+            break;
 
         switch (getIntFromString(m_receivedMessage, 3, 2))
         {
@@ -542,7 +542,7 @@ ConnectedOutput *HomeAssistant::getRemoteDeviceFromID(int ID)
 {
     for (int i = 0; i < m_remoteDevicesNumber; i++)
     {
-        if (m_deviceList[i]->getID() == ID)
+        if (m_remoteDeviceList[i]->getID() == ID)
             return static_cast<ConnectedOutput *>(m_remoteDeviceList[i]);
     }
 

@@ -23,6 +23,8 @@ void ConnectedOutput::setup()
     Output::setup();
 
     m_connection.setup();
+
+    m_operational = true; // Provisoire
 }
 
 void ConnectedOutput::turnOn(bool shareInformation)

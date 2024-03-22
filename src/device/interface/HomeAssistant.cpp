@@ -564,7 +564,14 @@ int HomeAssistant::getIntFromString(String &string, int position, int lenght)
     int result = 0;
 
     for (int i = 0; i < lenght; i++)
-        result += (string.charAt(position + i) - '0') * pow(10, ((lenght - i) - 1));
+    {
+        int power = 1;
+
+        for (int j = 0; j < ((lenght - i) - 1); j++)
+            power *= 10;
+
+        result += (string.charAt(position + i) - '0') * power;
+    }
 
     return result;
 }

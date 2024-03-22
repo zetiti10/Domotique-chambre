@@ -141,10 +141,10 @@ void Display::displayVolume(VolumeType action, int volume)
     // Affichage du volume selon le mode sélectionné.
     if (action == DECREASE || action == INCREASE || action == UNMUTE)
     {
-        m_display.drawRect(50, 52, 27, 3, WHITE);
+        m_display.drawRect(50, 52, 27, 4, WHITE);
 
         if (volume > 0)
-            m_display.drawLine(51, 53, 51 + volume, 53, WHITE);
+            m_display.fillRect(51, 53, volume, 2, WHITE);
 
         m_display.setTextSize(1);
         m_display.setCursor(80, 52);
@@ -489,12 +489,12 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
 
     m_display.clearDisplay();
 
-    // m_display.drawBitmap(0, 0, temperatureBitmap, 128, 64, WHITE);
+    m_display.drawBitmap(0, 0, lightColorTemperatureBitmap, 128, 64, WHITE);
 
-    m_display.drawRect(50, 52, 27, 3, WHITE);
+    m_display.drawRect(50, 52, 27, 4, WHITE);
 
     if (temperature > minimum)
-        m_display.drawLine(51, 53, 51 + map(temperature, minimum, maximum, 0, 25), 53, WHITE);
+        m_display.fillRect(51, 53, map(temperature, minimum, maximum, 0, 25), 2, WHITE);
 
     m_display.setTextSize(1);
     m_display.setCursor(52, 57);
@@ -520,12 +520,12 @@ void Display::displayLuminosity(int luminosity)
 
     m_display.clearDisplay();
 
-    // m_display.drawBitmap(0, 0, luminosityBitmap, 128, 64, WHITE);
+    m_display.drawBitmap(0, 0, lightLuminosityBitmap, 128, 64, WHITE);
 
-    m_display.drawRect(50, 52, 27, 3, WHITE);
+    m_display.drawRect(50, 52, 27, 4, WHITE);
 
     if (luminosity > 0)
-        m_display.drawLine(51, 53, 51 + map(luminosity, 0, 255, 0, 25), 53, WHITE);
+        m_display.fillRect(51, 53, map(luminosity, 0, 255, 0, 25), 2, WHITE);
 
     m_display.setTextSize(1);
     m_display.setCursor(55, 57);

@@ -264,7 +264,7 @@ void Display::displayLEDState(int r, int g, int b)
 /// @param on Mise en marche ou errêt.
 void Display::displayDeviceState(bool on)
 {
-    if (!m_operational || (millis() - m_lastStateAnimation) <= 1000)
+    if (!m_operational || (millis() - m_lastStateAnimation) <= 500)
         return;
 
     m_display.clearDisplay();
@@ -491,20 +491,14 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
 
     m_display.drawBitmap(0, 0, lightColorTemperatureBitmap, 128, 64, WHITE);
 
-    m_display.drawRect(50, 52, 27, 4, WHITE);
+    m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (temperature > minimum)
-        m_display.fillRect(51, 53, map(temperature, minimum, maximum, 0, 25), 2, WHITE);
+        m_display.fillRect(15, 46, map(temperature, minimum, maximum, 0, 98), 4, WHITE);
 
     m_display.setTextSize(1);
-    m_display.setCursor(52, 57);
+    m_display.setCursor(49, 57);
     m_display.print(temperature);
-    m_display.print('K');
-    m_display.setCursor(5, 52);
-    m_display.print(minimum);
-    m_display.print('K');
-    m_display.setCursor(95, 52);
-    m_display.print(maximum);
     m_display.print('K');
 
     m_display.display();
@@ -522,13 +516,23 @@ void Display::displayLuminosity(int luminosity)
 
     m_display.drawBitmap(0, 0, lightLuminosityBitmap, 128, 64, WHITE);
 
-    m_display.drawRect(50, 52, 27, 4, WHITE);
+    m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (luminosity > 0)
-        m_display.fillRect(51, 53, map(luminosity, 0, 255, 0, 25), 2, WHITE);
+        m_display.fillRect(15, 46, map(luminosity, 0, 255, 0, 98), 4, WHITE);
 
     m_display.setTextSize(1);
-    m_display.setCursor(55, 57);
+
+    if (luminosity < 10)
+        m_display.setCursor(58, 57);
+
+    else if (luminosity < 100)
+        m_display.setCursor(55, 57);
+
+    else
+        m_display.setCursor(52, 57);
+
+
     m_display.print(map(luminosity, 0, 255, 0, 100));
     // Code pour insérer un "%".
     m_display.write(0x25);

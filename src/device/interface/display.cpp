@@ -18,7 +18,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Display::Display(String friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0) {}
+Display::Display(String friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()
@@ -264,7 +264,7 @@ void Display::displayLEDState(int r, int g, int b)
 /// @param on Mise en marche ou errêt.
 void Display::displayDeviceState(bool on)
 {
-    if (!m_operational)
+    if (!m_operational || (millis() - m_lastStateAnimation) <= 1000)
         return;
 
     m_display.clearDisplay();
@@ -294,6 +294,7 @@ void Display::displayDeviceState(bool on)
     }
 
     m_lastTime = millis();
+    m_lastStateAnimation = millis();
 }
 
 /// @brief Affiche les informations sur le menu sélectionné.
@@ -496,13 +497,13 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
         m_display.drawLine(51, 53, 51 + map(temperature, minimum, maximum, 0, 25), 53, WHITE);
 
     m_display.setTextSize(1);
-    m_display.setCursor(58, 57);
+    m_display.setCursor(52, 57);
     m_display.print(temperature);
     m_display.print('K');
-    m_display.setCursor(5, 57);
+    m_display.setCursor(5, 52);
     m_display.print(minimum);
     m_display.print('K');
-    m_display.setCursor(103, 57);
+    m_display.setCursor(95, 52);
     m_display.print(maximum);
     m_display.print('K');
 
@@ -527,7 +528,7 @@ void Display::displayLuminosity(int luminosity)
         m_display.drawLine(51, 53, 51 + map(luminosity, 0, 255, 0, 25), 53, WHITE);
 
     m_display.setTextSize(1);
-    m_display.setCursor(58, 57);
+    m_display.setCursor(55, 57);
     m_display.print(map(luminosity, 0, 255, 0, 100));
     // Code pour insérer un "%".
     m_display.write(0x25);

@@ -117,7 +117,7 @@ int ConnectedTemperatureVariableLight::getLuminosity()
 
 void ConnectedTemperatureVariableLight::updateColorTemperature(int temperature, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational || !m_state || m_colorTemperature == temperature)
         return;
 
     m_colorTemperature = temperature;
@@ -128,7 +128,7 @@ void ConnectedTemperatureVariableLight::updateColorTemperature(int temperature, 
 
 void ConnectedTemperatureVariableLight::updateLuminosity(int luminosity, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational || !m_state || m_luminosity == luminosity)
         return;
 
     m_luminosity = luminosity;
@@ -210,7 +210,7 @@ int ConnectedColorVariableLight::getBLuminosity()
 
 void ConnectedColorVariableLight::updateColor(int r, int g, int b, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational || !m_state || (m_RColor == r && m_GColor == g && m_BColor == b))
         return;
 
     m_RColor = r;

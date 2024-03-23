@@ -51,8 +51,8 @@ Television television("Télévision", ID_TELEVISION, HomeAssistantConnection, di
 
 // Périphériques de sortie à distance.
 ConnectedOutput mainLights("Lumières du plafond", ID_MAIN_LIGHTS, HomeAssistantConnection, display);
-ConnectedTemperatureVariableLight sofaLight("Lampe du canapé", ID_SOFA_LIGHT, HomeAssistantConnection, display, 2000, 5000); // Changer les températures.
-ConnectedColorVariableLight bedLight("Lampe de chevet", ID_BED_LIGHT, HomeAssistantConnection, display, 2202, 6535); // Changer les températures.
+ConnectedTemperatureVariableLight sofaLight("Lampe du canapé", ID_SOFA_LIGHT, HomeAssistantConnection, display, 2000, 5000);
+ConnectedColorVariableLight bedLight("Lampe de chevet", ID_BED_LIGHT, HomeAssistantConnection, display, 2202, 6535);
 ConnectedOutput cameraLight("Lumière de la caméra", ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
 // Création d'une liste contenant des références vers tous les actionneurs.

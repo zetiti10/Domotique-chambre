@@ -80,7 +80,7 @@ void HomeAssistant::loop()
     }
 }
 
-/// @brief Traitement des messages reçus
+/// @brief Traitement des messages reçus.
 void HomeAssistant::processMessage()
 {
     // Traitement du message reçu afin d'exécuter l'action demandée.

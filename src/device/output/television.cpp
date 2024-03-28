@@ -127,7 +127,9 @@ void Television::increaseVolume(bool shareInformation)
         return;
     }
 
-    m_IRSender.sendNEC(0x44C1, 0x47, 2);
+    for (int i = 0; i < 2; i++)
+        m_IRSender.sendNEC(0x44C1, 0x47, 3);
+
     m_volume++;
 
     m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
@@ -148,7 +150,9 @@ void Television::decreaseVolume(bool shareInformation)
         return;
     }
 
-    m_IRSender.sendNEC(0x44C1, 0xC7, 2);
+    for (int i = 0; i < 2; i++)
+        m_IRSender.sendNEC(0x44C1, 0xC7, 3);
+
     m_volume--;
 
     m_connection.updateTelevisionVolume(m_ID, 0, m_volume);

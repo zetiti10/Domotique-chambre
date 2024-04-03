@@ -19,6 +19,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche liée au capteur.
+/// @param connected Permet d'envoyer l'état du capteur à Home Assistant ou non.
 AnalogInput::AnalogInput(String friendlyName, int ID, HomeAssistant &connection, int pin, bool connected) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin), m_connected(connected) {}
 
 /// @brief Initialise l'objet.

@@ -29,6 +29,7 @@ public:
     virtual void trigger();
     virtual void stopRinging();
     virtual MissileLauncher &getMissileLauncher();
+    virtual AlarmMode &getAlarmStripMode();
     virtual void disableBuzzer();
     virtual void enableBuzzer();
     virtual bool getBuzzerState() const;

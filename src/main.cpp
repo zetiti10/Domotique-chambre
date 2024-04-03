@@ -64,7 +64,7 @@ WardrobeDoorSensor wardrobeDoorSensor("Capteur des portes de l'armoire", ID_WARD
 DoorSensor doorSensor("Capteur de la porte de la chambre", ID_DOOR_SENSOR, HomeAssistantConnection, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
 BinaryInput presenceSensor("Capteur de présence", ID_PRESENCE_SENSOR, HomeAssistantConnection, PIN_MOTION_SENSOR, false, false);
 Doorbell doorbell("Sonnette", ID_DOORBELL, HomeAssistantConnection, PIN_DOORBELL_BUTTON, false, false, display, buzzer);
-AnalogInput lightSensor("Capteur de luminosité", ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR, true);
+AnalogInput lightSensor("Capteur de luminosité", ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR, false);
 AnalogInput microphone("Microphone", ID_MICROPHONE, HomeAssistantConnection, PIN_MICROPHONE, false);
 AirSensor airSensor("Capteur de l'air", ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
 IRSensor iRSensor("Capteur infrarouge", ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
@@ -76,7 +76,7 @@ int inputsNumber = 9;
 // Modes du ruban de DEL.
 ColorMode colorMode("Mode couleur unique", ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
 RainbowMode rainbowMode("Mode arc-en-ciel", ID_RAINBOW_MODE, LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
-// Mode son-réaction.
+SoundreactMode soundreactMode("Mode son-réaction", ID_SOUND_REACT_MODE, LEDStrip);
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
 Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};

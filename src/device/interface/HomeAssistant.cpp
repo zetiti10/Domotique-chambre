@@ -33,7 +33,7 @@ HomeAssistant::HomeAssistant(String friendlyName, int ID, HardwareSerial &serial
 /// @param remoteDevicesNumber Le nombre d'élements de la liste `remoteDeviceList`.
 /// @param colorMode Le mode de couleur unique utilisé pour le ruban de DEL.
 /// @param colorMode Le mode multicolore utilisé pour le ruban de DEL.
-void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode)
+void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode)
 {
     m_deviceList = deviceList;
     m_devicesNumber = devicesNumber;
@@ -43,7 +43,8 @@ void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output 
 
     m_colorMode = &colorMode;
     m_rainbowMode = &rainbowMode;
-    // Mode son-réaction.
+    m_soundreactMode = &soundreactMode;
+    m_alarmMode = &alarmMode;
 }
 
 /// @brief Initialise la communication avec Home Assistant. Nécessite d'avoir défini les périphériques connectés auparavant. Méthode à exécuter avant d'initialiser les autres périphériques du système de domotique.
@@ -135,8 +136,11 @@ void HomeAssistant::processMessage()
                 break;
 
             case 2:
-                // strip->setMode(*static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
-                // Mode son-réaction.
+                strip->setMode(static_cast<RGBLEDStripMode *>(m_soundreactMode), true);
+                break;
+
+            case 3:
+                strip->setMode(static_cast<RGBLEDStripMode *>(m_alarmMode), true);
                 break;
             }
 

@@ -39,6 +39,7 @@ private:
     friend class ColorMode;
     friend class AlarmMode;
     friend class RainbowMode;
+    friend class SoundreactMode;
 };
 
 // Classe représentant un mode pour un ruban de DEL.
@@ -116,6 +117,17 @@ protected:
 private:
     virtual void activate() override;
     virtual void desactivate() override;
+    virtual void loop() override;
+    friend class RGBLEDStrip;
+};
+
+// Classe du mode de couleur son-réaction.
+class SoundreactMode : public RGBLEDStripMode
+{
+public:
+    SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip);
+
+private:
     virtual void loop() override;
     friend class RGBLEDStrip;
 };

@@ -57,11 +57,15 @@ void BinaryInput::loop()
         m_connection.updateBinaryInput(m_ID, m_state);
 }
 
-/// @brief Méthode permettant de lire l'état de l'entrée, en mettant à jour son état. Une protection anti-erreur est intégrée.
+/// @brief Méthode permettant de lire l'état de l'entrée, en mettant à jour son état. Une protection anti-erreur est intégrée : plusieurs vérifications sont effectuées si un état différent est détecté.
 /// @return L'état actuel de l'entrée.
 bool BinaryInput::getState()
 {
+    if ((!m_reverted && (digitalRead(m_pin) == m_state)) || (m_reverted && (!digitalRead(m_pin) == m_state)))
+        return m_state;
+
     bool previous_state = m_state;
+    int counter = 0;
 
     while (1)
     {
@@ -75,12 +79,23 @@ bool BinaryInput::getState()
 
         if (new_state == previous_state)
         {
-            m_state = new_state;
+            if (counter >= 3)
+            {
+                m_state = new_state;
 
-            return m_state;
+                return m_state;
+            }
+
+            else
+                counter++;
         }
 
-        previous_state = new_state;
+        else
+        {
+            previous_state = new_state;
+
+            counter = 0;
+        }
 
         delay(1);
     }

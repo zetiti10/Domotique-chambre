@@ -25,7 +25,7 @@ class HomeAssistant : public Device
 {
 public:
     HomeAssistant(String friendlyName, int ID, HardwareSerial &serial, Display &display);
-    virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode);
+    virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
     virtual void setup() override;
     virtual void loop();
     virtual void processMessage();
@@ -61,6 +61,8 @@ protected:
     int m_remoteDevicesNumber;
     ColorMode *m_colorMode;
     RainbowMode *m_rainbowMode;
+    SoundreactMode *m_soundreactMode;
+    AlarmMode *m_alarmMode;
 };
 
 #endif

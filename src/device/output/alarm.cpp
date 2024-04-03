@@ -22,6 +22,7 @@
 #include "device/output/RGBLEDStrip.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "EEPROM.hpp"
+#include "alarm.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -274,6 +275,13 @@ void Alarm::stopRinging()
 MissileLauncher &Alarm::getMissileLauncher()
 {
     return m_missileLauncher;
+}
+
+/// @brief Méthode permettant de récupérer l'objet du mode alarme pour le ruban de DEL RVB.
+/// @return Le mode de l'alarme.
+AlarmMode &Alarm::getAlarmStripMode()
+{
+    return m_alarmStripMode;
 }
 
 /// @brief Désactive le son de l'alarme.

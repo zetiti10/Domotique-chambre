@@ -12,6 +12,8 @@
 class Output;
 class ColorMode;
 class RainbowMode;
+class SoundreactMode;
+class AlarmMode;
 class RGBLEDStrip;
 class RGBLEDStripMode;
 class Alarm;

@@ -97,7 +97,7 @@ void setup()
     Serial.begin(115200);
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
-    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode);
+    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

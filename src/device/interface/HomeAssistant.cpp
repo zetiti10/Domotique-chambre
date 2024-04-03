@@ -126,7 +126,7 @@ void HomeAssistant::processMessage()
             switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
-                m_colorMode->setColor(this->getIntFromString(m_receivedMessage, 5, 3), this->getIntFromString(m_receivedMessage, 8, 3), this->getIntFromString(m_receivedMessage, 11, 3));
+                m_colorMode->setColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3));
                 strip->setMode(static_cast<RGBLEDStripMode *>(m_colorMode), true);
                 break;
 
@@ -454,7 +454,7 @@ void HomeAssistant::updateRGBLEDStripMode(int ID, int mode, int r, int g, int b)
     m_serial.print(this->addZeros(ID, 2));
     m_serial.print(0);
     m_serial.print(2);
-    m_serial.println(mode);
+    m_serial.print(mode);
 
     if (mode == 0)
     {

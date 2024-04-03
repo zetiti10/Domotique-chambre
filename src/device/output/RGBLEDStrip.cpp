@@ -95,7 +95,7 @@ void RGBLEDStrip::loop()
 /// @param shareInformation Affichage ou non de l'animation sur l'écran.
 void RGBLEDStrip::setMode(RGBLEDStripMode *mode, bool shareInformation)
 {
-    if (m_locked)
+    if (m_locked || mode == m_mode)
         return;
 
     if (m_mode != nullptr && m_operational && m_state)
@@ -109,10 +109,12 @@ void RGBLEDStrip::setMode(RGBLEDStripMode *mode, bool shareInformation)
     if (shareInformation)
         m_display.displayMessage(m_mode->getFriendlyName(), "Mode");
 
-    m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
-
     if (m_operational && m_state)
+    {
         m_mode->activate();
+
+        m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
+    }
 }
 
 /// @brief Méthode renvoyant le mode actuel du ruban de DEL RVB.

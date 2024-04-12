@@ -35,5 +35,5 @@ const static uint8_t PROGMEM GammaCorrectionTable[] = {
 /// @return La valeur corrigée.
 int gammaCorrection(int value)
 {
-    return GammaCorrectionTable[value];
+    return pgm_read_byte(&GammaCorrectionTable[value]);
 }

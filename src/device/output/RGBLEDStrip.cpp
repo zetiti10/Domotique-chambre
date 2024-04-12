@@ -14,6 +14,7 @@
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
+#include "gammaCorrection/gammaCorrection.hpp"
 #include "RGBLEDStrip.hpp"
 
 /// @brief Constructeur de la classe.
@@ -173,9 +174,9 @@ void RGBLEDStrip::setColor(int r, int g, int b)
     m_GState = g;
     m_BState = b;
 
-    analogWrite(m_RPin, r);
-    analogWrite(m_GPin, g);
-    analogWrite(m_BPin, b);
+    analogWrite(m_RPin, gammaCorrection(r));
+    analogWrite(m_GPin, gammaCorrection(g));
+    analogWrite(m_BPin, gammaCorrection(b));
 }
 
 /// @brief Constructeur de la classe.

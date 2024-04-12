@@ -174,11 +174,6 @@ void RGBLEDStrip::setColor(int r, int g, int b)
     m_GState = g;
     m_BState = b;
 
-    Serial.print("R: ");
-    Serial.println(r);
-    Serial.print("R corrected: ");
-    Serial.println(gammaCorrection(r));
-
     analogWrite(m_RPin, gammaCorrection(r));
     analogWrite(m_GPin, gammaCorrection(g));
     analogWrite(m_BPin, gammaCorrection(b));

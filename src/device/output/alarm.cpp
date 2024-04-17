@@ -54,7 +54,7 @@ void Alarm::setup()
     m_strip.setup();
     m_buzzer.setup();
 
-    if (!m_missileLauncher.begin())
+    if (!m_missileLauncher.begin(1000))
         return;
 
     m_nfcReader.begin();
@@ -151,6 +151,22 @@ void Alarm::loop()
 
         m_lastTimeCardChecked = millis();
     }
+
+    int baseAngle = -1;
+    int angleAngle = -1;
+    int firstMissile = -1;
+    int secondMissile = -1;
+    int thirdMissile = -1;
+    m_missileLauncher.update(baseAngle, angleAngle, firstMissile, secondMissile, thirdMissile);
+
+    if (baseAngle != -1)
+    {
+        m_connection.updateAlarmMissileLauncherBaseAngle(m_ID, baseAngle);
+        m_connection.updateAlarmMissileLauncherAngleAngle(m_ID, angleAngle);
+    }
+
+    if (firstMissile != -1)
+        m_connection.updateAlarmMissileLauncherMissilesState(m_ID, firstMissile, secondMissile, thirdMissile);
 
     if (!m_isRinging)
         return;

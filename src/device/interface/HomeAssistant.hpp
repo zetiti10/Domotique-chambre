@@ -43,6 +43,9 @@ public:
     virtual void updateOutputDeviceState(int ID, bool state);
     virtual void updateRGBLEDStripMode(int ID, int mode, int r = 0, int g = 0, int b = 0);
     virtual void updateAlarmTriggeredState(int ID, bool state);
+    virtual void updateAlarmMissileLauncherBaseAngle(int ID, int angle);
+    virtual void updateAlarmMissileLauncherAngleAngle(int ID, int angle);
+    virtual void updateAlarmMissileLauncherMissilesState(int ID, int firstMissile, int secondMissile, int thirdMissile);
     virtual void updateTelevisionVolume(int ID, int mode, int volume = 0);
     virtual void updateBinaryInput(int ID, bool state);
     virtual void updateAnalogInput(int ID, int state);

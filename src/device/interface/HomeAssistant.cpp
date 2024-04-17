@@ -19,6 +19,7 @@
 #include "device/output/RGBLEDStrip.hpp"
 #include "device/output/television.hpp"
 #include "device/output/tray.hpp"
+#include "HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -160,6 +161,18 @@ void HomeAssistant::processMessage()
 
             case 1:
                 alarm->trigger();
+                break;
+
+            case 2:
+                alarm->getMissileLauncher().absoluteMove(BASE, this->getIntFromString(m_receivedMessage, 6, 3));
+                break;
+
+            case 3:
+                alarm->getMissileLauncher().absoluteMove(ANGLE, this->getIntFromString(m_receivedMessage, 6, 3));
+                break;
+            
+            case 4:
+                alarm->getMissileLauncher().launchMissile(1);
                 break;
             }
 
@@ -479,6 +492,35 @@ void HomeAssistant::updateAlarmTriggeredState(int ID, bool state)
     m_serial.println(state);
 }
 
+void HomeAssistant::updateAlarmMissileLauncherBaseAngle(int ID, int angle)
+{
+    m_serial.print(1);
+    m_serial.print(this->addZeros(ID, 2));
+    m_serial.print(0);
+    m_serial.print(3);
+    m_serial.print(2);
+    m_serial.println(this->addZeros(angle, 3));
+}
+void HomeAssistant::updateAlarmMissileLauncherAngleAngle(int ID, int angle)
+{
+    m_serial.print(1);
+    m_serial.print(this->addZeros(ID, 2));
+    m_serial.print(0);
+    m_serial.print(3);
+    m_serial.print(3);
+    m_serial.println(this->addZeros(angle, 3));
+}
+void HomeAssistant::updateAlarmMissileLauncherMissilesState(int ID, int firstMissile, int secondMissile, int thirdMissile)
+{
+    m_serial.print(1);
+    m_serial.print(this->addZeros(ID, 2));
+    m_serial.print(0);
+    m_serial.print(3);
+    m_serial.print(4);
+    m_serial.print(firstMissile);
+    m_serial.print(secondMissile);
+    m_serial.println(thirdMissile);
+}
 void HomeAssistant::updateTelevisionVolume(int ID, int mode, int volume)
 {
     m_serial.print(1);

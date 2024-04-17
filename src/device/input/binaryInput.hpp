@@ -18,6 +18,7 @@ class BinaryInput : public Input
 public:
     BinaryInput(String friendlyName, int ID, HomeAssistant &connection, int pin, bool revert = false, bool pullup = false);
     virtual void setup() override;
+    virtual void reportState() override;
     virtual void loop() override;
     virtual bool getState();
 

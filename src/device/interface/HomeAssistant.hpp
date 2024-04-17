@@ -18,6 +18,7 @@ class RGBLEDStrip;
 class RGBLEDStripMode;
 class Alarm;
 class Television;
+class Input;
 class ConnectedOutput;
 class ConnectedTemperatureVariableLight;
 class ConnectedColorVariableLight;
@@ -27,7 +28,7 @@ class HomeAssistant : public Device
 {
 public:
     HomeAssistant(String friendlyName, int ID, HardwareSerial &serial, Display &display);
-    virtual void setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDeviceNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
+    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
     virtual void setup() override;
     virtual void loop();
     virtual void processMessage();
@@ -62,6 +63,8 @@ protected:
     Display &m_display;
     Output **m_deviceList;
     int m_devicesNumber;
+    Input **m_inputDeviceList;
+    int m_inputDevicesNumber;
     Output **m_remoteDeviceList;
     int m_remoteDevicesNumber;
     ColorMode *m_colorMode;

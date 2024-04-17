@@ -14,6 +14,7 @@
 #include "device/input/airSensor.hpp"
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
+#include "airSensor.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -46,6 +47,15 @@ void AirSensor::setup()
     m_humidity = event.relative_humidity;
 
     m_lastTime = millis();
+}
+
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void AirSensor::reportState()
+{
+    if (!m_operational)
+        return;
+
+    m_connection.updateAirSensor(m_ID, m_temperature, m_humidity);
 }
 
 /// @brief Méthode d'exécution des tâches liées au capteur.

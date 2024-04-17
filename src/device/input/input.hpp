@@ -14,6 +14,7 @@ class Input : public Device
 public:
     Input(String friendlyName, int ID, HomeAssistant &connection);
     virtual void setup() override;
+    virtual void reportState() = 0;
     virtual void loop() = 0;
 
 protected:

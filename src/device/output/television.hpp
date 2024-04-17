@@ -16,6 +16,7 @@ class Television : public Output
 public:
     Television(String friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
     virtual void setup() override;
+    virtual void reportState() override;
     virtual void loop();
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

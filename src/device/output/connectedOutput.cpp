@@ -27,6 +27,17 @@ void ConnectedOutput::setup()
     m_operational = true; // Provisoire
 }
 
+/// @brief Met à jour l'état du périphérique virtuel.
+void ConnectedOutput::reportState()
+{
+    if (!m_operational)
+        return;
+
+    // Changement de l'état de l'appareil pour reçevoir une mise à jour de son état.
+    toggle();
+    toggle();
+}
+
 void ConnectedOutput::turnOn(bool shareInformation)
 {
     if (!m_operational || m_state)

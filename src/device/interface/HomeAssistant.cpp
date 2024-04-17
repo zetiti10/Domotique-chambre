@@ -19,6 +19,7 @@
 #include "device/output/RGBLEDStrip.hpp"
 #include "device/output/television.hpp"
 #include "device/output/tray.hpp"
+#include "device/input/input.hpp"
 #include "HomeAssistant.hpp"
 
 /// @brief Constructeur de la classe.
@@ -34,10 +35,13 @@ HomeAssistant::HomeAssistant(String friendlyName, int ID, HardwareSerial &serial
 /// @param remoteDevicesNumber Le nombre d'élements de la liste `remoteDeviceList`.
 /// @param colorMode Le mode de couleur unique utilisé pour le ruban de DEL.
 /// @param colorMode Le mode multicolore utilisé pour le ruban de DEL.
-void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode)
+void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode)
 {
     m_deviceList = deviceList;
     m_devicesNumber = devicesNumber;
+
+    m_inputDeviceList = inputDeviceList;
+    m_inputDevicesNumber = inputDevicesNumber;
 
     m_remoteDeviceList = remoteDeviceList;
     m_remoteDevicesNumber = remoteDevicesNumber;
@@ -170,7 +174,7 @@ void HomeAssistant::processMessage()
             case 3:
                 alarm->getMissileLauncher().absoluteMove(ANGLE, this->getIntFromString(m_receivedMessage, 6, 3));
                 break;
-            
+
             case 4:
                 alarm->getMissileLauncher().launchMissile(1);
                 break;
@@ -317,6 +321,27 @@ void HomeAssistant::processMessage()
 
                 break;
             }
+        }
+
+        break;
+    }
+
+    // Configuration de la connexion.
+    case 3:
+    {
+        switch (getIntFromString(m_receivedMessage, 1, 2))
+        {
+        case 0:
+        {
+            for (int i = 0; i < m_devicesNumber; i ++)
+                m_deviceList[i]->reportState();
+
+            
+            for (int i = 0; i < m_inputDevicesNumber; i ++)
+                m_inputDeviceList[i]->reportState();
+
+            break;
+        }
         }
 
         break;

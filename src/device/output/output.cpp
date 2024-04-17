@@ -14,6 +14,7 @@
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
+#include "output.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -25,6 +26,15 @@ void Output::setup()
 {
     m_display.setup();
     m_connection.setup();
+}
+
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void Output::reportState()
+{
+    if (!m_operational)
+        return;
+
+    m_connection.updateOutputDeviceState(m_ID, m_state);
 }
 
 /// @brief Bascule l'état de l'objet.

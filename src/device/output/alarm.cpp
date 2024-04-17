@@ -69,6 +69,35 @@ void Alarm::setup()
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void Alarm::reportState()
+{
+    if (!m_operational)
+        return;
+
+    Output::reportState();
+
+    m_connection.updateAlarmTriggeredState(m_ID, m_isRinging);
+
+    int baseAngle = -1;
+    int angleAngle = -1;
+    int firstMissile = -1;
+    int secondMissile = -1;
+    int thirdMissile = -1;
+
+    m_missileLauncher.getPosition(baseAngle, angleAngle);
+    m_missileLauncher.getMissileStates(firstMissile, secondMissile, thirdMissile);
+
+    if (baseAngle != -1)
+    {
+        m_connection.updateAlarmMissileLauncherBaseAngle(m_ID, baseAngle);
+        m_connection.updateAlarmMissileLauncherAngleAngle(m_ID, angleAngle);
+    }
+
+    if (firstMissile != -1)
+        m_connection.updateAlarmMissileLauncherMissilesState(m_ID, firstMissile, secondMissile, thirdMissile);
+}
+
 /// @brief Mise en marche l'alarme.
 /// @param shareInformation Affiche ou non l'animation d'allumage.
 void Alarm::turnOn(bool shareInformation)

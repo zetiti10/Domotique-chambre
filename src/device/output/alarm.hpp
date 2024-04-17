@@ -21,6 +21,7 @@ class Alarm : public Output
 public:
     Alarm(String friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
     virtual void setup() override;
+    virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
     virtual void loop();

@@ -15,6 +15,7 @@ class Output : public Device
 public:
     Output(String friendlyName, int ID, HomeAssistant &connection, Display &display);
     virtual void setup() override;
+    virtual void reportState();
     virtual void turnOn(bool shareInformation = false) = 0;
     virtual void turnOff(bool shareInformation = false) = 0;
     virtual void toggle(bool shareInformation = false);

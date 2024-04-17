@@ -70,8 +70,8 @@ AirSensor airSensor("Capteur de l'air", ID_AIR_SENSOR, HomeAssistantConnection, 
 IRSensor iRSensor("Capteur infrarouge", ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
 
 // Création d'une liste contenant des références vers tous les capteurs.
-Input *inputList[] = {&wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &lightSensor, &microphone, &airSensor, &iRSensor};
-int inputsNumber = 9;
+Input *inputList[] = {&wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
+int inputsNumber = 8;
 
 // Modes du ruban de DEL.
 ColorMode colorMode("Mode couleur unique", ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
@@ -97,7 +97,7 @@ void setup()
     Serial.begin(115200);
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
-    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
+    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

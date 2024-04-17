@@ -17,6 +17,7 @@
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "device/interface/buzzer.hpp"
+#include "binaryInput.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -44,6 +45,15 @@ void BinaryInput::setup()
     m_operational = true;
 
     m_connection.updateDeviceAvailability(m_ID, true);
+}
+
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void BinaryInput::reportState()
+{
+    if (!m_operational)
+        return;
+
+    m_connection.updateBinaryInput(m_ID, m_state);
 }
 
 /// @brief Méthode d'exécution des tâches liées au capteur.

@@ -44,6 +44,17 @@ void RGBLEDStrip::setup()
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void RGBLEDStrip::reportState()
+{
+    if (!m_operational)
+        return;
+
+    Output::reportState();
+
+    m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
+}
+
 /// @brief Met en marche le ruban de DEL RVB.
 /// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void RGBLEDStrip::turnOn(bool shareInformation)

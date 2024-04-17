@@ -15,6 +15,7 @@ class RGBLEDStrip : public Output
 public:
     RGBLEDStrip(String friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin);
     virtual void setup() override;
+    virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
     virtual void loop();

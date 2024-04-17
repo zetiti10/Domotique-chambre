@@ -13,6 +13,7 @@
 #include "device/input/IRSensor.hpp"
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
+#include "IRSensor.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -36,6 +37,11 @@ void IRSensor::setup()
     m_operational = true;
 
     m_connection.updateDeviceAvailability(m_ID, true);
+}
+
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void IRSensor::reportState()
+{
 }
 
 /// @brief Boucle d'exécution des tâches liées au capteur.

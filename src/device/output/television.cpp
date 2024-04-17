@@ -45,6 +45,20 @@ void Television::setup()
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
+/// @brief Envoie l'état du périphérique à Home Assistant pour initialiser son état dans l'interface.
+void Television::reportState()
+{
+    if (!m_operational)
+        return;
+
+    Output::reportState();
+
+    m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
+
+    if (m_volumeMuted)
+        m_connection.updateTelevisionVolume(m_ID, 1);
+}
+
 void Television::loop()
 {
     if ((millis() - m_lastTime) >= 60000)

@@ -14,6 +14,7 @@ class AnalogInput : public Input
 public:
     AnalogInput(String friendlyName, int ID, HomeAssistant &connection, int pin, bool connected);
     virtual void setup() override;
+    virtual void reportState() override;
     virtual void loop() override;
     virtual int getValue();
 

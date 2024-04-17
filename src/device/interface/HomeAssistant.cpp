@@ -59,6 +59,7 @@ void HomeAssistant::setup()
         return;
 
     m_serial.begin(9600);
+    m_serial.println("301");
 
     m_display.setup();
 

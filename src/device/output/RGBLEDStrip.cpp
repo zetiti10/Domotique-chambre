@@ -50,9 +50,9 @@ void RGBLEDStrip::reportState()
     if (!m_operational)
         return;
 
-    Output::reportState();
-
     m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
+
+    Output::reportState();
 }
 
 /// @brief Met en marche le ruban de DEL RVB.

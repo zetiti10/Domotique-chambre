@@ -54,7 +54,7 @@ void Alarm::setup()
     m_strip.setup();
     m_buzzer.setup();
 
-    if (!m_missileLauncher.begin(1000))
+    if (!m_missileLauncher.begin(200))
         return;
 
     m_nfcReader.begin();
@@ -75,8 +75,6 @@ void Alarm::reportState()
     if (!m_operational)
         return;
 
-    Output::reportState();
-
     m_connection.updateAlarmTriggeredState(m_ID, m_isRinging);
 
     int baseAngle = -1;
@@ -96,6 +94,8 @@ void Alarm::reportState()
 
     if (firstMissile != -1)
         m_connection.updateAlarmMissileLauncherMissilesState(m_ID, firstMissile, secondMissile, thirdMissile);
+
+    Output::reportState();
 }
 
 /// @brief Mise en marche l'alarme.

@@ -50,7 +50,11 @@ void RGBLEDStrip::reportState()
     if (!m_operational)
         return;
 
-    m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
+    if (m_mode != nullptr)
+        m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
+
+    else
+        m_connection.updateRGBLEDStripMode(m_ID, 0, m_RState, m_GState, m_BState);
 
     Output::reportState();
 }

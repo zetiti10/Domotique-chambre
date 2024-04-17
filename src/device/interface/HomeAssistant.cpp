@@ -334,11 +334,10 @@ void HomeAssistant::processMessage()
         {
         case 0:
         {
-            for (int i = 0; i < m_devicesNumber; i ++)
+            for (int i = 0; i < m_devicesNumber; i++)
                 m_deviceList[i]->reportState();
-
             
-            for (int i = 0; i < m_inputDevicesNumber; i ++)
+            for (int i = 0; i < m_inputDevicesNumber; i++)
                 m_inputDeviceList[i]->reportState();
 
             break;

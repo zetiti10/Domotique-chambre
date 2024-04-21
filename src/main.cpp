@@ -32,23 +32,22 @@
 #include "device/input/IRSensor.hpp"
 
 // Configuration du clavier.
-const byte ROWS = 4;
-const byte COLS = 4;
-
-char keys[ROWS][COLS] = {
+const byte KEYPAD_ROWS = 4;
+const byte KEYPAD_COLS = 4;
+char keypadKeys[KEYPAD_ROWS][KEYPAD_COLS] = {
     {'1', '2', '3', 'A'},
     {'4', '5', '6', 'B'},
     {'7', '8', '9', 'C'},
     {'*', '0', '#', 'D'}};
-byte rowPins[ROWS] = {5, 4, 3, 2};
-byte colPins[COLS] = {11, 10, 9, 8};
+byte keypadRowPins[KEYPAD_ROWS] = {31, 33, 35, 37};
+byte keypadColPins[KEYPAD_COLS] = {30, 32, 34, 36};
 
 // Instanciation des périphériques du système.
 // Interfaces.
 Display display("Écran", ID_DISPLAY);
 Buzzer buzzer("Buzzer", ID_BUZZER, PIN_BUZZER);
 HomeAssistant HomeAssistantConnection("Connexion à HA", ID_HA, Serial1, display);
-Keypad keypad("Clavier de contrôle", ID_KEYPAD, display, makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+Keypad keypad("Clavier de contrôle", ID_KEYPAD, display, makeKeymap(keypadKeys), keypadRowPins, keypadColPins, KEYPAD_ROWS, KEYPAD_COLS);
 
 // Périphériques de sortie.
 Tray tray("Plateau", ID_TRAY, HomeAssistantConnection, display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);

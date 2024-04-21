@@ -33,6 +33,7 @@ public:
     virtual AlarmMode &getAlarmStripMode();
     virtual void disableBuzzer();
     virtual void enableBuzzer();
+    virtual void toggleBuzzer();
     virtual bool getBuzzerState() const;
 
 protected:

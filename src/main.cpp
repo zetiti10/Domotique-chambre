@@ -18,6 +18,7 @@
 #include "EEPROM.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/buzzer.hpp"
+#include "device/interface/keypad.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "device/output/tray.hpp"
 #include "device/output/binaryOutput.hpp"
@@ -30,11 +31,24 @@
 #include "device/input/airSensor.hpp"
 #include "device/input/IRSensor.hpp"
 
+// Configuration du clavier.
+const byte ROWS = 4;
+const byte COLS = 4;
+
+char keys[ROWS][COLS] = {
+    {'1', '2', '3', 'A'},
+    {'4', '5', '6', 'B'},
+    {'7', '8', '9', 'C'},
+    {'*', '0', '#', 'D'}};
+byte rowPins[ROWS] = {5, 4, 3, 2};
+byte colPins[COLS] = {11, 10, 9, 8};
+
 // Instanciation des périphériques du système.
 // Interfaces.
 Display display("Écran", ID_DISPLAY);
 Buzzer buzzer("Buzzer", ID_BUZZER, PIN_BUZZER);
 HomeAssistant HomeAssistantConnection("Connexion à HA", ID_HA, Serial1, display);
+Keypad keypad("Clavier de contrôle", ID_KEYPAD, display, makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 // Périphériques de sortie.
 Tray tray("Plateau", ID_TRAY, HomeAssistantConnection, display, PIN_MOTOR_TRAY_1, PIN_MOTOR_TRAY_2, PIN_TRAY_MOTOR_SPEED);
@@ -90,6 +104,13 @@ int HADevicesNumber = 11;
 Output *HARemoteDeviceList[] = {&mainLights, &sofaLight, &bedLight, &cameraLight};
 int HARemoteDevicesNumber = 4;
 
+// Liste des périphériques pour le clavier de contrôle.
+Output *keypadOutputList[] = {&disco, &beacon};
+int keypadOutputsNumber = 2;
+
+Alarm *keypadAlarmList[] = {&alarm};
+int keypadAlarmsNumber = 1;
+
 // Initialisation du système.
 void setup()
 {
@@ -98,6 +119,9 @@ void setup()
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
     HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
+
+    // Définition des périphériques contrôlables depuis le clavier de contrôle.
+    keypad.setDevices(keypadOutputList, keypadOutputsNumber, keypadAlarmList, keypadAlarmsNumber);
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)
@@ -109,7 +133,7 @@ void setup()
 
 // Boucle d'exécution des tâches du système.
 void loop()
-{    
+{
     // Exécutuon des tâches périodiques des capteurs.
     for (int i = 0; i < inputsNumber; i++)
         inputList[i]->loop();

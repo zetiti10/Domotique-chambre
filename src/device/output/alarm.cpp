@@ -351,6 +351,15 @@ void Alarm::enableBuzzer()
     EEPROM.update(EEPROM_ALARM_BUZZER_STATE, m_buzzerState);
 }
 
+void Alarm::toggleBuzzer()
+{
+    if (m_buzzerState)
+        disableBuzzer();
+
+    else
+        enableBuzzer();
+}
+
 /// @brief Méthode permettant de savoir si le buzzer de l'alarme est activé ou non.
 /// @return L'état d'activation du buzzer.
 bool Alarm::getBuzzerState() const

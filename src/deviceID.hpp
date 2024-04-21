@@ -24,6 +24,7 @@
 #define ID_DISPLAY 21
 #define ID_BUZZER 22
 #define ID_HA 23
+#define ID_KEYPAD 24
 
 // Périphériques distants.
 #define ID_MAIN_LIGHTS 96

@@ -92,8 +92,8 @@ RainbowMode rainbowMode("Mode arc-en-ciel", ID_RAINBOW_MODE, LEDStrip, EEPROM.re
 SoundreactMode soundreactMode("Mode son-réaction", ID_SOUND_REACT_MODE, LEDStrip);
 
 // Création d'une liste contenant des références vers tous les périphériques du système.
-Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
-int devicesNumber = 26;
+Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &keypad, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
+int devicesNumber = 27;
 
 // Liste des périphériques connectés à Home Assistant.
 Output *HADeviceList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television};
@@ -142,4 +142,5 @@ void loop()
     alarm.loop();
     LEDStrip.loop();
     HomeAssistantConnection.loop();
+    keypad.loop();
 }

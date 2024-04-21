@@ -41,10 +41,10 @@ void Keypad::setDevices(Output *outputList[], int &outputsNumber, Alarm *alarmLi
         else
             itemsInCurrentMenu = 9;
 
-        KeypadMenu *subMenusInCurrentMenu[itemsInCurrentMenu];
-        Output *devicesInCurrentMenu[itemsInCurrentMenu];
+        KeypadMenu **subMenusInCurrentMenu = new KeypadMenu *[itemsInCurrentMenu];
+        Output **devicesInCurrentMenu = new Output *[itemsInCurrentMenu];
 
-        KeypadMenuOutputList devicesMenu("Périphériques " + String(i + 1), *this);
+        KeypadMenuOutputList *devicesMenu = new KeypadMenuOutputList("Périphériques " + String(i + 1), *this);
 
         for (int j = 0; j < itemsInCurrentMenu; j++)
         {
@@ -61,38 +61,40 @@ void Keypad::setDevices(Output *outputList[], int &outputsNumber, Alarm *alarmLi
             {
                 Alarm *alarm = alarmList[deviceIndex - outputsNumber];
 
-                KeypadMenuAlarm menu("Contrôle de l'alarme " + alarm->getFriendlyName(), *this);
-                menu.setAlarm(alarm);
-                menu.setParentMenu(&devicesMenu);
+                KeypadMenuAlarm *menu = new KeypadMenuAlarm("Contrôle de l'alarme " + alarm->getFriendlyName(), *this);
+                menu->setAlarm(alarm);
+                menu->setParentMenu(devicesMenu);
 
-                subMenusInCurrentMenu[j] = &menu;
+                subMenusInCurrentMenu[j] = menu;
 
                 devicesInCurrentMenu[j] = alarm;
             }
         }
 
-        devicesMenu.setDevices(devicesInCurrentMenu, subMenusInCurrentMenu, itemsInCurrentMenu);
+        devicesMenu->setDevices(devicesInCurrentMenu, subMenusInCurrentMenu, itemsInCurrentMenu);
 
         if (i == 0)
         {
-            m_mainMenu = &devicesMenu;
-            m_currentMenu = &devicesMenu;
+            m_mainMenu = devicesMenu;
+            m_currentMenu = devicesMenu;
         }
 
         else
         {
-            previousMenu->setNextMenu(&devicesMenu);
+            previousMenu->setNextMenu(devicesMenu);
 
-            devicesMenu.setPreviousMenu(previousMenu);
+            devicesMenu->setPreviousMenu(previousMenu);
         }
 
-        previousMenu = &devicesMenu;
+        previousMenu = devicesMenu;
     }
+
+    m_devicesDefined = true;
 }
 
 void Keypad::setup()
 {
-    if (m_operational || m_devicesDefined == 0)
+    if (m_operational || !m_devicesDefined)
         return;
 
     m_keypad.begin();
@@ -229,20 +231,24 @@ void KeypadMenuOutputList::setDevices(Output *outputList[], KeypadMenu *outputMe
     m_outputList = outputList;
     m_outputMenuList = outputMenuList;
     m_outputsNumber = outputsNumber;
+
+    Serial.println("Les périphériques du menu ont été initialisés.");
 }
 
 void KeypadMenuOutputList::keyPressed(char key, bool longClick)
 {
+    int keyInt = key - '0';
+
     if (!longClick)
     {
-        if (key <= m_outputsNumber)
-            m_outputList[(int)key]->toggle(true);
+        if (keyInt <= m_outputsNumber)
+            m_outputList[keyInt - 1]->toggle(true);
     }
 
     else
     {
-        if (m_outputMenuList[(int)key] != nullptr)
-            m_keypad.setMenu(m_outputMenuList[(int)key]);
+        if (m_outputMenuList[keyInt - 1] != nullptr)
+            m_keypad.setMenu(m_outputMenuList[keyInt - 1]);
     }
 }
 
@@ -250,10 +256,8 @@ void KeypadMenuOutputList::displayHelp()
 {
     String list("Court : basculer ; Long : contrôle ; ");
 
-    for (int i = 0; i < m_outputsNumber; i ++)
-    {
+    for (int i = 0; i < m_outputsNumber; i++)
         list += String(i + 1) + " : " + m_outputList[i]->getFriendlyName() + " ; ";
-    }
 
     m_keypad.getDisplay().displayMessage(list, "Aide");
 }

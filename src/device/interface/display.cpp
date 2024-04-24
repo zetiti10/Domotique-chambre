@@ -19,7 +19,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Display::Display(const String &friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0) {}
+Display::Display(const String &friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0), m_menuHelpList(nullptr), m_menuHelpMenu(1) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()
@@ -179,7 +179,7 @@ void Display::displayAirValues(float temperature, float humidity)
     m_display.print(temperature);
     // Code pour insérer un "°".
     m_display.write(0xF8);
-    m_display.print("C");
+    m_display.print(F("C"));
 
     m_display.setCursor(40, 10);
     m_display.print(humidity);
@@ -227,10 +227,10 @@ void Display::displayMotionSensorValue(bool motionDetected)
     m_display.setTextSize(2);
 
     if (motionDetected)
-        m_display.print("OUI");
+        m_display.print(F("OUI"));
 
     else
-        m_display.print("NON");
+        m_display.print(F("NON"));
 
     display();
 }
@@ -248,17 +248,17 @@ void Display::displayLEDState(int r, int g, int b)
     m_display.setTextSize(2);
 
     m_display.setCursor(22, 0);
-    m_display.print("R");
+    m_display.print(F("R"));
     m_display.fillRect(25, 18, 4, int(map(r, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(24, 17, 6, 47, WHITE);
 
     m_display.setCursor(62, 0);
-    m_display.print("V");
+    m_display.print(F("V"));
     m_display.fillRect(65, 18, 4, int(map(g, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(64, 17, 6, 47, WHITE);
 
     m_display.setCursor(101, 0);
-    m_display.print("B");
+    m_display.print(F("B"));
     m_display.fillRect(102, 18, 4, int(map(b, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(101, 17, 6, 47, WHITE);
 

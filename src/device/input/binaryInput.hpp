@@ -38,6 +38,7 @@ public:
     virtual void loop() override;
     virtual void activate();
     virtual void desactivate();
+    virtual void toggleActivation();
     virtual bool getActivation() const;
 
 protected:

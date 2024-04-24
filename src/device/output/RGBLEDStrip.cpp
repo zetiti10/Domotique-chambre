@@ -271,6 +271,21 @@ void ColorMode::setColor(int r, int g, int b)
     }
 }
 
+int ColorMode::getR() const
+{
+    return m_R;
+}
+
+int ColorMode::getG() const
+{
+    return m_G;
+}
+
+int ColorMode::getB() const
+{
+    return m_B;
+}
+
 void ColorMode::activate()
 {
     RGBLEDStripMode::activate();

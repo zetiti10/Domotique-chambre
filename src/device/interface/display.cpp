@@ -14,6 +14,7 @@
 #include "device/interface/display.hpp"
 #include "device/device.hpp"
 #include "bitmaps.hpp"
+#include "display.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -44,20 +45,16 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
-    m_display.setTextSize(1);
-    m_display.setTextColor(WHITE);
-    m_display.setCursor(0, 0);
+    resetDisplay();
 
     // Vérification pour chaque périphérique de la liste s'il est indisponible.
     int counter = 0;
-
     for (int i = 0; i < devicesNumber; i++)
     {
         if (!deviceList[i]->getAvailability())
         {
-            m_display.setCursor(0, counter * 10 + 18);
-            m_display.println(deviceList[i]->getFriendlyName());
+            m_display.setCursor(0, counter * 10 + 10);
+            printAccents(deviceList[i]->getFriendlyName());
             counter++;
         }
     }
@@ -65,19 +62,14 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     // Si aucune erreur n'a été détectée, affichage d'un message.
     if (counter == 0)
     {
-        displayMessage("Initialisation terminee sans erreur.");
+        displayMessage("Initialisation terminée !");
     }
 
     // Affichage de la liste des périphériques indisponibles.
     else
     {
-        m_display.setCursor(0, 0);
-        m_display.setTextSize(2);
-        m_display.print("Erreur(s)");
-
-        m_display.display();
-
-        m_lastTime = millis();
+        printAccents("ERREURS");
+        display();
     }
 }
 
@@ -87,10 +79,9 @@ void Display::displayBell()
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
+    resetDisplay();
     m_display.drawBitmap(0, 0, bellBitmap, 128, 64, WHITE);
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Affiche un message à l'écran avec un gros titre.
@@ -101,18 +92,11 @@ void Display::displayMessage(String message, String title)
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
-
-    m_display.setCursor(0, 0);
-    m_display.setTextSize(2);
-    m_display.print(title);
-
-    m_display.setCursor(0, 18);
-    m_display.setTextSize(1);
-    m_display.print(message);
-
-    m_display.display();
-    m_lastTime = millis();
+    resetDisplay();
+    printAccents(title);
+    m_display.setCursor(0, 10);
+    printAccents(message);
+    display();
 }
 
 /// @brief Affiche le volume actuel.
@@ -123,7 +107,7 @@ void Display::displayVolume(VolumeType action, int volume)
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
+    resetDisplay();
 
     // Affichage d'un pictogramme en fonction de l'action sélectionnée.
     if (action == DECREASE)
@@ -141,18 +125,23 @@ void Display::displayVolume(VolumeType action, int volume)
     // Affichage du volume selon le mode sélectionné.
     if (action == DECREASE || action == INCREASE || action == UNMUTE)
     {
-        m_display.drawRect(50, 52, 27, 4, WHITE);
+        m_display.drawRect(14, 45, 100, 6, WHITE);
 
         if (volume > 0)
-            m_display.fillRect(51, 53, volume, 2, WHITE);
+            m_display.fillRect(15, 46, map(volume, 0, 25, 0, 98), 4, WHITE);
 
-        m_display.setTextSize(1);
-        m_display.setCursor(80, 52);
+        if (volume < 10)
+            m_display.setCursor(58, 57);
+
+        else
+            m_display.setCursor(55, 57);
+
         m_display.print(volume);
+        // Code pour insérer un "♫".
+        m_display.write(0x0E);
     }
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Affiche un pictogramme d'alerte (point d'exclamation).
@@ -162,7 +151,7 @@ void Display::displayAlarmTriggered(bool colorsInverted)
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
+    resetDisplay();
     m_display.drawBitmap(0, 0, alarmTriggeredBitmap, 128, 64, 1);
 
     if (!colorsInverted)
@@ -171,8 +160,7 @@ void Display::displayAlarmTriggered(bool colorsInverted)
     else
         m_display.invertDisplay(true);
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Affiche les valeurs des capteurs de température et d'humidité, avec deux pictogrammes.
@@ -183,7 +171,7 @@ void Display::displayAirValues(float temperature, float humidity)
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
+    resetDisplay();
     m_display.drawBitmap(0, 0, airBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
 
@@ -198,26 +186,45 @@ void Display::displayAirValues(float temperature, float humidity)
     // Code pour insérer un "%".
     m_display.write(0x25);
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
-/// @brief Affiche les valeurs des capteurs de luminosité et de mouvement, avec deux pictogrammes.
+/// @brief Affiche la valeur du capteur de luminosité, avec un pictogramme.
 /// @param luminosity La valeur de la luminosité à afficher.
-/// @param motionDetected La valeur du capteur de mouvement à afficher.
-void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDetected)
+void Display::displayLuminosityValue(int luminosity)
 {
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
-    m_display.drawBitmap(0, 0, luminosityMotionSensorsBitmap, 128, 64, WHITE);
+    resetDisplay();
+    m_display.drawBitmap(0, 0, lightLuminosityBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
 
-    m_display.setCursor(40, 42);
+    if (luminosity > 10)
+        m_display.setCursor(45, 58);
+
+    else if (luminosity < 100)
+        m_display.setCursor(45, 52);
+
+    else
+        m_display.setCursor(45, 45);
+
     m_display.print(luminosity);
 
-    m_display.setCursor(40, 10);
+    display();
+}
+
+/// @brief Affiche la valeur du capteur de mouvement, avec un pictogramme.
+/// @param motionDetected La valeur du capteur de mouvement à afficher.
+void Display::displayMotionSensorValue(bool motionDetected)
+{
+    if (!m_operational)
+        return;
+
+    resetDisplay();
+    m_display.drawBitmap(0, 0, motionBitmap, 128, 64, WHITE);
+    m_display.setCursor(45, 50);
+    m_display.setTextSize(2);
 
     if (motionDetected)
         m_display.print("OUI");
@@ -225,8 +232,7 @@ void Display::displayLuminosityMotionSensorValues(int luminosity, bool motionDet
     else
         m_display.print("NON");
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Affiche trois jauges correspondant à l'intensité des trois couleurs.
@@ -238,7 +244,7 @@ void Display::displayLEDState(int r, int g, int b)
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
+    resetDisplay();
     m_display.setTextSize(2);
 
     m_display.setCursor(22, 0);
@@ -256,8 +262,7 @@ void Display::displayLEDState(int r, int g, int b)
     m_display.fillRect(102, 18, 4, int(map(b, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(101, 17, 6, 47, WHITE);
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Affiche une animation illustrant la mise en marche ou l'arrêt d'un périphérique.
@@ -267,7 +272,7 @@ void Display::displayDeviceState(bool on)
     if (!m_operational || (millis() - m_lastStateAnimation) <= 500)
         return;
 
-    m_display.clearDisplay();
+    resetDisplay();
 
     // Animation de mise en marche.
     if (on == true)
@@ -293,11 +298,58 @@ void Display::displayDeviceState(bool on)
         }
     }
 
-    m_lastTime = millis();
-    m_lastStateAnimation = millis();
+    display();
 }
 
-/// @brief Affiche les informations sur le menu sélectionné.
+void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
+{
+    if (!m_operational)
+        return;
+
+    resetDisplay();
+
+    switch (menuIcon)
+    {
+    case OUTPUTS:
+        m_display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
+        break;
+
+    case INPUTS:
+        m_display.drawBitmap(0, 0, sensorsMenuBitmap, 128, 64, WHITE);
+        break;
+
+    case LIGHTS:
+        m_display.drawBitmap(0, 0, lightsMenuBitmap, 128, 64, WHITE);
+        break;
+
+    case SETTINGS:
+        m_display.drawBitmap(0, 0, configurationMenuBitmap, 128, 64, WHITE);
+        break;
+
+    case TELEVISIONS:
+        m_display.drawBitmap(0, 0, TVMenuBitmap, 128, 64, WHITE);
+        break;
+
+    case CONTROL:
+        m_display.drawBitmap(0, 0, deviceControlMenuBitmap, 128, 64, WHITE);
+        break;
+    }
+
+    String text;
+
+    if (menuName.length() > (18 - 5))
+        text = menuName;
+
+    else
+        text = "Menu " + menuName;
+
+    m_display.setCursor(((128 - (7 * text.length())) / 2), 55);
+    m_display.setTextWrap(false);
+    printAccents(text);
+    display();
+}
+
+/*/// @brief Affiche les informations sur le menu sélectionné.
 void Display::displayKeypadMenu()
 {
     if (!m_operational)
@@ -307,7 +359,7 @@ void Display::displayKeypadMenu()
     m_display.setTextSize(1);
     m_display.setCursor(0, 0);
 
-    /*switch (keypadMenu)
+    switch (keypadMenu)
     {
     case LIGHTS_MENU:
         m_display.drawBitmap(0, 0, lightsMenuBitmap, 128, 64, WHITE);
@@ -426,10 +478,51 @@ void Display::displayKeypadMenu()
 
     default:
         break;
-    }*/
+    }
 
     m_display.display();
     m_lastTime = millis();
+}*/
+
+/// @brief Affiche l'aide d'un menu, avec deux affichages qui s'alternent.
+/// @param menuHelpList La liste des commandes du menu pour chaque touche, d'une taille de 10 éléments (de 1 à 9, avec le 0 en dernier).
+/// @param menuTitle Le nom du menu.
+void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
+{
+    if (!m_operational)
+        return;
+
+    resetDisplay();
+
+    int begin = 0;
+
+    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2))
+        m_menuHelpMenu = 1;
+
+    else
+    {
+        m_menuHelpMenu = 2;
+        begin = 5;
+    }
+
+    for (int i = begin; i < (begin + 5); i++)
+    {
+        m_display.setCursor(0, (9 * i + 9));
+        m_display.setTextWrap(false);
+        m_display.write(i + 1);
+        m_display.write(". ");
+        printAccents(menuHelpList[i]);
+    }
+
+    m_menuHelpList = menuHelpList;
+
+    m_display.setCursor(0, 0);
+    m_display.print("Aide ");
+    m_display.print(m_menuHelpMenu);
+    m_display.print(" - ");
+    printAccents(menuName);
+
+    display();
 }
 
 /// @brief Affiche l'animation d'ouverture ou de fermeture du plateau.
@@ -440,10 +533,11 @@ void Display::displayTray(bool on, bool shareInformation)
     if (!m_operational)
         return;
 
+    resetDisplay();
+    m_display.fillRoundRect(5, -10, 118, 20, 5, WHITE);
+
     if (on)
     {
-        m_display.clearDisplay();
-        m_display.fillRoundRect(5, -10, 118, 20, 5, WHITE);
         for (int i = 0; i < 40; i++)
         {
             m_display.drawLine(28, 11 + i, 100, 11 + i, WHITE);
@@ -451,14 +545,10 @@ void Display::displayTray(bool on, bool shareInformation)
                 m_display.display();
             delay(15);
         }
-
-        if (shareInformation)
-            m_lastTime = millis();
     }
 
     else
     {
-        m_display.fillRoundRect(5, -10, 118, 20, 5, WHITE);
         for (int i = 0; i < 40; i++)
             m_display.drawLine(28, 11 + i, 100, 11 + i, WHITE);
 
@@ -472,10 +562,10 @@ void Display::displayTray(bool on, bool shareInformation)
                 m_display.display();
             delay(15);
         }
-
-        if (shareInformation)
-            m_lastTime = millis();
     }
+
+    if (shareInformation)
+        display();
 }
 
 /// @brief Affiche la température de couleur actuelle d'une ampoule.
@@ -487,10 +577,8 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
-
+    resetDisplay();
     m_display.drawBitmap(0, 0, lightColorTemperatureBitmap, 128, 64, WHITE);
-
     m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (temperature > minimum)
@@ -501,8 +589,7 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
     m_display.print(temperature);
     m_display.print('K');
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Affiche la luminosité actuelle d'une ampoule.
@@ -512,10 +599,8 @@ void Display::displayLuminosity(int luminosity)
     if (!m_operational)
         return;
 
-    m_display.clearDisplay();
-
+    resetDisplay();
     m_display.drawBitmap(0, 0, lightLuminosityBitmap, 128, 64, WHITE);
-
     m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (luminosity > 0)
@@ -532,13 +617,11 @@ void Display::displayLuminosity(int luminosity)
     else
         m_display.setCursor(52, 57);
 
-
     m_display.print(map(luminosity, 0, 255, 0, 100));
     // Code pour insérer un "%".
     m_display.write(0x25);
 
-    m_display.display();
-    m_lastTime = millis();
+    display();
 }
 
 /// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps.
@@ -547,7 +630,67 @@ void Display::loop()
     if (m_operational && (m_lastTime != 0) && ((millis() - m_lastTime) >= 8000))
     {
         m_lastTime = 0;
-        m_display.clearDisplay();
+        resetDisplay();
         m_display.display();
+
+        m_menuHelpList = nullptr;
+        m_menuHelpMenu = 1;
     }
+}
+
+void Display::printAccents(const String &string)
+{
+    int stringBeginIndex = 0;
+
+    for (unsigned int i = 0; i < string.length(); i++)
+    {
+        String c = String(string.charAt(i));
+        if (c != "é" && c != "à" && c != "è" && c != "ù" && c != "â" && c != "ê" && c != "î" && c != "ô" && c != "û")
+            continue;
+
+        m_display.print(string.substring(stringBeginIndex, i - 1));
+        stringBeginIndex = i + 1;
+
+        if (c == "à")
+            m_display.write(0x82);
+
+        else if (c == "à")
+            m_display.write(0x85);
+
+        else if (c == "è")
+            m_display.write(0x8A);
+
+        else if (c == "ù")
+            m_display.write(0x97);
+
+        else if (c == "â")
+            m_display.write(0x83);
+
+        else if (c == "ê")
+            m_display.write(0x88);
+
+        else if (c == "î")
+            m_display.write(0x8C);
+
+        else if (c == "ô")
+            m_display.write(0x93);
+
+        else if (c == "û")
+            m_display.write(0x96);
+    }
+}
+
+void Display::resetDisplay()
+{
+    m_display.clearDisplay();
+    m_display.setCursor(0, 0);
+    m_display.setTextColor(WHITE);
+    m_display.setTextWrap(true);
+    m_display.setTextSize(1);
+}
+
+void Display::display()
+{
+    m_display.display();
+    m_lastTime = millis();
 }

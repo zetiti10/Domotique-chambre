@@ -156,6 +156,15 @@ void WardrobeDoorSensor::desactivate()
     m_activated = false;
 }
 
+void WardrobeDoorSensor::toggleActivation()
+{
+    if (m_activated)
+        desactivate();
+    
+    else
+        activate();
+}
+
 /// @brief Méthode permettant de savoir si le mode automatique est activé ou non.
 /// @return L'état du mode automatique.
 bool WardrobeDoorSensor::getActivation() const

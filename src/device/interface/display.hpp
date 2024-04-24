@@ -17,6 +17,17 @@ enum VolumeType
     UNMUTE
 };
 
+// Types de pictogrammes disponibles pour les menus.
+enum MenuIcons
+{
+    OUTPUTS,
+    INPUTS,
+    LIGHTS,
+    SETTINGS,
+    TELEVISIONS,
+    CONTROL
+};
+
 // Classe regroupant les méthodes de contrôle de l'écran.
 class Display : public Device
 {
@@ -29,19 +40,27 @@ public:
     virtual void displayVolume(VolumeType action = UNMUTE, int volume = 0);
     virtual void displayAlarmTriggered(bool colorsInverted = false);
     virtual void displayAirValues(float temperature, float humidity);
-    virtual void displayLuminosityMotionSensorValues(int luminosity, bool motionDetected);
+    virtual void displayLuminosityValue(int luminosity);
+    virtual void displayMotionSensorValue(bool motionDetected);
     virtual void displayLEDState(int r, int g, int b);
     virtual void displayDeviceState(bool on);
-    virtual void displayKeypadMenu();
+    virtual void displayKeypadMenu(MenuIcons menuIcon, String &menuName);
+    virtual void displayKeypadMenuHelp(String *menuHelpList, String &menuName);
     virtual void displayTray(bool on, bool shareInformation = false);
     virtual void displayLightColorTemperature(int minimum, int maximum, int temperature);
     virtual void displayLuminosity(int luminosity);
     virtual void loop();
 
 protected:
+    virtual void printAccents(const String &string);
+    virtual void resetDisplay();
+    virtual void display();
+
     Adafruit_SSD1306 m_display;
     unsigned long m_lastTime;
     unsigned long m_lastStateAnimation;
+    String *m_menuHelpList;
+    int m_menuHelpMenu;
 };
 
 #endif

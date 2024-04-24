@@ -104,11 +104,32 @@ Output *HARemoteDeviceList[] = {&mainLights, &sofaLight, &bedLight, &cameraLight
 int HARemoteDevicesNumber = 4;
 
 // Liste des périphériques pour le clavier de contrôle.
-Output *keypadOutputList[] = {&disco, &beacon};
-int keypadOutputsNumber = 2;
-
+Output *keypadDeviceList[] = {&tray, &LEDCube, &disco, &beacon, &street, &cameraLight, &mainLights};
+int keypadDevicesNumber = 7;
+Output *keypadLightList[] = {&wardrobeLights, &deskLight, &doorLED};
+int keypadLightsNumber = 3;
+RGBLEDStrip *keypadStripList[] = {&LEDStrip};
+ColorMode *keypadStripColorModeList[] = {&colorMode};
+RainbowMode *keypadStripRainbowModeList[] = {&rainbowMode};
+SoundreactMode *keypadStripSoundreactModeList[] = {&soundreactMode};
+AlarmMode *keypadStripAlarmModeList[] = {&alarm.getAlarmStripMode()};
+int keypadStripsNumber = 1;
+ConnectedTemperatureVariableLight *keypadConnectedTemperatureVariableLightList[] = {&sofaLight};
+int keypadConnectedTemperatureVariableLightsNumber = 1;
+ConnectedColorVariableLight *keypadConnectedColorVariableLightList[] = {&bedLight};
+int keypadConnectedColorVariableLightsNumber = 1;
+Television *keypadTelevisionList[] = {&television};
+int keypadTelevisionsNumber = 1;
 Alarm *keypadAlarmList[] = {&alarm};
 int keypadAlarmsNumber = 1;
+BinaryInput *keypadBinaryInputList[] = {&doorSensor, &presenceSensor, &doorbell};
+int keypadBinaryInputsNumber = 3;
+AnalogInput *keypadAnalogInputList[] = {&lightSensor};
+int keypadAnalogInputsNumber = 1;
+AirSensor *keypadAirSensorList[] = {&airSensor};
+int keypadAirSensorsNumber = 1;
+WardrobeDoorSensor *keypadWardrobeDoorSensorList[] = {&wardrobeDoorSensor};
+int keypadWardrobeDoorSensorsList = 1;
 
 // Initialisation du système.
 void setup()
@@ -120,7 +141,32 @@ void setup()
     HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
 
     // Définition des périphériques contrôlables depuis le clavier de contrôle.
-    keypad.setDevices(keypadOutputList, keypadOutputsNumber, keypadAlarmList, keypadAlarmsNumber);
+    keypad.setDevices(keypadDeviceList,
+                      keypadDevicesNumber,
+                      keypadLightList,
+                      keypadLightsNumber,
+                      keypadStripList,
+                      keypadStripColorModeList,
+                      keypadStripRainbowModeList,
+                      keypadStripSoundreactModeList,
+                      keypadStripAlarmModeList,
+                      keypadStripsNumber,
+                      keypadConnectedTemperatureVariableLightList,
+                      keypadConnectedTemperatureVariableLightsNumber,
+                      keypadConnectedColorVariableLightList,
+                      keypadConnectedColorVariableLightsNumber,
+                      keypadTelevisionList,
+                      keypadTelevisionsNumber,
+                      keypadAlarmList,
+                      keypadAlarmsNumber,
+                      keypadBinaryInputList,
+                      keypadBinaryInputsNumber,
+                      keypadAnalogInputList,
+                      keypadAnalogInputsNumber,
+                      keypadAirSensorList,
+                      keypadAirSensorsNumber,
+                      keypadWardrobeDoorSensorList,
+                      keypadWardrobeDoorSensorsList);
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

@@ -13,8 +13,10 @@
 #include "device/output/RGBLEDStrip.hpp"
 #include "device/output/alarm.hpp"
 #include "device/output/television.hpp"
+#include "device/output/connectedOutput.hpp"
 #include "device/input/binaryInput.hpp"
 #include "device/input/analogInput.hpp"
+#include "device/input/airSensor.hpp"
 
 class KeypadMenu;
 
@@ -23,7 +25,18 @@ class Keypad : public Device
 {
 public:
     Keypad(String friendlyName, int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols);
-    virtual void setDevices(Output *outputList[], int &outputsNumber, Alarm *alarmList[], int &alarmsNumber /*, RGBLEDStrip *RGBLEDStripList[], Television *televisionList[], ConnectedOutput *connectedBinaryOutputList[], ConnectedTemperatureVariableLight *connectedTemperatureVariableLightList[], ConnectedColorVariableLight *connectedColorVariableLightList[], Input *inputList[]*/);
+    virtual void setDevices(
+        Output *deviceList[], int &devicesNumber,
+        Output *lightList[], int &lightsNumber,
+        RGBLEDStrip *RGBLEDStripList[], ColorMode *colorModeList[], RainbowMode *rainbowModeList[], SoundreactMode *soundreactModeList[], AlarmMode *alarmModeList[], int &RGBLEDStripsNumber,
+        ConnectedTemperatureVariableLight *connectedTemperatureVariableLightList[], int &connectedTemperatureVariableLightsNumber,
+        ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber,
+        Television *televisionList[], int &televisionsNumber,
+        Alarm *alarmList[], int &alarmsNumber,
+        BinaryInput *binaryInputList[], int &binaryInputsNumber,
+        AnalogInput *analogInputList[], int &analogInputsNumber,
+        AirSensor *airSensorList[], int &airSensorsNumber,
+        WardrobeDoorSensor *wardrobeDoorSensorList[], int &wardrobeDoorSensorsNumber);
     virtual void setup() override;
     virtual void loop();
     virtual Display &getDisplay();
@@ -42,7 +55,7 @@ class KeypadMenu
 {
 public:
     KeypadMenu(String friendlyName, Keypad &keypad);
-    
+
     virtual String getFriendlyName() const;
     virtual void setParentMenu(KeypadMenu *menu);
     virtual KeypadMenu *getParentMenu() const;
@@ -50,9 +63,10 @@ public:
     virtual KeypadMenu *getPreviousMenu() const;
     virtual void setNextMenu(KeypadMenu *menu);
     virtual KeypadMenu *getNextMenu() const;
-    
-    virtual void keyPressed(char key, bool longClick);
-    virtual void displayHelp();
+
+    virtual void keyPressed(char key, bool longClick) = 0;
+    virtual void displayHelp() = 0;
+    virtual void displayMenu() = 0;
 
 protected:
     String m_friendlyName;
@@ -68,29 +82,261 @@ class KeypadMenuOutputList : public KeypadMenu
 public:
     KeypadMenuOutputList(String friendlyName, Keypad &keypad);
 
-    virtual void setDevices(Output *outputList[], KeypadMenu *outputMenuList[], int &outputsNumber);
+    virtual void setDevices(Output *outputList[], int &outputsNumber);
 
     virtual void keyPressed(char key, bool longClick) override;
     virtual void displayHelp() override;
+    virtual void displayMenu() override;
 
 protected:
     Output **m_outputList;
-    KeypadMenu **m_outputMenuList;
     int m_outputsNumber;
+};
+
+class KeypadMenuLightList : public KeypadMenu
+{
+public:
+    KeypadMenuLightList(String friendlyName, Keypad &keypad);
+
+    virtual void setLights(Output *lightList[], KeypadMenu *lightMenuList[], int &lightsNumber);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    Output **m_lightList;
+    KeypadMenu **m_lightMenuList;
+    int m_lightsNumber;
+};
+
+class KeypadMenuRGBLEDStripColorModeControl : public KeypadMenu
+{
+public:
+    KeypadMenuRGBLEDStripColorModeControl(String friendlyName, Keypad &keypad, ColorMode &colorMode);
+
+    virtual ColorMode &getColorMode();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    ColorMode &m_colorMode;
+};
+
+class KeypadMenuRGBLEDStripRainbowModeControl : public KeypadMenu
+{
+public:
+    KeypadMenuRGBLEDStripRainbowModeControl(String friendlyName, Keypad &keypad, RainbowMode &rainbowMode);
+
+    virtual RainbowMode &getRainbowMode();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    RainbowMode &m_rainbowMode;
+};
+
+class KeypadMenuRGBLEDStripSoundreactModeControl : public KeypadMenu
+{
+public:
+    KeypadMenuRGBLEDStripSoundreactModeControl(String friendlyName, Keypad &keypad, SoundreactMode &soundreactMode);
+
+    virtual SoundreactMode &getSoundreactMode();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    SoundreactMode &m_soundreactMode;
+};
+
+class KeypadMenuRGBLEDStripAlarmModeControl : public KeypadMenu
+{
+public:
+    KeypadMenuRGBLEDStripAlarmModeControl(String friendlyName, Keypad &keypad, AlarmMode &alarmMode);
+
+    virtual AlarmMode &getAlarmMode();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    AlarmMode &m_alarmMode;
+};
+
+class KeypadMenuRGBLEDStripControl : public KeypadMenu
+{
+public:
+    KeypadMenuRGBLEDStripControl(String friendlyName, Keypad &keypad);
+
+    virtual void setStrip(RGBLEDStrip *strip, ColorMode *colorMode, RainbowMode *rainbowMode, SoundreactMode *soundreactMode, AlarmMode *alarmMode);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    RGBLEDStrip *m_strip;
+
+    KeypadMenuRGBLEDStripColorModeControl *m_colorMode;
+    KeypadMenuRGBLEDStripRainbowModeControl *m_rainbowMode;
+    KeypadMenuRGBLEDStripSoundreactModeControl *m_soundreactMode;
+    KeypadMenuRGBLEDStripAlarmModeControl *m_alarmMode;
+};
+
+
+
+class KeypadMenuConnectedLightLuminosityControl : public KeypadMenu
+{
+public:
+    KeypadMenuConnectedLightLuminosityControl(String friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light);
+
+    virtual ConnectedTemperatureVariableLight &getLight();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    ConnectedTemperatureVariableLight &m_light;
+};
+
+class KeypadMenuConnectedLightTemperatureControl : public KeypadMenu
+{
+public:
+    KeypadMenuConnectedLightTemperatureControl(String friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light);
+
+    virtual ConnectedTemperatureVariableLight &getLight();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    ConnectedTemperatureVariableLight &m_light;
+};
+
+class KeypadMenuConnectedLightColorControl : public KeypadMenu
+{
+public:
+    KeypadMenuConnectedLightColorControl(String friendlyName, Keypad &keypad, ConnectedColorVariableLight &light);
+
+    virtual ConnectedColorVariableLight &getLight();
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    ConnectedColorVariableLight &m_light;
+};
+
+class KeypadMenuConnectedTemperatureVariableLightControl : public KeypadMenu
+{
+public:
+    KeypadMenuConnectedTemperatureVariableLightControl(String friendlyName, Keypad &keypad);
+
+    virtual void setLight(ConnectedTemperatureVariableLight &light);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    KeypadMenuConnectedLightTemperatureControl *m_temperatureMenu;
+    KeypadMenuConnectedLightLuminosityControl *m_luminosityMenu;
+};
+
+class KeypadMenuConnectedColorVariableLightControl : public KeypadMenu
+{
+public:
+    KeypadMenuConnectedColorVariableLightControl(String friendlyName, Keypad &keypad);
+
+    virtual void setLight(ConnectedColorVariableLight &light);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    KeypadMenuConnectedLightTemperatureControl *m_temperatureMenu;
+    KeypadMenuConnectedLightLuminosityControl *m_luminosityMenu;
+    KeypadMenuConnectedLightColorControl *m_colorMenu;
+};
+
+class KeypadMenuTelevision : public KeypadMenu
+{
+public:
+    KeypadMenuTelevision(String friendlyName, Keypad &keypad);
+
+    virtual void setTelevision(Television *television);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    Television *m_television;
 };
 
 class KeypadMenuAlarm : public KeypadMenu
 {
-public: 
+public:
     KeypadMenuAlarm(String friendlyName, Keypad &keypad);
 
     virtual void setAlarm(Alarm *alarm);
 
     virtual void keyPressed(char key, bool longClick) override;
     virtual void displayHelp() override;
+    virtual void displayMenu() override;
 
 protected:
     Alarm *m_alarm;
+};
+
+enum KeypadMenuSensorType
+{
+    ANALOG,
+    BINARY,
+    WARDROBE_DOOR_SENSOR,
+    AIR
+};
+
+class KeypadMenuInputList : public KeypadMenu
+{
+public:
+    KeypadMenuInputList(String friendlyName, Keypad &keypad);
+
+    virtual void setInputs(Input **inputList, KeypadMenu **menuList, KeypadMenuSensorType *sensorTypeList, int sensorsNumber);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    Input **m_inputList;
+    KeypadMenu **m_menuList;
+    KeypadMenuSensorType *m_sensorTypeList;
+    int m_sensorsNumber;
+};
+
+class KeypadMenuWardrobeControl : public KeypadMenu
+{
+public:
+    KeypadMenuWardrobeControl(String friendlyName, Keypad &keypad, WardrobeDoorSensor &sensor);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    WardrobeDoorSensor &m_sensor;
 };
 
 #endif

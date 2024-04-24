@@ -71,6 +71,9 @@ class ColorMode : public RGBLEDStripMode
 public:
     ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection);
     virtual void setColor(int r, int g, int b);
+    virtual int getR() const;
+    virtual int getG() const;
+    virtual int getB() const;
 
 protected:
     HomeAssistant &m_connection;

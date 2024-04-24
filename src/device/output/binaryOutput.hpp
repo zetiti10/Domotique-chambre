@@ -13,7 +13,7 @@
 class BinaryOutput : public Output
 {
 public:
-    BinaryOutput(String friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin);
+    BinaryOutput(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

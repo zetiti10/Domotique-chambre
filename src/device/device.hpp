@@ -8,7 +8,7 @@
 class Device
 {
 public:
-    Device(String friendlyName, int ID);
+    Device(const String &friendlyName, int ID);
     virtual void setup() = 0;
     virtual String getFriendlyName() const;
     virtual int getID() const;

@@ -13,7 +13,7 @@
 class Tray : public Output
 {
 public:
-    Tray(String friendlyName, int ID, HomeAssistant &connection, Display &display, int motorPin1, int motorPin2, int speedPin);
+    Tray(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int motorPin1, int motorPin2, int speedPin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;

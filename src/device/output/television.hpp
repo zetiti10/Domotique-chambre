@@ -14,7 +14,7 @@
 class Television : public Output
 {
 public:
-    Television(String friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
+    Television(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop();

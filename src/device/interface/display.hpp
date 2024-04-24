@@ -32,11 +32,11 @@ enum MenuIcons
 class Display : public Device
 {
 public:
-    Display(String friendlyName, int ID);
+    Display(const String &friendlyName, int ID);
     virtual void setup() override;
     virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
     virtual void displayBell();
-    virtual void displayMessage(String message, String title = "Info");
+    virtual void displayMessage(const String &message, const String &title = "Info");
     virtual void displayVolume(VolumeType action = UNMUTE, int volume = 0);
     virtual void displayAlarmTriggered(bool colorsInverted = false);
     virtual void displayAirValues(float temperature, float humidity);

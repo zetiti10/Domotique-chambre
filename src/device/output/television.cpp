@@ -17,6 +17,8 @@
 #include "device/interface/HomeAssistant.hpp"
 #include "EEPROM.hpp"
 
+String unableToPerformError = "Impossible d'effectuer cette action.";
+
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
@@ -25,7 +27,7 @@
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(String friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
+Television::Television(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Television::setup()
@@ -112,7 +114,7 @@ void Television::syncVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+            m_display.displayMessage(unableToPerformError, "Erreur");
 
         return;
     }
@@ -136,7 +138,7 @@ void Television::increaseVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 25))
     {
         if (shareInformation)
-            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+            m_display.displayMessage(unableToPerformError, "Erreur");
 
         return;
     }
@@ -159,7 +161,7 @@ void Television::decreaseVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 0))
     {
         if (shareInformation)
-            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+            m_display.displayMessage(unableToPerformError, "Erreur");
 
         return;
     }
@@ -189,7 +191,7 @@ void Television::mute(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+            m_display.displayMessage(unableToPerformError, "Erreur");
 
         return;
     }
@@ -210,7 +212,7 @@ void Television::unMute(bool shareInformation)
     if (!m_state || m_locked || !m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+            m_display.displayMessage(unableToPerformError, "Erreur");
 
         return;
     }

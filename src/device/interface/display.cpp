@@ -19,7 +19,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Display::Display(String friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0) {}
+Display::Display(const String &friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()
@@ -62,7 +62,7 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     // Si aucune erreur n'a été détectée, affichage d'un message.
     if (counter == 0)
     {
-        displayMessage("Initialisation terminée !");
+        displayMessage("Démarré !");
     }
 
     // Affichage de la liste des périphériques indisponibles.
@@ -87,7 +87,7 @@ void Display::displayBell()
 /// @brief Affiche un message à l'écran avec un gros titre.
 /// @param message Le message à afficher.
 /// @param title Le titre du message (par défaut `INFO`).
-void Display::displayMessage(String message, String title)
+void Display::displayMessage(const String &message, const String &title)
 {
     if (!m_operational)
         return;
@@ -343,146 +343,11 @@ void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
     else
         text = "Menu " + menuName;
 
-    m_display.setCursor(((128 - (7 * text.length())) / 2), 55);
+    m_display.setCursor(ceil((128.0 - double(6 * text.length()) + 3.0) / 2), 53);
     m_display.setTextWrap(false);
     printAccents(text);
     display();
 }
-
-/*/// @brief Affiche les informations sur le menu sélectionné.
-void Display::displayKeypadMenu()
-{
-    if (!m_operational)
-        return;
-
-    m_display.clearDisplay();
-    m_display.setTextSize(1);
-    m_display.setCursor(0, 0);
-
-    switch (keypadMenu)
-    {
-    case LIGHTS_MENU:
-        m_display.drawBitmap(0, 0, lightsMenuBitmap, 128, 64, WHITE);
-        m_display.setCursor(20, 55);
-        m_display.print("Menu : lumieres");
-        break;
-
-    case SOFA_LIGHT_CONTROL_SUBMENU:
-        m_display.print("Lampe canape");
-
-        m_display.setCursor(0, 15);
-        m_display.println("1. Temperature");
-        m_display.println("2. Luminosite");
-        m_display.print("3. Effet");
-        break;
-
-    case SOFA_LIGHT_TEMPERATURE_CONTROL_SUBMENU:
-        m_display.print("Temperature : PAS CONFIGURE");
-        // Afficher rectangle temperature.
-        break;
-
-    case SOFA_LIGHT_LUMINOSITY_CONTROL_SUBMENU:
-        m_display.print("Luminosite : PAS CONFIGURE");
-        // Afficher rectangle luminosite.
-        break;
-
-    case SOFA_LIGHT_EFFECT_CONTROL_SUBMENU:
-        m_display.print("1. Test - 2. Test - 3. Test PAS CONFIGURE");
-        break;
-
-    case BEDSIDE_LIGHT_CONTROL_SUBMENU:
-        m_display.print("Lampe de chevet");
-
-        m_display.setCursor(0, 15);
-        m_display.println("1. Temperature");
-        m_display.println("2. Couleur");
-        m_display.println("3. Luminosite");
-        m_display.print("4. Effet");
-        break;
-
-    case BEDSIDE_LIGHT_TEMPERATURE_CONTROL_SUBMENU:
-        m_display.print("Temperature : PAS CONFIGURE");
-        // Afficher rectangle temperature.
-        break;
-
-    case BEDSIDE_LIGHT_COLOR_CONTROL_SUBMENU:
-        m_display.print("Couleur : PAS CONFIGURE");
-        // Afficher les 3 rectangles de la couleur.
-        break;
-
-    case BEDSIDE_LIGHT_LUMINOSITY_CONTROL_SUBMENU:
-        m_display.print("Luminosite : PAS CONFIGURE");
-        // Afficher rectangle luminosite.
-        break;
-
-    case BEDSIDE_LIGHT_EFFECT_CONTROL_SUBMENU:
-        m_display.print("1. Test - 2. Test - 3. Test PAS CONFIGURE");
-        break;
-
-    case RGB_STRIP_CONTROL_SUBMENU:
-        m_display.print("Rubans de DEL");
-
-        m_display.setCursor(0, 15);
-        m_display.println("1. Couleur");
-        m_display.print("2. Effet");
-        break;
-
-    case RGB_STRIP_COLOR_CONTROL_SUBMENU:
-        displayLEDState();
-        break;
-
-    case RGB_STRIP_EFFECT_CONTROL_SUBMENU:
-        m_display.print("Effet");
-
-        m_display.setCursor(0, 15);
-        m_display.println("1. Multicolore");
-        m_display.print("2. Son reaction");
-        break;
-
-    case DEVICES_MENU:
-        m_display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
-        m_display.setCursor(4, 55);
-        m_display.print("Menu : peripheriques");
-        break;
-
-    case SENSORS_MENU:
-        m_display.drawBitmap(0, 0, sensorsMenuBitmap, 128, 64, WHITE);
-        m_display.setCursor(20, 55);
-        m_display.print("Menu : capteurs");
-        break;
-
-    case TV_MENU:
-        m_display.drawBitmap(0, 0, TVMenuBitmap, 128, 64, WHITE);
-        m_display.setCursor(15, 55);
-        m_display.print("Menu : television");
-        break;
-
-    case CONFIGURATION_MENU:
-        m_display.drawBitmap(0, 0, configurationMenuBitmap, 128, 64, WHITE);
-        m_display.setCursor(5, 55);
-        m_display.print("Menu : configuration");
-        break;
-
-    case ALARM_CODE_CONFIGURATION_SUBMENU:
-        m_display.print("Entrez le mot de passe pour acceder au menu de gestion de l'alarme.");
-        break;
-
-    case ALARM_CONFIGURATION_SUBMENU:
-        m_display.print("Alarme");
-
-        m_display.setCursor(0, 15);
-        m_display.println("1. Son de l'alarme");
-        m_display.println("2. Ajouter une carte");
-        m_display.print("3. Suprimer les cartes");
-        break;
-
-    default:
-        break;
-    }
-
-    m_display.display();
-    m_lastTime = millis();
-}*/
 
 /// @brief Affiche l'aide d'un menu, avec deux affichages qui s'alternent.
 /// @param menuHelpList La liste des commandes du menu pour chaque touche, d'une taille de 10 éléments (de 1 à 9, avec le 0 en dernier).
@@ -505,21 +370,27 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
         begin = 5;
     }
 
+    m_display.setCursor(0, 9);
+
     for (int i = begin; i < (begin + 5); i++)
     {
-        m_display.setCursor(0, (9 * i + 9));
         m_display.setTextWrap(false);
-        m_display.write(i + 1);
+
+        if (i < 9)
+            m_display.print(i + 1);
+
+        else
+            m_display.print(0);
+        
         m_display.write(". ");
         printAccents(menuHelpList[i]);
+        m_display.println();
     }
 
     m_menuHelpList = menuHelpList;
 
     m_display.setCursor(0, 0);
-    m_display.print("Aide ");
-    m_display.print(m_menuHelpMenu);
-    m_display.print(" - ");
+    m_display.print("? ");
     printAccents(menuName);
 
     display();
@@ -644,14 +515,14 @@ void Display::printAccents(const String &string)
 
     for (unsigned int i = 0; i < string.length(); i++)
     {
-        String c = String(string.charAt(i));
+        String c = string.substring(i, i + 2);
         if (c != "é" && c != "à" && c != "è" && c != "ù" && c != "â" && c != "ê" && c != "î" && c != "ô" && c != "û")
             continue;
 
-        m_display.print(string.substring(stringBeginIndex, i - 1));
-        stringBeginIndex = i + 1;
+        m_display.print(string.substring(stringBeginIndex, i));
+        stringBeginIndex = i + 2;
 
-        if (c == "à")
+        if (c == "é")
             m_display.write(0x82);
 
         else if (c == "à")
@@ -678,6 +549,8 @@ void Display::printAccents(const String &string)
         else if (c == "û")
             m_display.write(0x96);
     }
+
+    m_display.print(string.substring(stringBeginIndex, string.length()));
 }
 
 void Display::resetDisplay()

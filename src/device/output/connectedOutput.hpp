@@ -13,7 +13,7 @@
 class ConnectedOutput : public Output
 {
 public:
-    ConnectedOutput(String friendlyName, int ID, HomeAssistant &connection, Display &display);
+    ConnectedOutput(const String &friendlyName, int ID, HomeAssistant &connection, Display &display);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -31,7 +31,7 @@ protected:
 class ConnectedTemperatureVariableLight : public ConnectedOutput
 {
 public:
-    ConnectedTemperatureVariableLight(String friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature);
+    ConnectedTemperatureVariableLight(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature);
     virtual void setColorTemperature(int temperature, bool shareInformation = false);
     virtual void setLuminosity(int luminosity, bool shareInformation = false);
     virtual int getColorTemperature();
@@ -51,7 +51,7 @@ protected:
 class ConnectedColorVariableLight : public ConnectedTemperatureVariableLight
 {
 public:
-    ConnectedColorVariableLight(String friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature);
+    ConnectedColorVariableLight(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature);
     virtual void setColor(int r, int g, int b, bool shareInformation = false);
     virtual void setColorTemperature(int temperature, bool shareInformation = false) override;
     virtual void setLuminosity(int luminosity, bool shareInformation = false) override;

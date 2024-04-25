@@ -31,17 +31,6 @@
 #include "device/input/airSensor.hpp"
 #include "device/input/IRSensor.hpp"
 
-int freeRam() {
-  extern int __heap_start,*__brkval;
-  int v;
-  return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int) __brkval);  
-}
-
-void displayFreeram() {
-  Serial.print(F("- SRAM left: "));
-  Serial.println(freeRam());
-}
-
 // Configuration du clavier.
 const byte KEYPAD_ROWS = 4;
 const byte KEYPAD_COLS = 4;
@@ -147,14 +136,9 @@ void setup()
 {
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
-    Serial.println(F("Début de l'initialisation"));
-    displayFreeram();
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
     HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
-
-    Serial.println(F("Périphériques de Home Assistant définis"));
-    displayFreeram();
 
     // Définition des périphériques contrôlables depuis le clavier de contrôle.
     keypad.setDevices(keypadDeviceList,
@@ -183,16 +167,10 @@ void setup()
                       keypadAirSensorsNumber,
                       keypadWardrobeDoorSensorList,
                       keypadWardrobeDoorSensorsList);
-    
-    Serial.println(F("Périphériques du clavier définis"));
-    displayFreeram();
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)
         deviceList[i]->setup();
-
-    Serial.println(F("Initialisation de tous les périphériques effectuée."));
-    displayFreeram();
 
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);

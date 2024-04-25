@@ -90,6 +90,9 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
 
         KeypadMenuOutputList *lightsMenu = new KeypadMenuOutputList("Lumières " + String(i + 1), *this);
 
+        Serial.println(F("Clavier - Contrôle des lumières en création - Menu principal crée"));
+        displayFreeram();
+
         for (int j = 0; j < itemsInCurrentMenu; j++)
         {
             int deviceIndex = (i * 9) + j;
@@ -138,6 +141,10 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
                 lightsInCurrentMenu[j] = light;
                 subMenusInCurrentMenu[j] = menu;
             }
+
+            Serial.print(F("Clavier - Contrôle des lumières en création - Mise en place effectuée pour la lumière "));
+            Serial.println(j);
+            displayFreeram();
         }
 
         lightsMenu->setDevices(lightsInCurrentMenu, itemsInCurrentMenu);
@@ -155,6 +162,9 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
         }
 
         previousMenu = lightsMenu;
+
+        Serial.println(F("Clavier - Contrôle des lumières en création - Menu défini"));
+        displayFreeram();
     }
 
     Serial.println(F("Clavier - Contrôle des lumières défini"));

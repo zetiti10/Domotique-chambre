@@ -15,7 +15,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Device::Device(const String &friendlyName, int ID) : m_friendlyName(friendlyName), m_ID(ID), m_operational(false) {}
+Device::Device(const __FlashStringHelper* friendlyName, int ID) : m_friendlyName(friendlyName), m_ID(ID), m_operational(false) {}
 
 /// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.

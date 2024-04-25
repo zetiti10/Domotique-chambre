@@ -14,7 +14,7 @@
 class IRSensor : public Input
 {
 public:
-    IRSensor(const String &friendlyName, int ID, HomeAssistant &connection, int pin);
+    IRSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop() override;

@@ -21,7 +21,7 @@
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
 /// @param relayPin La broche de l'Arduino liée au relai qui contrôle le périphérique.
-BinaryOutput::BinaryOutput(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin) : Output(friendlyName, ID, connection, display), m_relayPin(relayPin) {}
+BinaryOutput::BinaryOutput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin) : Output(friendlyName, ID, connection, display), m_relayPin(relayPin) {}
 
 /// @brief Initialise l'objet.
 void BinaryOutput::setup()

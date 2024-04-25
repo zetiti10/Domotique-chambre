@@ -21,7 +21,7 @@
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche liée au capteur.
 /// @param connected Permet d'envoyer l'état du capteur à Home Assistant ou non.
-AnalogInput::AnalogInput(const String &friendlyName, int ID, HomeAssistant &connection, int pin, bool connected) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin), m_connected(connected), m_lastTime(0) {}
+AnalogInput::AnalogInput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool connected) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin), m_connected(connected), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void AnalogInput::setup()

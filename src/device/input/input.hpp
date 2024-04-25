@@ -12,7 +12,7 @@
 class Input : public Device
 {
 public:
-    Input(const String &friendlyName, int ID, HomeAssistant &connection);
+    Input(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection);
     virtual void setup() override;
     virtual void reportState() = 0;
     virtual void loop() = 0;

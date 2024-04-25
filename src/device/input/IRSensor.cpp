@@ -20,7 +20,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche de l'Arduino liée au capteur infrarouge.
-IRSensor::IRSensor(const String &friendlyName, int ID, HomeAssistant &connection, int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
+IRSensor::IRSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void IRSensor::setup()

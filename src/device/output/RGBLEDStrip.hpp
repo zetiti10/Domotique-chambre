@@ -13,7 +13,7 @@
 class RGBLEDStrip : public Output
 {
 public:
-    RGBLEDStrip(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin);
+    RGBLEDStrip(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -47,7 +47,7 @@ private:
 class RGBLEDStripMode
 {
 public:
-    RGBLEDStripMode(const String &friendlyName, int ID, RGBLEDStrip &strip);
+    RGBLEDStripMode(String friendlyName, int ID, RGBLEDStrip &strip);
     virtual String getFriendlyName() const;
     virtual bool isActivated() const;
     virtual int getID() const;
@@ -69,7 +69,7 @@ private:
 class ColorMode : public RGBLEDStripMode
 {
 public:
-    ColorMode(const String &friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection);
+    ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection);
     virtual void setColor(int r, int g, int b);
     virtual int getR() const;
     virtual int getG() const;
@@ -92,7 +92,7 @@ private:
 class AlarmMode : public RGBLEDStripMode
 {
 public:
-    AlarmMode(const String &friendlyName, int ID, RGBLEDStrip &strip);
+    AlarmMode(String friendlyName, int ID, RGBLEDStrip &strip);
 
 protected:
     unsigned long m_lastTime;
@@ -107,7 +107,7 @@ private:
 class RainbowMode : public RGBLEDStripMode
 {
 public:
-    RainbowMode(const String &friendlyName, int ID, RGBLEDStrip &strip, int speed);
+    RainbowMode(String friendlyName, int ID, RGBLEDStrip &strip, int speed);
     virtual void setAnimationSpeed(int speed);
     virtual int getAnimationSpeed();
 
@@ -129,7 +129,7 @@ private:
 class SoundreactMode : public RGBLEDStripMode
 {
 public:
-    SoundreactMode(const String &friendlyName, int ID, RGBLEDStrip &strip);
+    SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip);
 
 private:
     virtual void loop() override;

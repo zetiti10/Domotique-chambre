@@ -18,7 +18,7 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param pin La broche reliée au buzzer du système de domotique.
-Buzzer::Buzzer(const String &friendlyName, int ID, int pin) : Device(friendlyName, ID), m_pin(pin) {}
+Buzzer::Buzzer(const __FlashStringHelper* friendlyName, int ID, int pin) : Device(friendlyName, ID), m_pin(pin) {}
 
 /// @brief Initialise l'objet.
 void Buzzer::setup()

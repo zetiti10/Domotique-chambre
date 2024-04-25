@@ -13,7 +13,7 @@
 class Output : public Device
 {
 public:
-    Output(const String &friendlyName, int ID, HomeAssistant &connection, Display &display);
+    Output(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display);
     virtual void setup() override;
     virtual void reportState();
     virtual void turnOn(bool shareInformation = false) = 0;

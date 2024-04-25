@@ -27,7 +27,7 @@ class ConnectedColorVariableLight;
 class HomeAssistant : public Device
 {
 public:
-    HomeAssistant(const String &friendlyName, int ID, HardwareSerial &serial, Display &display);
+    HomeAssistant(const __FlashStringHelper* friendlyName, int ID, HardwareSerial &serial, Display &display);
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
     virtual void setup() override;
     virtual void loop();

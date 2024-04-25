@@ -32,7 +32,7 @@ enum MenuIcons
 class Display : public Device
 {
 public:
-    Display(const String &friendlyName, int ID);
+    Display(const __FlashStringHelper* friendlyName, int ID);
     virtual void setup() override;
     virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
     virtual void displayBell();

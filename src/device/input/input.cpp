@@ -18,7 +18,7 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
-Input::Input(const String &friendlyName, int ID, HomeAssistant &connection) : Device(friendlyName, ID), m_connection(connection) {}
+Input::Input(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection) : Device(friendlyName, ID), m_connection(connection) {}
 
 void Input::setup()
 {

@@ -25,7 +25,7 @@
 /// @param RPin La broche liée à l'alimentation du rouge des rubans de DEL.
 /// @param GPin La broche liée à l'alimentation du vert des rubans de DEL.
 /// @param BPin La broche liée à l'alimentation du bleu des rubans de DEL.
-RGBLEDStrip::RGBLEDStrip(const String &friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, ID, connection, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
+RGBLEDStrip::RGBLEDStrip(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, ID, connection, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
 
 /// @brief Initialise l'objet.
 void RGBLEDStrip::setup()
@@ -197,7 +197,7 @@ void RGBLEDStrip::setColor(int r, int g, int b)
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-RGBLEDStripMode::RGBLEDStripMode(const String &friendlyName, int ID, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_ID(ID), m_strip(strip), m_activated(false) {}
+RGBLEDStripMode::RGBLEDStripMode(String friendlyName, int ID, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_ID(ID), m_strip(strip), m_activated(false) {}
 
 /// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -233,7 +233,7 @@ void RGBLEDStripMode::desactivate()
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-ColorMode::ColorMode(const String &friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(0), m_G(0), m_B(0) {}
+ColorMode::ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(0), m_G(0), m_B(0) {}
 
 /// @brief Défini la couleur du ruban de DEL RVB.
 /// @param r L'intensité du rouge.
@@ -305,7 +305,7 @@ void ColorMode::loop() {}
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-AlarmMode::AlarmMode(const String &friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0) {}
+AlarmMode::AlarmMode(String friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0) {}
 
 void AlarmMode::desactivate()
 {
@@ -333,7 +333,7 @@ void AlarmMode::loop()
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
 /// @param speed La vitesse de l'animation.
-RainbowMode::RainbowMode(const String &friendlyName, int ID, RGBLEDStrip &strip, int speed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(speed) {}
+RainbowMode::RainbowMode(String friendlyName, int ID, RGBLEDStrip &strip, int speed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(speed) {}
 
 /// @brief Définit la vitesse de l'animation arc-en-ciel.
 /// @param speed La vitesse, de `0` (lent) à `100` (très rapide).
@@ -409,6 +409,6 @@ void RainbowMode::loop()
             m_step = 0;
     }
 }
-SoundreactMode::SoundreactMode(const String &friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip) {}
+SoundreactMode::SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip) {}
 
 void SoundreactMode::loop() {}

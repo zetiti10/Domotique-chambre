@@ -77,13 +77,13 @@ void setup()
     //int outputsNumber = 15;
 
     // Périphériques d'entrée.
-    WardrobeDoorSensor wardrobeDoorSensor(F("Capteur des portes de l'armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
-    DoorSensor doorSensor(F("Capteur de la porte de la chambre"), ID_DOOR_SENSOR, HomeAssistantConnection, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
-    BinaryInput presenceSensor(F("Capteur de présence"), ID_PRESENCE_SENSOR, HomeAssistantConnection, PIN_MOTION_SENSOR, false, false);
+    WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
+    DoorSensor doorSensor(F("Porte"), ID_DOOR_SENSOR, HomeAssistantConnection, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
+    BinaryInput presenceSensor(F("Présence"), ID_PRESENCE_SENSOR, HomeAssistantConnection, PIN_MOTION_SENSOR, false, false);
     Doorbell doorbell(F("Sonnette"), ID_DOORBELL, HomeAssistantConnection, PIN_DOORBELL_BUTTON, false, false, display, buzzer);
-    AnalogInput lightSensor(F("Capteur de luminosité"), ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR, false);
+    AnalogInput lightSensor(F("Luminosité"), ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR, false);
     AnalogInput microphone(F("Microphone"), ID_MICROPHONE, HomeAssistantConnection, PIN_MICROPHONE, false);
-    AirSensor airSensor(F("Capteur de l'air"), ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
+    AirSensor airSensor(F("Air"), ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
     IRSensor iRSensor(F("Capteur infrarouge"), ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
 
     // Création d'une liste contenant des références vers tous les capteurs.
@@ -138,6 +138,10 @@ void setup()
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
 
+    // Initialise les noms des périphériques.
+    for (int i = 0; i < devicesNumber; i ++)
+        deviceList[i]->getFriendlyName();
+    
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
     HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
 

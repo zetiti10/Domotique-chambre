@@ -731,9 +731,9 @@ KeypadMenuConnectedTemperatureVariableLightControl::KeypadMenuConnectedTemperatu
 
 void KeypadMenuConnectedTemperatureVariableLightControl::setLight(ConnectedTemperatureVariableLight &light)
 {
-    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température", m_keypad, light);
+    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température " + light.getFriendlyName(), m_keypad, light);
     m_temperatureMenu->setParentMenu(this);
-    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité", m_keypad, light);
+    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité " + light.getFriendlyName(), m_keypad, light);
     m_luminosityMenu->setParentMenu(this);
 
     m_temperatureMenu->setNextMenu(m_luminosityMenu);
@@ -783,11 +783,11 @@ KeypadMenuConnectedColorVariableLightControl::KeypadMenuConnectedColorVariableLi
 
 void KeypadMenuConnectedColorVariableLightControl::setLight(ConnectedColorVariableLight &light)
 {
-    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl(light.getFriendlyName(), m_keypad, light);
+    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température " + light.getFriendlyName(), m_keypad, light);
     m_temperatureMenu->setParentMenu(this);
-    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl(light.getFriendlyName(), m_keypad, light);
+    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité " + light.getFriendlyName(), m_keypad, light);
     m_luminosityMenu->setParentMenu(this);
-    m_colorMenu = new KeypadMenuConnectedLightColorControl(light.getFriendlyName(), m_keypad, light);
+    m_colorMenu = new KeypadMenuConnectedLightColorControl("Couleur " + light.getFriendlyName(), m_keypad, light);
     m_colorMenu->setParentMenu(this);
 
     m_colorMenu->setNextMenu(m_temperatureMenu);
@@ -887,7 +887,7 @@ ConnectedTemperatureVariableLight &KeypadMenuConnectedLightTemperatureControl::g
 
 void KeypadMenuConnectedLightTemperatureControl::keyPressed(char key, bool longClick)
 {
-    int precision = 20;
+    int precision = 200;
 
     switch (key)
     {

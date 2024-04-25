@@ -486,7 +486,7 @@ void Display::displayLuminosity(int luminosity)
 /// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps.
 void Display::loop()
 {
-    if (m_operational && (m_lastTime != 0) && ((millis() - m_lastTime) >= 8000))
+    if (m_operational && (m_lastTime != 0) && ((millis() - m_lastTime) >= 15000))
     {
         m_lastTime = 0;
         resetDisplay();

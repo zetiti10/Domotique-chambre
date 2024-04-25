@@ -406,19 +406,6 @@ KeypadMenu *KeypadMenu::getNextMenu() const
     return m_nextMenu;
 }
 
-/*void KeypadMenu::displayHelp() {
-    String helpList[10];
-
-    helpList[0] = "1";
-
-    m_keypad.getDisplay().displayKeypadMenuHelp(helpList, m_friendlyName);
-}
-
-void KeypadMenu::displayMenu()
-{
-    m_keypad.getDisplay().displayKeypadMenu(SETTINGS, m_friendlyName);
-}*/
-
 KeypadMenuOutputList::KeypadMenuOutputList(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_outputList(nullptr), m_outputsNumber(0) {}
 
 void KeypadMenuOutputList::setDevices(Output *outputList[], int &outputsNumber)
@@ -491,14 +478,22 @@ void KeypadMenuRGBLEDStripControl::setStrip(RGBLEDStrip *strip, ColorMode *color
 {
     m_strip = strip;
 
-    m_colorMode = new KeypadMenuRGBLEDStripColorModeControl("Contrôle de " + String(colorMode->getFriendlyName()), m_keypad, *colorMode);
+    m_colorMode = new KeypadMenuRGBLEDStripColorModeControl(colorMode->getFriendlyName(), m_keypad, *colorMode);
     m_colorMode->setParentMenu(this);
-    m_rainbowMode = new KeypadMenuRGBLEDStripRainbowModeControl("Contrôle de " + String(rainbowMode->getFriendlyName()), m_keypad, *rainbowMode);
+    m_colorMode->setNextMenu(m_rainbowMode);
+    m_colorMode->setPreviousMenu(m_alarmMode);
+    m_rainbowMode = new KeypadMenuRGBLEDStripRainbowModeControl(rainbowMode->getFriendlyName(), m_keypad, *rainbowMode);
     m_rainbowMode->setParentMenu(this);
-    m_soundreactMode = new KeypadMenuRGBLEDStripSoundreactModeControl("Contrôle de " + String(soundreactMode->getFriendlyName()), m_keypad, *soundreactMode);
+    m_rainbowMode->setNextMenu(m_soundreactMode);
+    m_rainbowMode->setPreviousMenu(m_colorMode);
+    m_soundreactMode = new KeypadMenuRGBLEDStripSoundreactModeControl(soundreactMode->getFriendlyName(), m_keypad, *soundreactMode);
     m_soundreactMode->setParentMenu(this);
-    m_alarmMode = new KeypadMenuRGBLEDStripAlarmModeControl("Contrôle de " + String(alarmMode->getFriendlyName()), m_keypad, *alarmMode);
+    m_soundreactMode->setNextMenu(m_alarmMode);
+    m_soundreactMode->setPreviousMenu(m_rainbowMode);
+    m_alarmMode = new KeypadMenuRGBLEDStripAlarmModeControl(alarmMode->getFriendlyName(), m_keypad, *alarmMode);
     m_alarmMode->setParentMenu(this);
+    m_alarmMode->setNextMenu(m_colorMode);
+    m_alarmMode->setPreviousMenu(m_soundreactMode);
 }
 
 void KeypadMenuRGBLEDStripControl::keyPressed(char key, bool longClick)
@@ -565,7 +560,7 @@ void KeypadMenuRGBLEDStripControl::displayHelp()
 
 void KeypadMenuRGBLEDStripControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuRGBLEDStripColorModeControl::KeypadMenuRGBLEDStripColorModeControl(String friendlyName, Keypad &keypad, ColorMode &colorMode) : KeypadMenu(friendlyName, keypad), m_colorMode(colorMode) {}
@@ -623,7 +618,7 @@ void KeypadMenuRGBLEDStripColorModeControl::displayHelp()
 
 void KeypadMenuRGBLEDStripColorModeControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuRGBLEDStripRainbowModeControl::KeypadMenuRGBLEDStripRainbowModeControl(String friendlyName, Keypad &keypad, RainbowMode &rainbowMode) : KeypadMenu(friendlyName, keypad), m_rainbowMode(rainbowMode) {}
@@ -661,7 +656,7 @@ void KeypadMenuRGBLEDStripRainbowModeControl::displayHelp()
 
 void KeypadMenuRGBLEDStripRainbowModeControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuRGBLEDStripSoundreactModeControl::KeypadMenuRGBLEDStripSoundreactModeControl(String friendlyName, Keypad &keypad, SoundreactMode &soundreactMode) : KeypadMenu(friendlyName, keypad), m_soundreactMode(soundreactMode) {}
@@ -673,7 +668,7 @@ SoundreactMode &KeypadMenuRGBLEDStripSoundreactModeControl::getSoundreactMode()
 
 void KeypadMenuRGBLEDStripSoundreactModeControl::keyPressed(char key, bool longClick)
 {
-    int precision = 10;
+    // int precision = 10;
 
     switch (key)
     {
@@ -699,7 +694,7 @@ void KeypadMenuRGBLEDStripSoundreactModeControl::displayHelp()
 
 void KeypadMenuRGBLEDStripSoundreactModeControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuRGBLEDStripAlarmModeControl::KeypadMenuRGBLEDStripAlarmModeControl(String friendlyName, Keypad &keypad, AlarmMode &alarmMode) : KeypadMenu(friendlyName, keypad), m_alarmMode(alarmMode) {}
@@ -722,17 +717,21 @@ void KeypadMenuRGBLEDStripAlarmModeControl::displayHelp()
 
 void KeypadMenuRGBLEDStripAlarmModeControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuConnectedTemperatureVariableLightControl::KeypadMenuConnectedTemperatureVariableLightControl(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_temperatureMenu(nullptr), m_luminosityMenu(nullptr) {}
 
 void KeypadMenuConnectedTemperatureVariableLightControl::setLight(ConnectedTemperatureVariableLight &light)
 {
-    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température " + light.getFriendlyName(), m_keypad, light);
+    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température", m_keypad, light);
     m_temperatureMenu->setParentMenu(this);
-    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité " + light.getFriendlyName(), m_keypad, light);
+    m_temperatureMenu->setNextMenu(m_luminosityMenu);
+    m_temperatureMenu->setPreviousMenu(m_luminosityMenu);
+    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité", m_keypad, light);
     m_luminosityMenu->setParentMenu(this);
+    m_luminosityMenu->setNextMenu(m_temperatureMenu);
+    m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
 }
 
 void KeypadMenuConnectedTemperatureVariableLightControl::keyPressed(char key, bool longClick)
@@ -769,19 +768,25 @@ void KeypadMenuConnectedTemperatureVariableLightControl::displayHelp()
 
 void KeypadMenuConnectedTemperatureVariableLightControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuConnectedColorVariableLightControl::KeypadMenuConnectedColorVariableLightControl(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_temperatureMenu(nullptr), m_luminosityMenu(nullptr), m_colorMenu(nullptr) {}
 
 void KeypadMenuConnectedColorVariableLightControl::setLight(ConnectedColorVariableLight &light)
 {
-    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température de " + light.getFriendlyName(), m_keypad, light);
+    m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl(light.getFriendlyName(), m_keypad, light);
     m_temperatureMenu->setParentMenu(this);
-    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité de " + light.getFriendlyName(), m_keypad, light);
+    m_temperatureMenu->setNextMenu(m_luminosityMenu);
+    m_temperatureMenu->setPreviousMenu(m_colorMenu);
+    m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl(light.getFriendlyName(), m_keypad, light);
     m_luminosityMenu->setParentMenu(this);
-    m_colorMenu = new KeypadMenuConnectedLightColorControl("Couleur de " + light.getFriendlyName(), m_keypad, light);
+    m_luminosityMenu->setNextMenu(m_colorMenu);
+    m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
+    m_colorMenu = new KeypadMenuConnectedLightColorControl(light.getFriendlyName(), m_keypad, light);
     m_colorMenu->setParentMenu(this);
+    m_colorMenu->setNextMenu(m_temperatureMenu);
+    m_colorMenu->setPreviousMenu(m_luminosityMenu);
 }
 
 void KeypadMenuConnectedColorVariableLightControl::keyPressed(char key, bool longClick)
@@ -823,7 +828,7 @@ void KeypadMenuConnectedColorVariableLightControl::displayHelp()
 
 void KeypadMenuConnectedColorVariableLightControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuConnectedLightLuminosityControl::KeypadMenuConnectedLightLuminosityControl(String friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light) : KeypadMenu(friendlyName, keypad), m_light(light) {}
@@ -861,7 +866,7 @@ void KeypadMenuConnectedLightLuminosityControl::displayHelp()
 
 void KeypadMenuConnectedLightLuminosityControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuConnectedLightTemperatureControl::KeypadMenuConnectedLightTemperatureControl(String friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light) : KeypadMenu(friendlyName, keypad), m_light(light) {}
@@ -899,7 +904,7 @@ void KeypadMenuConnectedLightTemperatureControl::displayHelp()
 
 void KeypadMenuConnectedLightTemperatureControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuConnectedLightColorControl::KeypadMenuConnectedLightColorControl(String friendlyName, Keypad &keypad, ConnectedColorVariableLight &light) : KeypadMenu(friendlyName, keypad), m_light(light) {}
@@ -957,7 +962,7 @@ void KeypadMenuConnectedLightColorControl::displayHelp()
 
 void KeypadMenuConnectedLightColorControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(LIGHTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
 KeypadMenuTelevision::KeypadMenuTelevision(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_television(nullptr) {}
@@ -1065,7 +1070,7 @@ void KeypadMenuAlarm::displayHelp()
 
 void KeypadMenuAlarm::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(OUTPUTS, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(ALARMS, m_friendlyName);
 }
 
 KeypadMenuInputList::KeypadMenuInputList(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_inputList(nullptr), m_menuList(nullptr), m_sensorTypeList(nullptr), m_sensorsNumber(0) {}
@@ -1090,7 +1095,7 @@ void KeypadMenuInputList::keyPressed(char key, bool longClick)
             case ANALOG:
             {
                 AnalogInput *sensor = static_cast<AnalogInput *>(m_inputList[index]);
-                m_keypad.getDisplay().displayLuminosityValue(sensor->getValue());
+                m_keypad.getDisplay().displayAnalogSensorValue(sensor->getValue());
                 break;
             }
 
@@ -1104,7 +1109,7 @@ void KeypadMenuInputList::keyPressed(char key, bool longClick)
                 }
 
                 BinaryInput *sensor = static_cast<BinaryInput *>(m_inputList[index]);
-                m_keypad.getDisplay().displayLuminosityValue(sensor->getState());
+                m_keypad.getDisplay().displayBinarySensorValue(sensor->getState());
                 break;
             }
 
@@ -1142,7 +1147,10 @@ KeypadMenuWardrobeControl::KeypadMenuWardrobeControl(String friendlyName, Keypad
 void KeypadMenuWardrobeControl::keyPressed(char key, bool longClick)
 {
     if (key == '1')
+    {
         m_sensor.toggleActivation();
+        m_keypad.getDisplay().displayDeviceState(m_sensor.getActivation());
+    }
 }
 
 void KeypadMenuWardrobeControl::displayHelp()
@@ -1156,5 +1164,5 @@ void KeypadMenuWardrobeControl::displayHelp()
 
 void KeypadMenuWardrobeControl::displayMenu()
 {
-    m_keypad.getDisplay().displayKeypadMenu(CONTROL, m_friendlyName);
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }

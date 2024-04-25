@@ -19,7 +19,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Display::Display(const __FlashStringHelper* friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0), m_menuHelpList(nullptr), m_menuHelpMenu(1) {}
+Display::Display(const __FlashStringHelper *friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0), m_menuHelpList(nullptr), m_menuHelpMenu(1) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()
@@ -189,49 +189,43 @@ void Display::displayAirValues(float temperature, float humidity)
     display();
 }
 
-/// @brief Affiche la valeur du capteur de luminosité, avec un pictogramme.
-/// @param luminosity La valeur de la luminosité à afficher.
-void Display::displayLuminosityValue(int luminosity)
+/// @brief Affiche la valeur d'un capteur analogique.
+/// @param value La valeur du capteur analogique.
+void Display::displayAnalogSensorValue(int value)
 {
     if (!m_operational)
         return;
 
     resetDisplay();
-    m_display.drawBitmap(0, 0, lightLuminosityBitmap, 128, 64, WHITE);
+    m_display.drawBitmap(0, 0, analogSensorBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
 
-    if (luminosity > 10)
-        m_display.setCursor(45, 58);
+    if (value < 10)
+        m_display.setCursor(58, 45);
 
-    else if (luminosity < 100)
-        m_display.setCursor(45, 52);
+    else if (value < 100)
+        m_display.setCursor(52, 45);
 
     else
         m_display.setCursor(45, 45);
 
-    m_display.print(luminosity);
+    m_display.print(value);
 
     display();
 }
 
-/// @brief Affiche la valeur du capteur de mouvement, avec un pictogramme.
-/// @param motionDetected La valeur du capteur de mouvement à afficher.
-void Display::displayMotionSensorValue(bool motionDetected)
+/// @brief Affiche la valeur d'un capteur binaire.
+/// @param value La valeur du capteur binaire.
+void Display::displayBinarySensorValue(bool value)
 {
     if (!m_operational)
         return;
 
     resetDisplay();
-    m_display.drawBitmap(0, 0, motionBitmap, 128, 64, WHITE);
-    m_display.setCursor(45, 50);
+    m_display.drawBitmap(0, 0, binarySensorBitmap, 128, 64, WHITE);
     m_display.setTextSize(2);
-
-    if (motionDetected)
-        m_display.print(F("OUI"));
-
-    else
-        m_display.print(F("NON"));
-
+    m_display.setCursor(58, 45);
+    m_display.print(value);
     display();
 }
 
@@ -314,23 +308,23 @@ void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
         m_display.drawBitmap(0, 0, devicesMenuBitmap, 128, 64, WHITE);
         break;
 
-    case INPUTS:
-        m_display.drawBitmap(0, 0, sensorsMenuBitmap, 128, 64, WHITE);
-        break;
-
     case LIGHTS:
         m_display.drawBitmap(0, 0, lightsMenuBitmap, 128, 64, WHITE);
         break;
 
-    case SETTINGS:
-        m_display.drawBitmap(0, 0, configurationMenuBitmap, 128, 64, WHITE);
+    case INPUTS:
+        m_display.drawBitmap(0, 0, sensorsMenuBitmap, 128, 64, WHITE);
         break;
 
     case TELEVISIONS:
         m_display.drawBitmap(0, 0, TVMenuBitmap, 128, 64, WHITE);
         break;
 
-    case CONTROL:
+    case ALARMS:
+        m_display.drawBitmap(0, 0, AlarmMenuBitmap, 128, 64, WHITE);
+        break;
+
+    case CONTROLS:
         m_display.drawBitmap(0, 0, deviceControlMenuBitmap, 128, 64, WHITE);
         break;
     }
@@ -343,7 +337,7 @@ void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
     else
         text = "Menu " + menuName;
 
-    m_display.setCursor(ceil((128.0 - double(6 * text.length()) + 3.0) / 2), 53);
+    m_display.setCursor(ceil((128.0 - double(6 * text.length())) / 2), 53);
     m_display.setTextWrap(false);
     printAccents(text);
     display();
@@ -381,8 +375,8 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
 
         else
             m_display.print(0);
-        
-        m_display.write(". ");
+
+        m_display.print(F(" "));
         printAccents(menuHelpList[i]);
         m_display.println();
     }
@@ -390,7 +384,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
     m_menuHelpList = menuHelpList;
 
     m_display.setCursor(0, 0);
-    m_display.print("? ");
+    m_display.print(F("? "));
     printAccents(menuName);
 
     display();
@@ -458,7 +452,7 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
     m_display.setTextSize(1);
     m_display.setCursor(49, 57);
     m_display.print(temperature);
-    m_display.print('K');
+    m_display.print(F("K"));
 
     display();
 }
@@ -503,9 +497,6 @@ void Display::loop()
         m_lastTime = 0;
         resetDisplay();
         m_display.display();
-
-        m_menuHelpList = nullptr;
-        m_menuHelpMenu = 1;
     }
 }
 
@@ -560,6 +551,8 @@ void Display::resetDisplay()
     m_display.setTextColor(WHITE);
     m_display.setTextWrap(true);
     m_display.setTextSize(1);
+    m_menuHelpList = nullptr;
+    m_menuHelpMenu = 1;
 }
 
 void Display::display()

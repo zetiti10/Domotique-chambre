@@ -21,11 +21,11 @@ enum VolumeType
 enum MenuIcons
 {
     OUTPUTS,
-    INPUTS,
     LIGHTS,
-    SETTINGS,
     TELEVISIONS,
-    CONTROL
+    ALARMS,
+    INPUTS,
+    CONTROLS
 };
 
 // Classe regroupant les méthodes de contrôle de l'écran.
@@ -40,8 +40,8 @@ public:
     virtual void displayVolume(VolumeType action = UNMUTE, int volume = 0);
     virtual void displayAlarmTriggered(bool colorsInverted = false);
     virtual void displayAirValues(float temperature, float humidity);
-    virtual void displayLuminosityValue(int luminosity);
-    virtual void displayMotionSensorValue(bool motionDetected);
+    virtual void displayAnalogSensorValue(int value);
+    virtual void displayBinarySensorValue(bool value);
     virtual void displayLEDState(int r, int g, int b);
     virtual void displayDeviceState(bool on);
     virtual void displayKeypadMenu(MenuIcons menuIcon, String &menuName);

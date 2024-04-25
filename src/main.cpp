@@ -110,8 +110,8 @@ void setup()
     // Liste des périphériques pour le clavier de contrôle.
     Output *keypadDeviceList[] = {&tray, &LEDCube, &disco, &beacon, &street, &cameraLight, &mainLights};
     int keypadDevicesNumber = 7;
-    Output *keypadLightList[] = {&wardrobeLights, &deskLight, &doorLED};
-    int keypadLightsNumber = 3;
+    Output *keypadLightList[] = {&wardrobeLights, &deskLight, &doorLED, &mainLights, &cameraLight};
+    int keypadLightsNumber = 5;
     RGBLEDStrip *keypadStripList[] = {&LEDStrip};
     ColorMode *keypadStripColorModeList[] = {&colorMode};
     RainbowMode *keypadStripRainbowModeList[] = {&rainbowMode};

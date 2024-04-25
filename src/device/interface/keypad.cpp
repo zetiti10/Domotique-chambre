@@ -81,7 +81,7 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
         Output **lightsInCurrentMenu = new Output *[itemsInCurrentMenu];
         KeypadMenu **subMenusInCurrentMenu = new KeypadMenu *[itemsInCurrentMenu];
 
-        KeypadMenuOutputList *lightsMenu = new KeypadMenuOutputList("Lumières " + String(i + 1), *this);
+        KeypadMenuLightList *lightsMenu = new KeypadMenuLightList("Lumières " + String(i + 1), *this);
 
         for (int j = 0; j < itemsInCurrentMenu; j++)
         {
@@ -133,7 +133,7 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
             }
         }
 
-        lightsMenu->setDevices(lightsInCurrentMenu, itemsInCurrentMenu);
+        lightsMenu->setLights(lightsInCurrentMenu, subMenusInCurrentMenu, itemsInCurrentMenu);
 
         if (m_mainMenu == nullptr)
         {
@@ -1141,7 +1141,7 @@ KeypadMenuWardrobeControl::KeypadMenuWardrobeControl(String friendlyName, Keypad
 
 void KeypadMenuWardrobeControl::keyPressed(char key, bool longClick)
 {
-    if (key == '0')
+    if (key == '1')
         m_sensor.toggleActivation();
 }
 

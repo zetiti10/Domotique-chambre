@@ -99,7 +99,7 @@ void ConnectedTemperatureVariableLight::setColorTemperature(int temperature, boo
     if (temperature > m_maximalColorTemperature)
         temperature = m_maximalColorTemperature;
 
-    m_connection.setConnectedTemperatureVariableLightLuminosity(m_ID, temperature);
+    m_connection.setConnectedTemperatureVariableLightTemperature(m_ID, temperature);
 }
 
 void ConnectedTemperatureVariableLight::setLuminosity(int luminosity, bool shareInformation)

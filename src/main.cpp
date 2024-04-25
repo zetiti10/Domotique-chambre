@@ -70,7 +70,7 @@ void setup()
     ConnectedOutput mainLights(F("Lumières du plafond"), ID_MAIN_LIGHTS, HomeAssistantConnection, display);
     ConnectedTemperatureVariableLight sofaLight(F("Lampe du canapé"), ID_SOFA_LIGHT, HomeAssistantConnection, display, 2000, 5000);
     ConnectedColorVariableLight bedLight(F("Lampe de chevet"), ID_BED_LIGHT, HomeAssistantConnection, display, 2202, 6535);
-    ConnectedOutput cameraLight(F("Lumière de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
+    ConnectedOutput cameraLight(F("DEL de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
     // Création d'une liste contenant des références vers tous les actionneurs.
     //Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
@@ -108,9 +108,9 @@ void setup()
     int HARemoteDevicesNumber = 4;
 
     // Liste des périphériques pour le clavier de contrôle.
-    Output *keypadDeviceList[] = {&tray, &LEDCube, &disco, &beacon, &street, &cameraLight, &mainLights};
-    int keypadDevicesNumber = 7;
-    Output *keypadLightList[] = {&wardrobeLights, &deskLight, &doorLED, &mainLights, &cameraLight};
+    Output *keypadDeviceList[] = {&tray, &LEDCube, &disco, &beacon, &street};
+    int keypadDevicesNumber = 5;
+    Output *keypadLightList[] = {&wardrobeLights, &deskLight, &doorLED, &cameraLight, &mainLights};
     int keypadLightsNumber = 5;
     RGBLEDStrip *keypadStripList[] = {&LEDStrip};
     ColorMode *keypadStripColorModeList[] = {&colorMode};

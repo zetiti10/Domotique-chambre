@@ -22,7 +22,7 @@
 #include "device/input/analogInput.hpp"
 #include "keypad.hpp"
 
-Keypad::Keypad(const __FlashStringHelper* friendlyName, int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols) : Device(friendlyName, ID), m_keypad(userKeymap, row, col, numRows, numCols), m_keyPressTime(0), m_display(display), m_mainMenu(nullptr), m_currentMenu(nullptr), m_devicesDefined(false) {}
+Keypad::Keypad(const __FlashStringHelper *friendlyName, int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols) : Device(friendlyName, ID), m_keypad(userKeymap, row, col, numRows, numCols), m_keyPressTime(0), m_display(display), m_mainMenu(nullptr), m_currentMenu(nullptr), m_devicesDefined(false) {}
 
 void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightList[], int &lightsNumber, RGBLEDStrip *RGBLEDStripList[], ColorMode *colorModeList[], RainbowMode *rainbowModeList[], SoundreactMode *soundreactModeList[], AlarmMode *alarmModeList[], int &RGBLEDStripsNumber, ConnectedTemperatureVariableLight *connectedTemperatureVariableLightList[], int &connectedTemperatureVariableLightsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber, Television *televisionList[], int &televisionsNumber, Alarm *alarmList[], int &alarmsNumber, BinaryInput *binaryInputList[], int &binaryInputsNumber, AnalogInput *analogInputList[], int &analogInputsNumber, AirSensor *airSensorList[], int &airSensorsNumber, WardrobeDoorSensor *wardrobeDoorSensorList[], int &wardrobeDoorSensorsNumber)
 {
@@ -480,18 +480,19 @@ void KeypadMenuRGBLEDStripControl::setStrip(RGBLEDStrip *strip, ColorMode *color
 
     m_colorMode = new KeypadMenuRGBLEDStripColorModeControl(colorMode->getFriendlyName(), m_keypad, *colorMode);
     m_colorMode->setParentMenu(this);
-    m_colorMode->setNextMenu(m_rainbowMode);
-    m_colorMode->setPreviousMenu(m_alarmMode);
     m_rainbowMode = new KeypadMenuRGBLEDStripRainbowModeControl(rainbowMode->getFriendlyName(), m_keypad, *rainbowMode);
     m_rainbowMode->setParentMenu(this);
-    m_rainbowMode->setNextMenu(m_soundreactMode);
-    m_rainbowMode->setPreviousMenu(m_colorMode);
     m_soundreactMode = new KeypadMenuRGBLEDStripSoundreactModeControl(soundreactMode->getFriendlyName(), m_keypad, *soundreactMode);
     m_soundreactMode->setParentMenu(this);
-    m_soundreactMode->setNextMenu(m_alarmMode);
-    m_soundreactMode->setPreviousMenu(m_rainbowMode);
     m_alarmMode = new KeypadMenuRGBLEDStripAlarmModeControl(alarmMode->getFriendlyName(), m_keypad, *alarmMode);
     m_alarmMode->setParentMenu(this);
+
+    m_colorMode->setNextMenu(m_rainbowMode);
+    m_colorMode->setPreviousMenu(m_alarmMode);
+    m_rainbowMode->setNextMenu(m_soundreactMode);
+    m_rainbowMode->setPreviousMenu(m_colorMode);
+    m_soundreactMode->setNextMenu(m_alarmMode);
+    m_soundreactMode->setPreviousMenu(m_rainbowMode);
     m_alarmMode->setNextMenu(m_colorMode);
     m_alarmMode->setPreviousMenu(m_soundreactMode);
 }
@@ -578,26 +579,32 @@ void KeypadMenuRGBLEDStripColorModeControl::keyPressed(char key, bool longClick)
     {
     case '1':
         m_colorMode.setColor(m_colorMode.getR() + precision, m_colorMode.getG(), m_colorMode.getB());
+        m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
         break;
 
     case '2':
         m_colorMode.setColor(m_colorMode.getR(), m_colorMode.getG() + precision, m_colorMode.getB());
+        m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
         break;
 
     case '3':
         m_colorMode.setColor(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB() + precision);
+        m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
         break;
 
     case '4':
         m_colorMode.setColor(m_colorMode.getR() - precision, m_colorMode.getG(), m_colorMode.getB());
+        m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
         break;
 
     case '5':
         m_colorMode.setColor(m_colorMode.getR(), m_colorMode.getG() - precision, m_colorMode.getB());
+        m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
         break;
 
     case '6':
         m_colorMode.setColor(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB() - precision);
+        m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
         break;
     }
 }
@@ -726,10 +733,11 @@ void KeypadMenuConnectedTemperatureVariableLightControl::setLight(ConnectedTempe
 {
     m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl("Température", m_keypad, light);
     m_temperatureMenu->setParentMenu(this);
-    m_temperatureMenu->setNextMenu(m_luminosityMenu);
-    m_temperatureMenu->setPreviousMenu(m_luminosityMenu);
     m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl("Luminosité", m_keypad, light);
     m_luminosityMenu->setParentMenu(this);
+
+    m_temperatureMenu->setNextMenu(m_luminosityMenu);
+    m_temperatureMenu->setPreviousMenu(m_luminosityMenu);
     m_luminosityMenu->setNextMenu(m_temperatureMenu);
     m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
 }
@@ -750,7 +758,7 @@ void KeypadMenuConnectedTemperatureVariableLightControl::keyPressed(char key, bo
         break;
 
     case '3':
-        m_keypad.setMenu(m_temperatureMenu);
+        m_keypad.setMenu(m_luminosityMenu);
         break;
     }
 }
@@ -777,16 +785,17 @@ void KeypadMenuConnectedColorVariableLightControl::setLight(ConnectedColorVariab
 {
     m_temperatureMenu = new KeypadMenuConnectedLightTemperatureControl(light.getFriendlyName(), m_keypad, light);
     m_temperatureMenu->setParentMenu(this);
-    m_temperatureMenu->setNextMenu(m_luminosityMenu);
-    m_temperatureMenu->setPreviousMenu(m_colorMenu);
     m_luminosityMenu = new KeypadMenuConnectedLightLuminosityControl(light.getFriendlyName(), m_keypad, light);
     m_luminosityMenu->setParentMenu(this);
-    m_luminosityMenu->setNextMenu(m_colorMenu);
-    m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
     m_colorMenu = new KeypadMenuConnectedLightColorControl(light.getFriendlyName(), m_keypad, light);
     m_colorMenu->setParentMenu(this);
+
     m_colorMenu->setNextMenu(m_temperatureMenu);
     m_colorMenu->setPreviousMenu(m_luminosityMenu);
+    m_temperatureMenu->setNextMenu(m_luminosityMenu);
+    m_temperatureMenu->setPreviousMenu(m_colorMenu);
+    m_luminosityMenu->setNextMenu(m_colorMenu);
+    m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
 }
 
 void KeypadMenuConnectedColorVariableLightControl::keyPressed(char key, bool longClick)
@@ -805,7 +814,7 @@ void KeypadMenuConnectedColorVariableLightControl::keyPressed(char key, bool lon
         break;
 
     case '3':
-        m_keypad.setMenu(m_temperatureMenu);
+        m_keypad.setMenu(m_luminosityMenu);
         break;
 
     case '4':
@@ -821,7 +830,7 @@ void KeypadMenuConnectedColorVariableLightControl::displayHelp()
     help[0] = "Basculer";
     help[1] = "Température";
     help[2] = "Luminosité";
-    help[3] = "Color";
+    help[3] = "Couleur";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }
@@ -921,27 +930,27 @@ void KeypadMenuConnectedLightColorControl::keyPressed(char key, bool longClick)
     switch (key)
     {
     case '1':
-        m_light.setColor(m_light.getRLuminosity() + precision, m_light.getGLuminosity(), m_light.getBLuminosity());
+        m_light.setColor(m_light.getRLuminosity() + precision, m_light.getGLuminosity(), m_light.getBLuminosity(), true);
         break;
 
     case '2':
-        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity() + precision, m_light.getBLuminosity());
+        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity() + precision, m_light.getBLuminosity(), true);
         break;
 
     case '3':
-        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity(), m_light.getBLuminosity() + precision);
+        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity(), m_light.getBLuminosity() + precision, true);
         break;
 
     case '4':
-        m_light.setColor(m_light.getRLuminosity() - precision, m_light.getGLuminosity(), m_light.getBLuminosity());
+        m_light.setColor(m_light.getRLuminosity() - precision, m_light.getGLuminosity(), m_light.getBLuminosity(), true);
         break;
 
     case '5':
-        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity() - precision, m_light.getBLuminosity());
+        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity() - precision, m_light.getBLuminosity(), true);
         break;
 
     case '6':
-        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity(), m_light.getBLuminosity() - precision);
+        m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity(), m_light.getBLuminosity() - precision, true);
         break;
     }
 }

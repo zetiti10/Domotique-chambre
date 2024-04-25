@@ -134,6 +134,7 @@ void HomeAssistant::processMessage()
             {
             case 0:
                 m_colorMode->setColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3));
+                m_display.displayLEDState(m_colorMode->getR(), m_colorMode->getG(), m_colorMode->getB());
                 strip->setMode(static_cast<RGBLEDStripMode *>(m_colorMode), true);
                 break;
 

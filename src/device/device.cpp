@@ -21,6 +21,10 @@ Device::Device(const __FlashStringHelper* friendlyName, int ID) : m_friendlyName
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
 String Device::getFriendlyName() const
 {
+    Serial.println("On m'appelle");
+    delay(5);
+    Serial.println(m_friendlyName);
+    delay(5);
     return m_friendlyName;
 }
 

@@ -292,6 +292,8 @@ void Display::displayDeviceState(bool on)
         }
     }
 
+    m_lastStateAnimation = millis();
+
     display();
 }
 
@@ -329,17 +331,9 @@ void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
         break;
     }
 
-    String text;
-
-    if (menuName.length() > (18 - 5))
-        text = menuName;
-
-    else
-        text = "Menu " + menuName;
-
-    m_display.setCursor(ceil((128.0 - double(6 * text.length())) / 2), 53);
+    m_display.setCursor(ceil((128.0 - double(6 * menuName.length())) / 2), 53);
     m_display.setTextWrap(false);
-    printAccents(text);
+    printAccents(menuName);
     display();
 }
 
@@ -497,6 +491,8 @@ void Display::loop()
         m_lastTime = 0;
         resetDisplay();
         m_display.display();
+        m_menuHelpList = nullptr;
+        m_menuHelpMenu = 1;
     }
 }
 
@@ -551,8 +547,6 @@ void Display::resetDisplay()
     m_display.setTextColor(WHITE);
     m_display.setTextWrap(true);
     m_display.setTextSize(1);
-    m_menuHelpList = nullptr;
-    m_menuHelpMenu = 1;
 }
 
 void Display::display()

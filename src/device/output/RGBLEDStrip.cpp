@@ -69,9 +69,9 @@ void RGBLEDStrip::turnOn(bool shareInformation)
     if (m_mode == nullptr)
         return;
 
-    m_mode->activate();
-
     m_state = true;
+
+    m_mode->activate();
 
     m_connection.updateOutputDeviceState(m_ID, true);
 
@@ -233,7 +233,7 @@ void RGBLEDStripMode::desactivate()
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-ColorMode::ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(0), m_G(0), m_B(0) {}
+ColorMode::ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(255), m_G(255), m_B(255) {}
 
 /// @brief Défini la couleur du ruban de DEL RVB.
 /// @param r L'intensité du rouge.
@@ -295,9 +295,7 @@ void ColorMode::activate()
 
 void ColorMode::desactivate()
 {
-    m_activated = false;
-
-    m_strip.setColor(0, 0, 0);
+    RGBLEDStripMode::desactivate();
 }
 
 void ColorMode::loop() {}

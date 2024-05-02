@@ -24,17 +24,14 @@ Display::Display(const __FlashStringHelper *friendlyName, int ID) : Device(frien
 /// @brief Initialise l'objet.
 void Display::setup()
 {
-    if (m_operational)
+    if (m_operational || !m_display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
         return;
 
-    if (m_display.begin(SSD1306_SWITCHCAPVCC, 0x3c))
-    {
-        m_display.clearDisplay();
-        m_display.cp437(true);
-        m_display.setTextColor(WHITE);
+    m_display.clearDisplay();
+    m_display.cp437(true);
+    m_display.setTextColor(WHITE);
 
-        m_operational = true;
-    }
+    m_operational = true;
 }
 
 /// @brief Affiche la liste des périphériques indisponibles.
@@ -68,7 +65,8 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     // Affichage de la liste des périphériques indisponibles.
     else
     {
-        printAccents("ERREURS");
+        m_display.setCursor(0, 0);
+        displayMessage("", "ERREURS");
         display();
     }
 }
@@ -93,7 +91,7 @@ void Display::displayMessage(const String &message, const String &title)
         return;
 
     resetDisplay();
-    printAccents(title);
+    printCenteredAccents(title, 1, 0);
     m_display.setCursor(0, 10);
     printAccents(message);
     display();
@@ -130,15 +128,7 @@ void Display::displayVolume(VolumeType action, int volume)
         if (volume > 0)
             m_display.fillRect(15, 46, map(volume, 0, 25, 0, 98), 4, WHITE);
 
-        if (volume < 10)
-            m_display.setCursor(58, 57);
-
-        else
-            m_display.setCursor(55, 57);
-
-        m_display.print(volume);
-        // Code pour insérer un "♫".
-        m_display.write(0x0E);
+        printCenteredAccents(String(volume), 1, 57);
     }
 
     display();
@@ -198,19 +188,7 @@ void Display::displayAnalogSensorValue(int value)
 
     resetDisplay();
     m_display.drawBitmap(0, 0, analogSensorBitmap, 128, 64, WHITE);
-    m_display.setTextSize(2);
-
-    if (value < 10)
-        m_display.setCursor(58, 45);
-
-    else if (value < 100)
-        m_display.setCursor(52, 45);
-
-    else
-        m_display.setCursor(45, 45);
-
-    m_display.print(value);
-
+    printCenteredAccents(String(value), 2, 45);
     display();
 }
 
@@ -223,9 +201,7 @@ void Display::displayBinarySensorValue(bool value)
 
     resetDisplay();
     m_display.drawBitmap(0, 0, binarySensorBitmap, 128, 64, WHITE);
-    m_display.setTextSize(2);
-    m_display.setCursor(58, 45);
-    m_display.print(value);
+    printCenteredAccents(String(value), 2, 45);
     display();
 }
 
@@ -331,9 +307,7 @@ void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
         break;
     }
 
-    m_display.setCursor(ceil((128.0 - double(6 * menuName.length())) / 2), 53);
-    m_display.setTextWrap(false);
-    printAccents(menuName);
+    printCenteredAccents(menuName, 1, 53);
     display();
 }
 
@@ -349,7 +323,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
 
     int begin = 0;
 
-    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2))
+    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (menuHelpList[5] == "" && menuHelpList[6] == "" && menuHelpList[7] == "" && menuHelpList[8] == "" && menuHelpList[9] == "" && menuHelpList[0] == ""))
         m_menuHelpMenu = 1;
 
     else
@@ -359,10 +333,12 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
     }
 
     m_display.setCursor(0, 9);
+    m_display.setTextWrap(false);
 
     for (int i = begin; i < (begin + 5); i++)
     {
-        m_display.setTextWrap(false);
+        if (menuHelpList[i] == "")
+            continue;
 
         if (i < 9)
             m_display.print(i + 1);
@@ -443,11 +419,8 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
     if (temperature > minimum)
         m_display.fillRect(15, 46, map(temperature, minimum, maximum, 0, 98), 4, WHITE);
 
-    m_display.setTextSize(1);
-    m_display.setCursor(49, 57);
-    m_display.print(temperature);
-    m_display.print(F("K"));
-
+    String text = String(temperature) + "K";
+    printCenteredAccents(text, 1, 57);
     display();
 }
 
@@ -465,21 +438,23 @@ void Display::displayLuminosity(int luminosity)
     if (luminosity > 0)
         m_display.fillRect(15, 46, map(luminosity, 0, 255, 0, 98), 4, WHITE);
 
-    m_display.setTextSize(1);
+    printCenteredAccents(String(map(luminosity, 0, 255, 0, 100)), 1, 57);
+    display();
+}
 
-    if (luminosity < 10)
-        m_display.setCursor(58, 57);
+void Display::displayPercentage(String name, int value)
+{
+    if (!m_operational)
+        return;
 
-    else if (luminosity < 100)
-        m_display.setCursor(55, 57);
+    resetDisplay();
+    printCenteredAccents(name, 1, 20);
+    m_display.drawRect(14, 45, 100, 6, WHITE);
 
-    else
-        m_display.setCursor(52, 57);
+    if (value > 0)
+        m_display.fillRect(15, 46, value, 4, WHITE);
 
-    m_display.print(map(luminosity, 0, 255, 0, 100));
-    // Code pour insérer un "%".
-    m_display.write(0x25);
-
+    printCenteredAccents(String(value), 1, 57);
     display();
 }
 
@@ -503,7 +478,7 @@ void Display::printAccents(const String &string)
     for (unsigned int i = 0; i < string.length(); i++)
     {
         String c = string.substring(i, i + 2);
-        if (c != "é" && c != "à" && c != "è" && c != "ù" && c != "â" && c != "ê" && c != "î" && c != "ô" && c != "û")
+        if (c != "é" && c != "à" && c != "è" && c != "ù" && c != "â" && c != "ê" && c != "î" && c != "ô" && c != "û" && c != "ç")
             continue;
 
         m_display.print(string.substring(stringBeginIndex, i));
@@ -535,9 +510,29 @@ void Display::printAccents(const String &string)
 
         else if (c == "û")
             m_display.write(0x96);
+
+        else if (c == "ç")
+            m_display.write(0x87);
     }
 
     m_display.print(string.substring(stringBeginIndex, string.length()));
+}
+
+void Display::printCenteredAccents(const String &string, int textSize, int y)
+{
+    int stringLength = string.length();
+    for (unsigned int i = 0; i < string.length(); i++)
+    {
+        String c = string.substring(i, i + 2);
+        if (c != "é" && c != "à" && c != "è" && c != "ù" && c != "â" && c != "ê" && c != "î" && c != "ô" && c != "û" && c != "ç")
+            continue;
+
+        stringLength--;
+    }
+
+    m_display.setCursor(ceil((128.0 - double((6 * textSize) * stringLength)) / 2), y);
+    m_display.setTextWrap(false);
+    printAccents(string);
 }
 
 void Display::resetDisplay()

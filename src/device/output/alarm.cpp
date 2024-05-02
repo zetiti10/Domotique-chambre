@@ -218,7 +218,7 @@ void Alarm::storeCard()
 
     m_cardToStoreState = true;
 
-    m_display.displayMessage("Presentez la carte a enregistrer.");
+    m_display.displayMessage("Présentez la carte à enregistrer.");
     m_buzzer.yesSound();
 }
 
@@ -235,7 +235,7 @@ void Alarm::removeCards()
             EEPROM.write(storeLocation + j, 0);
     }
 
-    m_display.displayMessage("Les cartes enregistrees ont ete supprimees.");
+    m_display.displayMessage("Les cartes enregistrées ont été supprimées.");
     m_buzzer.yesSound();
 }
 
@@ -384,7 +384,7 @@ void Alarm::storeCard(uint8_t card[4])
 {
     if (checkCard(card))
     {
-        m_display.displayMessage("Cette carte a deja ete enregistree.", "Erreur");
+        m_display.displayMessage("Cette carte a déjà été enregistrée.", "Erreur");
         m_buzzer.noSound();
 
         return;
@@ -397,6 +397,6 @@ void Alarm::storeCard(uint8_t card[4])
 
     EEPROM.write(EEPROM_STORED_CARD_COUNTER, EEPROM.read(EEPROM_STORED_CARD_COUNTER) + 1);
 
-    m_display.displayMessage("La carte a ete enregistree dans le systeme.");
+    m_display.displayMessage("La carte a été enregistrée dans le système.");
     m_buzzer.yesSound();
 }

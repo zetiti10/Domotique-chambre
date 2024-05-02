@@ -49,10 +49,12 @@ public:
     virtual void displayTray(bool on, bool shareInformation = false);
     virtual void displayLightColorTemperature(int minimum, int maximum, int temperature);
     virtual void displayLuminosity(int luminosity);
+    virtual void displayPercentage(String name, int value);
     virtual void loop();
 
 protected:
     virtual void printAccents(const String &string);
+    virtual void printCenteredAccents(const String &string, int textSize, int y);
     virtual void resetDisplay();
     virtual void display();
 

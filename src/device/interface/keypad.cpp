@@ -643,10 +643,12 @@ void KeypadMenuRGBLEDStripRainbowModeControl::keyPressed(char key, bool longClic
     {
     case '1':
         m_rainbowMode.setAnimationSpeed(m_rainbowMode.getAnimationSpeed() + precision);
+        m_keypad.getDisplay().displayPercentage("Vitesse", m_rainbowMode.getAnimationSpeed());
         break;
 
     case '2':
         m_rainbowMode.setAnimationSpeed(m_rainbowMode.getAnimationSpeed() - precision);
+        m_keypad.getDisplay().displayPercentage("Vitesse", m_rainbowMode.getAnimationSpeed());
         break;
     }
 }
@@ -681,10 +683,12 @@ void KeypadMenuRGBLEDStripSoundreactModeControl::keyPressed(char key, bool longC
     {
     case '1':
         // Augmenter la sensibilité.
+        //m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
         break;
 
     case '2':
         // Diminuer la sensibilité.
+        //m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
         break;
     }
 }
@@ -1043,6 +1047,7 @@ void KeypadMenuAlarm::keyPressed(char key, bool longClick)
 
     case '2':
         m_alarm->toggleBuzzer();
+        m_keypad.getDisplay().displayDeviceState(m_alarm->getBuzzerState());
         break;
 
     case '3':

@@ -94,6 +94,7 @@ void setup()
     ColorMode colorMode(F("Mode couleur unique"), ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
     RainbowMode rainbowMode(F("Mode arc-en-ciel"), ID_RAINBOW_MODE, LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
     SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip);
+    LEDStrip.setMode(&colorMode);
 
     // Création d'une liste contenant des références vers tous les périphériques du système.
     Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &keypad, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};

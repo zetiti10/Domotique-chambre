@@ -323,7 +323,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
 
     int begin = 0;
 
-    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (menuHelpList[5] == "" && menuHelpList[6] == "" && menuHelpList[7] == "" && menuHelpList[8] == "" && menuHelpList[9] == "" && menuHelpList[0] == ""))
+    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (menuHelpList[5] == "" && menuHelpList[6] == "" && menuHelpList[7] == "" && menuHelpList[8] == "" && menuHelpList[9] == ""))
         m_menuHelpMenu = 1;
 
     else
@@ -532,6 +532,7 @@ void Display::printCenteredAccents(const String &string, int textSize, int y)
 
     m_display.setCursor(ceil((128.0 - double((6 * textSize) * stringLength)) / 2), y);
     m_display.setTextWrap(false);
+    m_display.setTextSize(textSize);
     printAccents(string);
 }
 

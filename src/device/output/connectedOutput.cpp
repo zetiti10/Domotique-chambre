@@ -187,7 +187,7 @@ void ConnectedColorVariableLight::setColorTemperature(int temperature, bool shar
     if (temperature > m_maximalColorTemperature)
         temperature = m_maximalColorTemperature;
 
-    m_connection.setConnectedColorVariableLightLuminosity(m_ID, temperature);
+    m_connection.setConnectedColorVariableLightTemperature(m_ID, temperature);
 }
 
 void ConnectedColorVariableLight::setLuminosity(int luminosity, bool shareInformation)

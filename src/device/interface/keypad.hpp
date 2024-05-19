@@ -288,6 +288,8 @@ protected:
     Television *m_television;
 };
 
+class KeypadMenuAlarmMissileLauncherControl;
+
 class KeypadMenuAlarm : public KeypadMenu
 {
 public:

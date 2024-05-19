@@ -319,7 +319,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
     if (!m_operational)
         return;
 
-    resetDisplay();
+    resetDisplay(false);
 
     int begin = 0;
 
@@ -536,13 +536,19 @@ void Display::printCenteredAccents(const String &string, int textSize, int y)
     printAccents(string);
 }
 
-void Display::resetDisplay()
+void Display::resetDisplay(bool resetHelpMenu)
 {
     m_display.clearDisplay();
     m_display.setCursor(0, 0);
     m_display.setTextColor(WHITE);
     m_display.setTextWrap(true);
     m_display.setTextSize(1);
+
+    if (resetHelpMenu)
+    {
+        m_menuHelpList = nullptr;
+        m_menuHelpMenu = 1;
+    }
 }
 
 void Display::display()

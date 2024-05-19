@@ -22,7 +22,7 @@
 #include "device/input/analogInput.hpp"
 #include "keypad.hpp"
 
-Keypad::Keypad(const __FlashStringHelper *friendlyName, int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols) : Device(friendlyName, ID), m_keypad(userKeymap, row, col, numRows, numCols), m_keyPressTime(0), m_display(display), m_mainMenu(nullptr), m_currentMenu(nullptr), m_devicesDefined(false) {}
+Keypad::Keypad(const __FlashStringHelper *friendlyName, int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols) : Device(friendlyName, ID), m_keypad(userKeymap, row, col, numRows, numCols), m_keyPressTime(0), m_lastInteraction(0), m_display(display), m_mainMenu(nullptr), m_currentMenu(nullptr), m_devicesDefined(false) {}
 
 void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightList[], int &lightsNumber, RGBLEDStrip *RGBLEDStripList[], ColorMode *colorModeList[], RainbowMode *rainbowModeList[], SoundreactMode *soundreactModeList[], AlarmMode *alarmModeList[], int &RGBLEDStripsNumber, ConnectedTemperatureVariableLight *connectedTemperatureVariableLightList[], int &connectedTemperatureVariableLightsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber, Television *televisionList[], int &televisionsNumber, Alarm *alarmList[], int &alarmsNumber, BinaryInput *binaryInputList[], int &binaryInputsNumber, AnalogInput *analogInputList[], int &analogInputsNumber, AirSensor *airSensorList[], int &airSensorsNumber, WardrobeDoorSensor *wardrobeDoorSensorList[], int &wardrobeDoorSensorsNumber)
 {
@@ -193,6 +193,12 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
             alarmMenu->setPreviousMenu(previousMenu);
         }
 
+        KeypadMenuAlarmMissileLauncherControl *missileLanucherControl = new KeypadMenuAlarmMissileLauncherControl("Lance-missile", *this);
+        missileLanucherControl->setAlarm(alarm);
+        missileLanucherControl->setParentMenu(alarmMenu);
+
+        alarmMenu->setMissileLauncherControlMenu(missileLanucherControl);
+
         previousMenu = alarmMenu;
     }
 
@@ -295,12 +301,21 @@ void Keypad::loop()
 
     m_keypad.tick();
 
+    if (!(m_currentMenu == m_mainMenu) && ((m_lastInteraction + 60000) <= millis()))
+        setMenu(m_mainMenu);
+
     while (m_keypad.available())
     {
         keypadEvent event = m_keypad.read();
 
         if (event.bit.EVENT == KEY_JUST_PRESSED)
         {
+            if (m_currentMenu->advancedClickControl())
+            {
+                if (event.bit.KEY >= '1' && event.bit.KEY <= '9')
+                    m_currentMenu->keyPressed(event.bit.KEY, false);
+            }
+            
             if (m_keyPressTime != 0)
                 continue;
 
@@ -315,7 +330,13 @@ void Keypad::loop()
             bool longClick = ((millis() - m_keyPressTime) >= 300);
 
             if (event.bit.KEY >= '1' && event.bit.KEY <= '9')
-                m_currentMenu->keyPressed(event.bit.KEY, longClick);
+            {
+                if (m_currentMenu->advancedClickControl())
+                    m_currentMenu->keyReleased(event.bit.KEY);
+
+                else
+                    m_currentMenu->keyPressed(event.bit.KEY, longClick);
+            }
 
             else
             {
@@ -354,6 +375,7 @@ void Keypad::loop()
             }
 
             m_keyPressTime = 0;
+            m_lastInteraction = millis();
         }
     }
 }
@@ -404,6 +426,15 @@ void KeypadMenu::setNextMenu(KeypadMenu *menu)
 KeypadMenu *KeypadMenu::getNextMenu() const
 {
     return m_nextMenu;
+}
+
+void KeypadMenu::keyReleased(char key)
+{
+}
+
+bool KeypadMenu::advancedClickControl()
+{
+    return false;
 }
 
 KeypadMenuOutputList::KeypadMenuOutputList(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_outputList(nullptr), m_outputsNumber(0) {}
@@ -683,12 +714,12 @@ void KeypadMenuRGBLEDStripSoundreactModeControl::keyPressed(char key, bool longC
     {
     case '1':
         // Augmenter la sensibilité.
-        //m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
+        // m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
         break;
 
     case '2':
         // Diminuer la sensibilité.
-        //m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
+        // m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
         break;
     }
 }
@@ -1034,6 +1065,11 @@ void KeypadMenuAlarm::setAlarm(Alarm *alarm)
     m_alarm = alarm;
 }
 
+void KeypadMenuAlarm::setMissileLauncherControlMenu(KeypadMenuAlarmMissileLauncherControl *menu)
+{
+    m_missileLauncherControlMenu = menu;
+}
+
 void KeypadMenuAlarm::keyPressed(char key, bool longClick)
 {
     if (m_alarm == nullptr)
@@ -1065,6 +1101,13 @@ void KeypadMenuAlarm::keyPressed(char key, bool longClick)
     case '6':
         m_alarm->trigger();
         break;
+
+    case '7':
+        if (m_missileLauncherControlMenu == nullptr)
+            break;
+        
+        m_keypad.setMenu(m_missileLauncherControlMenu);
+        break;
     }
 }
 
@@ -1078,6 +1121,7 @@ void KeypadMenuAlarm::displayHelp()
     help[3] = "Retirer cartes";
     help[4] = "Arrêter la sonnerie";
     help[5] = "Déclencher";
+    help[6] = "Lance-missile";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }
@@ -1085,6 +1129,108 @@ void KeypadMenuAlarm::displayHelp()
 void KeypadMenuAlarm::displayMenu()
 {
     m_keypad.getDisplay().displayKeypadMenu(ALARMS, m_friendlyName);
+}
+
+KeypadMenuAlarmMissileLauncherControl::KeypadMenuAlarmMissileLauncherControl(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_alarm(nullptr), m_missileLauncher(nullptr) {}
+
+void KeypadMenuAlarmMissileLauncherControl::setAlarm(Alarm *alarm)
+{
+    m_alarm = alarm;
+    m_missileLauncher = &m_alarm->getMissileLauncher();
+}
+
+void KeypadMenuAlarmMissileLauncherControl::keyPressed(char key, bool longClick)
+{
+    if (m_missileLauncher == nullptr)
+        return;
+
+    if (!m_missileLauncher->isReady())
+    {
+        m_keypad.getDisplay().displayMessage("Le lance-missile n'est pas opérationnel.", "Erreur");
+        return;
+    }
+
+    switch (key)
+    {
+    case '2':
+        m_missileLauncher->beginMove(UP);
+        break;
+
+    case '4':
+        m_missileLauncher->beginMove(LEFT);
+        break;
+
+    case '5':
+        m_missileLauncher->launchMissile(1);
+        break;
+
+    case '6':
+        m_missileLauncher->beginMove(RIGHT);
+        break;
+
+    case '8':
+        m_missileLauncher->beginMove(DOWN);
+        break;
+
+    case '9':
+        m_missileLauncher->calibrate();
+        break;
+    }
+}
+
+void KeypadMenuAlarmMissileLauncherControl::keyReleased(char key)
+{
+    if (m_missileLauncher == nullptr)
+        return;
+
+    if (!m_missileLauncher->isReady())
+    {
+        m_keypad.getDisplay().displayMessage("Le lance-missile n'est pas opérationnel.", "Erreur");
+        return;
+    }
+
+    switch (key)
+    {
+    case '2':
+        m_missileLauncher->stopMove(ANGLE);
+        break;
+
+    case '4':
+        m_missileLauncher->stopMove(BASE);
+        break;
+
+    case '6':
+        m_missileLauncher->stopMove(BASE);
+        break;
+
+    case '8':
+        m_missileLauncher->stopMove(ANGLE);
+        break;
+    }
+}
+
+void KeypadMenuAlarmMissileLauncherControl::displayHelp()
+{
+    String help[10];
+
+    help[2] = "Haut";
+    help[4] = "Gauche";
+    help[5] = "Tirer un missile";
+    help[6] = "Droite";
+    help[8] = "Bas";
+    help[9] = "Calibrer";
+
+    m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
+}
+
+void KeypadMenuAlarmMissileLauncherControl::displayMenu()
+{
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
+}
+
+bool KeypadMenuAlarmMissileLauncherControl::advancedClickControl()
+{
+    return true;
 }
 
 KeypadMenuInputList::KeypadMenuInputList(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_inputList(nullptr), m_menuList(nullptr), m_sensorTypeList(nullptr), m_sensorsNumber(0) {}

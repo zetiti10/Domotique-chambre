@@ -45,6 +45,7 @@ public:
 protected:
     Adafruit_Keypad m_keypad;
     unsigned long m_keyPressTime;
+    unsigned long m_lastInteraction;
     Display &m_display;
     KeypadMenu *m_mainMenu;
     KeypadMenu *m_currentMenu;
@@ -65,8 +66,10 @@ public:
     virtual KeypadMenu *getNextMenu() const;
 
     virtual void keyPressed(char key, bool longClick) = 0;
+    virtual void keyReleased(char key);
     virtual void displayHelp() = 0;
     virtual void displayMenu() = 0;
+    virtual bool advancedClickControl();
 
 protected:
     String m_friendlyName;
@@ -291,6 +294,7 @@ public:
     KeypadMenuAlarm(String friendlyName, Keypad &keypad);
 
     virtual void setAlarm(Alarm *alarm);
+    virtual void setMissileLauncherControlMenu(KeypadMenuAlarmMissileLauncherControl *menu);
 
     virtual void keyPressed(char key, bool longClick) override;
     virtual void displayHelp() override;
@@ -298,6 +302,25 @@ public:
 
 protected:
     Alarm *m_alarm;
+    KeypadMenuAlarmMissileLauncherControl *m_missileLauncherControlMenu;
+};
+
+class KeypadMenuAlarmMissileLauncherControl : public KeypadMenu
+{
+public:
+    KeypadMenuAlarmMissileLauncherControl(String friendlyName, Keypad &keypad);
+
+    virtual void setAlarm(Alarm *alarm);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+    virtual bool advancedClickControl() override;
+
+protected:
+    Alarm *m_alarm;
+    MissileLauncher *m_missileLauncher;
 };
 
 enum KeypadMenuSensorType

@@ -55,7 +55,7 @@ public:
 protected:
     virtual void printAccents(const String &string);
     virtual void printCenteredAccents(const String &string, int textSize, int y);
-    virtual void resetDisplay();
+    virtual void resetDisplay(bool resetHelpMenu = true);
     virtual void display();
 
     Adafruit_SSD1306 m_display;

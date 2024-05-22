@@ -301,7 +301,7 @@ void Keypad::loop()
 
     m_keypad.tick();
 
-    if (!(m_currentMenu == m_mainMenu) && ((m_lastInteraction + 60000) <= millis()))
+    if (!(m_currentMenu == m_mainMenu) && ((m_lastInteraction + 600000) <= millis()))
         setMenu(m_mainMenu);
 
     while (m_keypad.available())
@@ -708,18 +708,18 @@ SoundreactMode &KeypadMenuRGBLEDStripSoundreactModeControl::getSoundreactMode()
 
 void KeypadMenuRGBLEDStripSoundreactModeControl::keyPressed(char key, bool longClick)
 {
-    // int precision = 10;
+    int precision = 5;
 
     switch (key)
     {
     case '1':
-        // Augmenter la sensibilité.
-        // m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
+        m_soundreactMode.setSensitivity(m_soundreactMode.getSensitivity() + precision);
+        m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getSensitivity());
         break;
 
     case '2':
-        // Diminuer la sensibilité.
-        // m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getAnimationSensibility());
+        m_soundreactMode.setSensitivity(m_soundreactMode.getSensitivity() - precision);
+        m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getSensitivity());
         break;
     }
 }

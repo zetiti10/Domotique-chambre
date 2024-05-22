@@ -407,6 +407,131 @@ void RainbowMode::loop()
             m_step = 0;
     }
 }
-SoundreactMode::SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip) {}
 
-void SoundreactMode::loop() {}
+SoundreactMode::SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int sensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_sensitivity(sensitivity), m_lastColorChange(0), m_lastTime(0), m_maxSound(0) {}
+
+/// @brief Méthode permettant de définir la sensibilité de l'animation son-réaction.
+/// @param sensitivity La sensibilité à définir, en pourcent (de `0` : peu sensible à `100` : très sensible).
+void SoundreactMode::setSensitivity(int sensitivity)
+{
+    if (sensitivity < 0)
+        sensitivity = 0;
+
+    if (sensitivity > 100)
+        sensitivity = 100;
+
+    m_sensitivity = sensitivity;
+}
+
+int SoundreactMode::getSensitivity()
+{
+    return m_sensitivity;
+}
+
+void SoundreactMode::activate()
+{
+    RGBLEDStripMode::activate();
+
+    m_lastColorChange = millis();
+    m_lastTime = millis();
+}
+
+void SoundreactMode::desactivate()
+{
+    RGBLEDStripMode::desactivate();
+
+    m_lastColorChange = 0;
+    m_lastTime = 0;
+    m_maxSound = 0;
+}
+
+void SoundreactMode::loop() {
+    int sound = m_microphone.getValue();
+    sound -= 287;
+    sound = abs(sound);
+
+    bool maxChanged = false;
+    if (sound > m_maxSound)
+    {
+        m_maxSound = (m_maxSound + (4 * sound)) / 5;
+        maxChanged = true;
+    }
+
+    unsigned long time = millis();
+    
+    bool colorChanged = false;
+
+    if ((time - m_lastColorChange) >= 200)
+    {
+        if (sound >= (( 1.0 - (double(m_sensitivity) / 100.0)) * m_maxSound))
+        {
+            m_lastColorChange = time;
+
+            bool rSelected = random(2);
+            bool gSelected = random(2);
+            bool bSelected = random(2);
+
+            int rValue = 0;
+            int gValue = 0;
+            int bValue = 0;
+
+            if (rSelected)
+            {
+                if (maxChanged)
+                    rValue = 255;
+
+                else
+                    rValue = random(100, 256);
+            }
+
+            if (gSelected)
+            {
+                if (maxChanged)
+                    gValue = 255;
+
+                else
+                    gValue = random(100, 256);
+            }
+
+            if (bSelected)
+            {
+                if (maxChanged)
+                    bValue = 255;
+
+                else
+                    bValue = random(100, 256);
+            }
+
+            m_strip.setColor(rValue, gValue, bValue);
+        }
+    }
+
+    if ((time - m_lastTime) >= 300)
+    {
+        m_lastTime = time;
+
+        if (!maxChanged)
+            m_maxSound--;
+
+        if ((time - m_lastColorChange) >= 1000)
+            m_maxSound -= 2;
+
+        if (!colorChanged)
+        {
+            int rValue = 0;
+            int gValue = 0;
+            int bValue = 0;
+
+            if ((m_strip.getR() - 5) >= 0)
+                rValue = m_strip.getR() - 5;
+
+            if ((m_strip.getG() - 5) >= 0)
+                gValue = m_strip.getG() - 5;
+
+            if ((m_strip.getB() - 5) >= 0)
+                bValue = m_strip.getB() - 5;
+
+            m_strip.setColor(rValue, gValue, bValue);
+        }
+    }
+}

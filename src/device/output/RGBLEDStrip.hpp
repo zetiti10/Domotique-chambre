@@ -8,6 +8,7 @@
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
+#include "device/input/analogInput.hpp"
 
 // Classe gérant un ruban de DEL.
 class RGBLEDStrip : public Output
@@ -129,9 +130,20 @@ private:
 class SoundreactMode : public RGBLEDStripMode
 {
 public:
-    SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip);
+    SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int sensitivity);
+    virtual void setSensitivity(int sensitivity);
+    virtual int getSensitivity();
+
+protected:
+    AnalogInput &m_microphone;
+    int m_sensitivity;
+    unsigned long m_lastColorChange;
+    unsigned long m_lastTime;
+    int m_maxSound;
 
 private:
+    virtual void activate() override;
+    virtual void desactivate() override;
     virtual void loop() override;
     friend class RGBLEDStrip;
 };

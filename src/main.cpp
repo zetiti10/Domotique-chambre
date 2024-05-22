@@ -93,7 +93,8 @@ void setup()
     // Modes du ruban de DEL.
     ColorMode colorMode(F("Mode couleur unique"), ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
     RainbowMode rainbowMode(F("Mode arc-en-ciel"), ID_RAINBOW_MODE, LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
-    SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip);
+    EEPROM.update(EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY, 25); // Provisoire.
+    SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM.read(EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY));
     LEDStrip.setMode(&colorMode);
 
     // Création d'une liste contenant des références vers tous les périphériques du système.
@@ -138,6 +139,9 @@ void setup()
 
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
+
+    // Génère une SEED pour la fonction random.
+    randomSeed(analogRead(PIN_RANDOM_SEED_GENERATOR));
 
     // Initialise les noms des périphériques.
     for (int i = 0; i < devicesNumber; i ++)

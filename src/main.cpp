@@ -12,6 +12,7 @@
 #include <EEPROM.h>
 // Nécessaire, ne pas enlever.
 #include <IRremote.hpp>
+#include <arduinoFFT.h>
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
@@ -73,8 +74,8 @@ void setup()
     ConnectedOutput cameraLight(F("DEL de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
     // Création d'une liste contenant des références vers tous les actionneurs.
-    //Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
-    //int outputsNumber = 15;
+    // Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
+    // int outputsNumber = 15;
 
     // Périphériques d'entrée.
     WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
@@ -144,9 +145,9 @@ void setup()
     randomSeed(analogRead(PIN_RANDOM_SEED_GENERATOR));
 
     // Initialise les noms des périphériques.
-    for (int i = 0; i < devicesNumber; i ++)
+    for (int i = 0; i < devicesNumber; i++)
         deviceList[i]->getFriendlyName();
-    
+
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
     HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
 

@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
 #include <IRremote.hpp>
+#include <arduinoFFT.h>
 
 // Autres fichiers du programme.
 #include "device/output/output.hpp"
@@ -32,12 +33,20 @@ public:
 protected:
     virtual void moveDisplayServo(int angle);
     virtual void switchDisplay();
+    virtual void detectTriggerSound();
+
     const int m_servomotorPin;
     const int m_IRLEDPin;
     IRsend m_IRSender;
     int m_volume;
     bool m_volumeMuted;
     unsigned long m_lastTime;
+    ArduinoFFT<float> m_FFT;
+    unsigned int m_triggerSamplingPeriodUs;
+    unsigned int m_triggerPreviousMicros;
+    float m_triggerVReal[64];
+    float m_triggerVImag[64];
+    int m_triggerSampleIndex;
 };
 
 #endif

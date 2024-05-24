@@ -16,6 +16,7 @@
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "EEPROM.hpp"
+#include "television.hpp"
 
 String unableToPerformError = "Impossible d'effectuer cette action.";
 
@@ -27,7 +28,7 @@ String unableToPerformError = "Impossible d'effectuer cette action.";
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
+Television::Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_FFT(ArduinoFFT<float>()), m_triggerSamplingPeriodUs(round(1000000 * (1.0f / 40000.0f))), m_triggerPreviousMicros(0), m_triggerVReal(), m_triggerVImag(), m_triggerSampleIndex(0) {}
 
 /// @brief Initialise l'objet.
 void Television::setup()
@@ -63,6 +64,8 @@ void Television::reportState()
 
 void Television::loop()
 {
+    detectTriggerSound();
+
     if ((millis() - m_lastTime) >= 60000)
     {
         EEPROM.update(EEPROM_VOLUME, m_volume);
@@ -268,5 +271,39 @@ void Television::switchDisplay()
     {
         moveDisplayServo(pos);
         delay(1);
+    }
+}
+void Television::detectTriggerSound()
+{
+    if (m_triggerSampleIndex < 64)
+    {
+        // Collecte des échantillons de manière non bloquante.
+        if (micros() - m_triggerPreviousMicros >= m_triggerSamplingPeriodUs)
+        {
+            m_triggerPreviousMicros = micros();
+            m_triggerVReal[m_triggerSampleIndex] = analogRead(54);
+            m_triggerVImag[m_triggerSampleIndex] = 0;
+            m_triggerSampleIndex++;
+        }
+    }
+
+    else
+    {
+        // Une fois que tous les échantillons sont collectés, effectuer la FFT.
+        m_FFT.windowing(m_triggerVReal, 64, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+        m_FFT.compute(m_triggerVReal, m_triggerVImag, 64, FFT_FORWARD);
+        m_FFT.complexToMagnitude(m_triggerVReal, m_triggerVImag, 64);
+
+        // Trouver la fréquence principale.
+        double peakFrequency = m_FFT.majorPeak(m_triggerVReal, 64, 40000);
+
+        // Vérifier si la fréquence principale correspond à la fréquence cible.
+        if (abs(peakFrequency - 1000.0f) < 50.0f)
+        {
+            Serial.println("Son détecté !");
+        }
+
+        // Réinitialiser l'index pour la prochaine collecte d'échantillons.
+        m_triggerSampleIndex = 0;
     }
 }

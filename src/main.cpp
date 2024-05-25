@@ -100,7 +100,7 @@ void setup()
     LEDStrip.setMode(&colorMode);
 
     // Musiques.
-    int test1MusicActionNumber = 5;
+    int test1MusicActionNumber = 23;
     const Action test1Music[] PROGMEM = {
         {7240, F("009001")},
         {8010, F("009000")},

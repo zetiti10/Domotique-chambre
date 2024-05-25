@@ -128,10 +128,6 @@ void Television::loop()
 
             if ((m_lastActionIndex + 1) < m_musicList[m_currentMusicIndex]->actionsNumber)
             {
-                Serial.print(F("Index : "));
-                Serial.println(m_lastActionIndex);
-                Serial.print(F("Total : "));
-                Serial.println(m_musicList[m_currentMusicIndex]->actionsNumber);
                 m_lastActionIndex++;
             }
 
@@ -140,7 +136,7 @@ void Television::loop()
                 m_currentMusicIndex = 0;
                 m_lastActionIndex = 0;
                 m_musicStartTime = 0;
-                Serial.println(F("Fini"));
+                break;
             }
         }
     }
@@ -444,7 +440,7 @@ void Television::detectTriggerSound()
     if (abs(peakFrequency - 1000.0) < 50.0)
     {
         m_waitingForTriggerSound = false;
-        m_musicStartTime = millis() - 1000;
+        m_musicStartTime = millis() - 775;
     }
 }
 

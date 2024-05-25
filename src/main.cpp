@@ -100,6 +100,14 @@ void setup()
     LEDStrip.setMode(&colorMode);
 
     // Musiques.
+    int test1MusicActionNumber = 5;
+    const Action test1Music[] PROGMEM = {
+        {10090, F("009001")},
+        {12030, F("009000")},
+        {13020, F("009001")},
+        {15160, F("009000")},
+        {19050, F("009001")},
+    };
     Music test1;
     test1.friendlyName = F("Test 1");
     test1.videoURL = F("URL");

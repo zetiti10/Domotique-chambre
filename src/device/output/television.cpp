@@ -96,11 +96,11 @@ void Television::loop()
 
     if (m_musicStartTime != 0)
     {
-        while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode >= (m_musicStartTime - millis()))
+        while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode <= (millis() - m_musicStartTime))
         {
             String action = m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].action;
 
-            switch (getIntFromString(action, 3, 2))
+            switch (getIntFromString(action, 5, 1))
             {
             case 0:
             {
@@ -126,14 +126,21 @@ void Television::loop()
                 break;
             }
 
-            if (m_lastActionIndex < m_musicList[m_currentMusicIndex]->actionsNumber)
+            if ((m_lastActionIndex + 1) < m_musicList[m_currentMusicIndex]->actionsNumber)
+            {
+                Serial.print(F("Index : "));
+                Serial.println(m_lastActionIndex);
+                Serial.print(F("Total : "));
+                Serial.println(m_musicList[m_currentMusicIndex]->actionsNumber);
                 m_lastActionIndex++;
+            }
 
             else
             {
                 m_currentMusicIndex = 0;
                 m_lastActionIndex = 0;
-                m_musicStartTime= 0;
+                m_musicStartTime = 0;
+                Serial.println(F("Fini"));
             }
         }
     }
@@ -332,7 +339,7 @@ void Television::playMusic(int musicIndex)
 
     for (int i = 0; i < m_devicesNumber; i++)
     {
-        if (!m_deviceList[i]->getAvailability() || !m_deviceList[i]->isLocked())
+        if (!m_deviceList[i]->getAvailability() || m_deviceList[i]->isLocked())
         {
             m_display.displayMessage(unableToPerformError, error);
             return;
@@ -344,7 +351,7 @@ void Television::playMusic(int musicIndex)
 
     for (int i = 0; i < m_stripsNumber; i++)
     {
-        if (!m_stripList[i]->getAvailability() || !m_stripList[i]->isLocked())
+        if (!m_stripList[i]->getAvailability() || m_stripList[i]->isLocked())
         {
             m_display.displayMessage(unableToPerformError, error);
             return;
@@ -356,7 +363,7 @@ void Television::playMusic(int musicIndex)
 
     for (int i = 0; i < m_connectedColorVariableLightsNumber; i++)
     {
-        if (!m_connectedColorVariableLightList[i]->getAvailability() || !m_connectedColorVariableLightList[i]->isLocked())
+        if (!m_connectedColorVariableLightList[i]->getAvailability() || m_connectedColorVariableLightList[i]->isLocked())
         {
             m_display.displayMessage(unableToPerformError, error);
             return;
@@ -434,10 +441,10 @@ void Television::detectTriggerSound()
 
     double peakFrequency = FFT.majorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
-    if (abs(peakFrequency - 10000.0) < 50.0)
+    if (abs(peakFrequency - 1000.0) < 50.0)
     {
         m_waitingForTriggerSound = false;
-        m_musicStartTime = millis() + 4000;
+        m_musicStartTime = millis() - 1000;
     }
 }
 

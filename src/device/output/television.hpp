@@ -17,7 +17,7 @@
 struct Action
 {
     unsigned long timecode;
-    const char *action;
+    const __FlashStringHelper *action;
 };
 
 struct Music

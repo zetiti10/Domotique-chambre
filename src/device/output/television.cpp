@@ -277,17 +277,15 @@ void Television::detectTriggerSound()
 {
     ArduinoFFT<float> m_FFT;
     unsigned int samplingPeriodUs;
-    unsigned int previousMicros;
     unsigned long microSeconds;
     float vReal[64];
     float vImag[64];
-    int sampleIndex;
 
-    for (int i = 0; sampleIndex < 64; i++)
+    for (int sampleIndex = 0; sampleIndex < 64; sampleIndex++)
     {
         microSeconds = micros();
-        vReal[i] = analogRead(54);
-        vImag[i] = 0;
+        vReal[sampleIndex] = analogRead(54);
+        vImag[sampleIndex] = 0;
         while (micros() < (microSeconds + samplingPeriodUs))
         {
         }

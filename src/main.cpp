@@ -33,9 +33,25 @@
 #include "device/input/airSensor.hpp"
 #include "device/input/IRSensor.hpp"
 
+int freeRam() {
+  extern int __heap_start,*__brkval;
+  int v;
+  return (int)&v - (__brkval == 0  
+    ? (int)&__heap_start : (int) __brkval);  
+}
+
+void display_freeram() {
+  Serial.print(F("- SRAM left: "));
+  Serial.println(freeRam());
+}
+
 // Initialisation du système.
 void setup()
 {
+    Serial.begin(115200);
+    Serial.println("=====================");
+    display_freeram();
+
     // Configuration du clavier.
     const byte KEYPAD_ROWS = 4;
     const byte KEYPAD_COLS = 4;
@@ -64,7 +80,8 @@ void setup()
     BinaryOutput deskLight(F("Lampe du bureau"), ID_DESK_LIGHT, HomeAssistantConnection, display, PIN_DESK_LIGHT_RELAY);
     BinaryOutput doorLED(F("DEL de la porte"), ID_DOOR_LED, HomeAssistantConnection, display, PIN_DOOR_LED);
     RGBLEDStrip LEDStrip(F("Ruban de DEL"), ID_LED_STRIP, HomeAssistantConnection, display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
-    Alarm alarm(F("Alarme"), ID_ALARM, HomeAssistantConnection, display, Serial2, doorLED, beacon, LEDStrip, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
+    AlarmMode alarmMode(F("Mode alarme"), 3, LEDStrip);
+    Alarm alarm(F("Alarme"), ID_ALARM, HomeAssistantConnection, display, Serial2, doorLED, beacon, LEDStrip, alarmMode, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
     Television television(F("Télévision"), ID_TELEVISION, HomeAssistantConnection, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
 
     // Périphériques de sortie à distance.
@@ -94,7 +111,6 @@ void setup()
     // Modes du ruban de DEL.
     ColorMode colorMode(F("Mode couleur unique"), ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
     RainbowMode rainbowMode(F("Mode arc-en-ciel"), ID_RAINBOW_MODE, LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
-    EEPROM.update(EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY, 25); // Provisoire.
     SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM.read(EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY));
     LEDStrip.setMode(&colorMode);
 
@@ -119,7 +135,7 @@ void setup()
     ColorMode *keypadStripColorModeList[] = {&colorMode};
     RainbowMode *keypadStripRainbowModeList[] = {&rainbowMode};
     SoundreactMode *keypadStripSoundreactModeList[] = {&soundreactMode};
-    AlarmMode *keypadStripAlarmModeList[] = {&alarm.getAlarmStripMode()};
+    AlarmMode *keypadStripAlarmModeList[] = {&alarmMode};
     int keypadStripsNumber = 1;
     ConnectedTemperatureVariableLight *keypadConnectedTemperatureVariableLightList[] = {&sofaLight};
     int keypadConnectedTemperatureVariableLightsNumber = 1;
@@ -140,6 +156,7 @@ void setup()
 
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
+    display_freeram();
 
     // Génère une SEED pour la fonction random.
     randomSeed(analogRead(PIN_RANDOM_SEED_GENERATOR));
@@ -149,7 +166,9 @@ void setup()
         deviceList[i]->getFriendlyName();
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
-    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarm.getAlarmStripMode());
+    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarmMode);
+
+    display_freeram();
 
     // Définition des périphériques contrôlables depuis le clavier de contrôle.
     keypad.setDevices(keypadDeviceList,
@@ -179,12 +198,15 @@ void setup()
                       keypadWardrobeDoorSensorList,
                       keypadWardrobeDoorSensorsList);
 
+    display_freeram();
+
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)
         deviceList[i]->setup();
 
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);
+    display_freeram();
 
     // Boucle d'exécution des tâches du système.
     while (1)

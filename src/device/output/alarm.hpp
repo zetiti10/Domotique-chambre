@@ -19,7 +19,7 @@
 class Alarm : public Output
 {
 public:
-    Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
+    Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -45,7 +45,7 @@ protected:
     BinaryOutput &m_doorLED;
     BinaryOutput &m_beacon;
     RGBLEDStrip &m_strip;
-    AlarmMode m_alarmStripMode;
+    AlarmMode &m_alarmStripMode;
     RGBLEDStripMode *m_previousMode;
     MissileLauncher m_missileLauncher;
     Buzzer &m_buzzer;

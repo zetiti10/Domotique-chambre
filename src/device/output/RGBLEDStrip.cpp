@@ -197,7 +197,7 @@ void RGBLEDStrip::setColor(int r, int g, int b)
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-RGBLEDStripMode::RGBLEDStripMode(String friendlyName, int ID, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_ID(ID), m_strip(strip), m_activated(false) {}
+RGBLEDStripMode::RGBLEDStripMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_ID(ID), m_strip(strip), m_activated(false) {}
 
 /// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -233,7 +233,7 @@ void RGBLEDStripMode::desactivate()
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-ColorMode::ColorMode(String friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(255), m_G(255), m_B(255) {}
+ColorMode::ColorMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(255), m_G(255), m_B(255) {}
 
 /// @brief Défini la couleur du ruban de DEL RVB.
 /// @param r L'intensité du rouge.
@@ -303,7 +303,7 @@ void ColorMode::loop() {}
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-AlarmMode::AlarmMode(String friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0) {}
+AlarmMode::AlarmMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0) {}
 
 void AlarmMode::desactivate()
 {
@@ -331,7 +331,7 @@ void AlarmMode::loop()
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
 /// @param speed La vitesse de l'animation.
-RainbowMode::RainbowMode(String friendlyName, int ID, RGBLEDStrip &strip, int speed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(speed) {}
+RainbowMode::RainbowMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, int speed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(speed) {}
 
 /// @brief Définit la vitesse de l'animation arc-en-ciel.
 /// @param speed La vitesse, de `0` (lent) à `100` (très rapide).
@@ -408,7 +408,7 @@ void RainbowMode::loop()
     }
 }
 
-SoundreactMode::SoundreactMode(String friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int sensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_sensitivity(sensitivity), m_lastColorChange(0), m_lastTime(0), m_maxSound(0) {}
+SoundreactMode::SoundreactMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int sensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_sensitivity(sensitivity), m_lastColorChange(0), m_lastTime(0), m_maxSound(0) {}
 
 /// @brief Méthode permettant de définir la sensibilité de l'animation son-réaction.
 /// @param sensitivity La sensibilité à définir, en pourcent (de `0` : peu sensible à `100` : très sensible).

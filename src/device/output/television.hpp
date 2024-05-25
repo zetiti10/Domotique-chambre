@@ -41,12 +41,6 @@ protected:
     int m_volume;
     bool m_volumeMuted;
     unsigned long m_lastTime;
-    ArduinoFFT<float> m_FFT;
-    unsigned int m_triggerSamplingPeriodUs;
-    unsigned int m_triggerPreviousMicros;
-    float m_triggerVReal[64];
-    float m_triggerVImag[64];
-    int m_triggerSampleIndex;
 };
 
 #endif

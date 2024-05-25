@@ -33,11 +33,12 @@
 /// @param doorLED La DEL rouge de la porte.
 /// @param beacon Le gyrophare.
 /// @param strip Le ruban de DEL RVB.
+/// @param alarmMode Le mode de couleur de l'alarme pour le ruban de DEL RVB.
 /// @param missileLauncherSerial Le port série connecté au lance-missile.
 /// @param buzzer Le buzzer.
 /// @param alarmRelayPin La broche connectée au relais de l'alarme.
 /// @param buzzerState L'activation ou non du son de l'alarme.
-Alarm::Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode("Mode alarme de l'alarme '" + getFriendlyName() + "'", 3, m_strip), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
+Alarm::Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode(alarmMode), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
 
 /// @brief Initialise l'objet.
 void Alarm::setup()

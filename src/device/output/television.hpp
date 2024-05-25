@@ -11,11 +11,29 @@
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
+#include "device/output/RGBLEDStrip.hpp"
+#include "device/output/connectedOutput.hpp"
+
+struct Action
+{
+    unsigned long timecode;
+    const char *action;
+};
+
+struct Music
+{
+    const __FlashStringHelper *friendlyName;
+    const __FlashStringHelper *videoURL;
+    const Action *actionList;
+    unsigned int actionsNumber;
+};
 
 class Television : public Output
 {
 public:
-    Television(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
+    Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
+    virtual void setMusicDevices(Output *deviceList[], int &devicesNumber, RGBLEDStrip *stripList[], int &stripsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber);
+    virtual void setMusicsList(Music **musicList, int &musicsNumber);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop();
@@ -29,11 +47,16 @@ public:
     virtual void unMute(bool shareInformation = false);
     virtual void toggleMute(bool shareInformation = false);
     virtual bool getMute();
+    virtual Music **getMusicsList();
+    virtual int getMusicNumber();
+    virtual void playMusic(int musicIndex);
 
 protected:
     virtual void moveDisplayServo(int angle);
     virtual void switchDisplay();
     virtual void detectTriggerSound();
+    static String addZeros(int number, int length);
+    static int getIntFromString(String &string, int position, int lenght);
 
     const int m_servomotorPin;
     const int m_IRLEDPin;
@@ -41,6 +64,18 @@ protected:
     int m_volume;
     bool m_volumeMuted;
     unsigned long m_lastTime;
+    bool m_waitingForTriggerSound;
+    unsigned long m_musicStartTime;
+    unsigned int m_lastActionIndex;
+    Music **m_musicList;
+    int m_currentMusicIndex;
+    int m_musicsNumber;
+    Output **m_deviceList;
+    int m_devicesNumber;
+    RGBLEDStrip **m_stripList;
+    int m_stripsNumber;
+    ConnectedColorVariableLight **m_connectedColorVariableLightList;
+    int m_connectedColorVariableLightsNumber;
 };
 
 #endif

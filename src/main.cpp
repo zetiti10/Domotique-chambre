@@ -18,6 +18,7 @@
 #include "pinDefinitions.hpp"
 #include "deviceID.hpp"
 #include "EEPROM.hpp"
+#include "musics.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/buzzer.hpp"
 #include "device/interface/keypad.hpp"
@@ -75,8 +76,8 @@ void setup()
     ConnectedOutput cameraLight(F("DEL de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
     // Création d'une liste contenant des références vers tous les actionneurs.
-    // Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
-    // int outputsNumber = 15;
+    Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
+    int outputsNumber = 15;
 
     // Périphériques d'entrée.
     WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
@@ -97,6 +98,17 @@ void setup()
     RainbowMode rainbowMode(F("Mode arc-en-ciel"), ID_RAINBOW_MODE, LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
     SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM.read(EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY));
     LEDStrip.setMode(&colorMode);
+
+    // Musiques.
+    Music test1;
+    test1.friendlyName = F("Test 1");
+    test1.videoURL = F("URL");
+    test1.actionList = test1Music;
+    test1.actionsNumber = test1MusicActionNumber;
+
+    // Liste des musiques.
+    Music *musicList[] = {&test1};
+    int musicsNumber = 1;
 
     // Création d'une liste contenant des références vers tous les périphériques du système.
     Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &keypad, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
@@ -178,6 +190,10 @@ void setup()
                       keypadAirSensorsNumber,
                       keypadWardrobeDoorSensorList,
                       keypadWardrobeDoorSensorsList);
+
+    // Définitions des périphériques et musiques pour la musique sur la télévision.
+    television.setMusicsList(musicList, musicsNumber);
+    television.setMusicDevices(outputList, outputsNumber, keypadStripList, keypadStripsNumber, keypadConnectedColorVariableLightList, keypadConnectedColorVariableLightsNumber);
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

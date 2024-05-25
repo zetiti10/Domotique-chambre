@@ -1038,6 +1038,9 @@ void KeypadMenuTelevision::keyPressed(char key, bool longClick)
     case '4':
         m_television->toggleMute(true);
         break;
+
+    case '5':
+        m_television->playMusic(0);
     }
 }
 

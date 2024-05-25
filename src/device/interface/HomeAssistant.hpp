@@ -52,6 +52,7 @@ public:
     virtual void updateAnalogInput(int ID, int state);
     virtual void updateAirSensor(int ID, float temperature, float humidity);
     virtual void sayMessage(String message);
+    virtual void playVideo(String videoURL);
 
 protected:
     virtual Output *getDeviceFromID(int ID);

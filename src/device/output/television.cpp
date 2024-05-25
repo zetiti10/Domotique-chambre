@@ -19,6 +19,7 @@
 #include "television.hpp"
 
 const char unableToPerformError[] PROGMEM = "Impossible d'effectuer cette action.";
+const char error[] PROGMEM = "Erreur";
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -28,7 +29,26 @@ const char unableToPerformError[] PROGMEM = "Impossible d'effectuer cette action
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0) {}
+Television::Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_stripList(nullptr), m_stripsNumber(0), m_connectedColorVariableLightList(nullptr), m_connectedColorVariableLightsNumber(0) {}
+
+void Television::setMusicDevices(Output *deviceList[], int &devicesNumber, RGBLEDStrip *stripList[], int &stripsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber)
+{
+    m_deviceList = deviceList;
+    m_devicesNumber = devicesNumber;
+    m_stripList = stripList;
+    m_stripsNumber = stripsNumber;
+    m_connectedColorVariableLightList = connectedColorVariableLightList;
+    m_connectedColorVariableLightsNumber = connectedColorVariableLightsNumber;
+}
+
+void Television::setMusicsList(Music **musicList, int &musicsNumber)
+{
+    if (musicsNumber <= 0)
+        return;
+
+    m_musicList = musicList;
+    m_musicsNumber = musicsNumber;
+}
 
 /// @brief Initialise l'objet.
 void Television::setup()
@@ -69,6 +89,53 @@ void Television::loop()
         EEPROM.update(EEPROM_VOLUME, m_volume);
 
         m_lastTime = millis();
+    }
+
+    if (m_waitingForTriggerSound)
+        detectTriggerSound();
+
+    if (m_musicStartTime != 0)
+    {
+        while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode >= (m_musicStartTime - millis()))
+        {
+            String action = m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].action;
+
+            switch (getIntFromString(action, 3, 2))
+            {
+            case 0:
+            {
+                for (int i = 0; i < m_devicesNumber; i++)
+                {
+                    if (m_deviceList[i]->getID() == getIntFromString(action, 1, 2))
+                        m_deviceList[i]->turnOff();
+                }
+                break;
+            }
+
+            case 1:
+            {
+                for (int i = 0; i < m_devicesNumber; i++)
+                {
+                    if (m_deviceList[i]->getID() == getIntFromString(action, 1, 2))
+                        m_deviceList[i]->turnOn();
+                }
+                break;
+            }
+
+            default:
+                break;
+            }
+
+            if (m_lastActionIndex < m_musicList[m_currentMusicIndex]->actionsNumber)
+                m_lastActionIndex++;
+
+            else
+            {
+                m_currentMusicIndex = 0;
+                m_lastActionIndex = 0;
+                m_musicStartTime= 0;
+            }
+        }
     }
 }
 
@@ -115,7 +182,7 @@ void Television::syncVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, "Erreur");
+            m_display.displayMessage(unableToPerformError, error);
 
         return;
     }
@@ -139,7 +206,7 @@ void Television::increaseVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 25))
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, "Erreur");
+            m_display.displayMessage(unableToPerformError, error);
 
         return;
     }
@@ -162,7 +229,7 @@ void Television::decreaseVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 0))
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, "Erreur");
+            m_display.displayMessage(unableToPerformError, error);
 
         return;
     }
@@ -192,7 +259,7 @@ void Television::mute(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, "Erreur");
+            m_display.displayMessage(unableToPerformError, error);
 
         return;
     }
@@ -213,7 +280,7 @@ void Television::unMute(bool shareInformation)
     if (!m_state || m_locked || !m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, "Erreur");
+            m_display.displayMessage(unableToPerformError, error);
 
         return;
     }
@@ -243,6 +310,72 @@ void Television::toggleMute(bool shareInformation)
 bool Television::getMute()
 {
     return m_volumeMuted;
+}
+
+Music **Television::getMusicsList()
+{
+    return m_musicList;
+}
+
+int Television::getMusicNumber()
+{
+    return m_musicsNumber;
+}
+
+void Television::playMusic(int musicIndex)
+{
+    if (m_locked || !m_operational || musicIndex > m_musicsNumber)
+    {
+        m_display.displayMessage(unableToPerformError, error);
+        return;
+    }
+
+    for (int i = 0; i < m_devicesNumber; i++)
+    {
+        if (!m_deviceList[i]->getAvailability() || !m_deviceList[i]->isLocked())
+        {
+            m_display.displayMessage(unableToPerformError, error);
+            return;
+        }
+
+        else
+            m_deviceList[i]->turnOff();
+    }
+
+    for (int i = 0; i < m_stripsNumber; i++)
+    {
+        if (!m_stripList[i]->getAvailability() || !m_stripList[i]->isLocked())
+        {
+            m_display.displayMessage(unableToPerformError, error);
+            return;
+        }
+
+        else
+            m_stripList[i]->turnOff();
+    }
+
+    for (int i = 0; i < m_connectedColorVariableLightsNumber; i++)
+    {
+        if (!m_connectedColorVariableLightList[i]->getAvailability() || !m_connectedColorVariableLightList[i]->isLocked())
+        {
+            m_display.displayMessage(unableToPerformError, error);
+            return;
+        }
+
+        else
+            m_connectedColorVariableLightList[i]->turnOff();
+    }
+
+    if (!m_state)
+    {
+        turnOn();
+        delay(2000);
+    }
+
+    m_connection.playVideo(m_musicList[musicIndex]->videoURL);
+    m_waitingForTriggerSound = true;
+    m_currentMusicIndex = musicIndex;
+    m_display.displayMessage("Initialisation...");
 }
 
 void Television::moveDisplayServo(int angle)
@@ -275,9 +408,7 @@ void Television::switchDisplay()
 void Television::detectTriggerSound()
 {
     const int SAMPLES = 128;
-    const double SAMPLING_FREQUENCY = 5000;
-    const double targetFrequency = 1000.0;
-    const double frequencyThreshold = 50.0;
+    const double SAMPLING_FREQUENCY = 5000.0;
 
     unsigned int samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
     unsigned long microSeconds;
@@ -297,17 +428,42 @@ void Television::detectTriggerSound()
         }
     }
 
-    /* Compute FFT */
     FFT.windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
     FFT.compute(vReal, vImag, SAMPLES, FFT_FORWARD);
     FFT.complexToMagnitude(vReal, vImag, SAMPLES);
 
-    /* Find peak frequency */
     double peakFrequency = FFT.majorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
-    
-    /* Check if peak frequency matches target frequency */
-    if (abs(peakFrequency - targetFrequency) < frequencyThreshold)
+
+    if (abs(peakFrequency - 10000.0) < 50.0)
     {
-        Serial.println("OK !");
+        m_waitingForTriggerSound = false;
+        m_musicStartTime = millis() + 4000;
     }
+}
+
+String Television::addZeros(int number, int length)
+{
+    String result = String(number);
+    while (result.length() < (unsigned int)length)
+    {
+        result = "0" + result;
+    }
+    return result;
+}
+
+int Television::getIntFromString(String &string, int position, int lenght)
+{
+    int result = 0;
+
+    for (int i = 0; i < lenght; i++)
+    {
+        int power = 1;
+
+        for (int j = 0; j < ((lenght - i) - 1); j++)
+            power *= 10;
+
+        result += (string.charAt(position + i) - '0') * power;
+    }
+
+    return result;
 }

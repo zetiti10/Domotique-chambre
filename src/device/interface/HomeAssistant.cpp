@@ -599,6 +599,12 @@ void HomeAssistant::sayMessage(String message)
     m_serial.println(message);
 }
 
+void HomeAssistant::playVideo(String videoURL)
+{
+    m_serial.print(4);
+    m_serial.println(videoURL);
+}
+
 Output *HomeAssistant::getDeviceFromID(int ID)
 {
     for (int i = 0; i < m_devicesNumber; i++)

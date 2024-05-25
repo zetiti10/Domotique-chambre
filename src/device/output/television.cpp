@@ -69,8 +69,6 @@ void Television::loop()
         EEPROM.update(EEPROM_VOLUME, m_volume);
 
         m_lastTime = millis();
-
-        detectTriggerSound();
     }
 }
 
@@ -273,35 +271,43 @@ void Television::switchDisplay()
         delay(1);
     }
 }
+
 void Television::detectTriggerSound()
 {
-    ArduinoFFT<float> m_FFT;
-    unsigned int samplingPeriodUs;
-    unsigned long microSeconds;
-    float vReal[64];
-    float vImag[64];
+    const int SAMPLES = 128;
+    const double SAMPLING_FREQUENCY = 5000;
+    const double targetFrequency = 1000.0;
+    const double frequencyThreshold = 50.0;
 
-    for (int sampleIndex = 0; sampleIndex < 64; sampleIndex++)
+    unsigned int samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
+    unsigned long microSeconds;
+
+    double vReal[SAMPLES];
+    double vImag[SAMPLES];
+
+    ArduinoFFT<double> FFT = ArduinoFFT<double>();
+
+    for (int i = 0; i < SAMPLES; i++)
     {
         microSeconds = micros();
-        vReal[sampleIndex] = analogRead(54);
-        vImag[sampleIndex] = 0;
+        vReal[i] = analogRead(54) - 287;
+        vImag[i] = 0;
         while (micros() < (microSeconds + samplingPeriodUs))
         {
         }
     }
 
-    // Une fois que tous les échantillons sont collectés, effectuer la FFT.
-    m_FFT.windowing(vReal, 64, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-    m_FFT.compute(vReal, vImag, 64, FFT_FORWARD);
-    m_FFT.complexToMagnitude(vReal, vImag, 64);
+    /* Compute FFT */
+    FFT.windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
+    FFT.compute(vReal, vImag, SAMPLES, FFT_FORWARD);
+    FFT.complexToMagnitude(vReal, vImag, SAMPLES);
 
-    // Trouver la fréquence principale.
-    double peakFrequency = m_FFT.majorPeak(vReal, 64, 40000);
-
-    // Vérifier si la fréquence principale correspond à la fréquence cible.
-    if (abs(peakFrequency - 1000.0f) < 50.0f)
+    /* Find peak frequency */
+    double peakFrequency = FFT.majorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
+    
+    /* Check if peak frequency matches target frequency */
+    if (abs(peakFrequency - targetFrequency) < frequencyThreshold)
     {
-        Serial.println("Son détecté !");
+        Serial.println("OK !");
     }
 }

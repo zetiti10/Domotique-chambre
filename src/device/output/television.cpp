@@ -439,8 +439,9 @@ void Television::detectTriggerSound()
 
     if (abs(peakFrequency - 1000.0) < 50.0)
     {
-        m_waitingForTriggerSound = false;
-        m_musicStartTime = millis() - 775;
+        //m_waitingForTriggerSound = false;
+        //m_musicStartTime = millis() - 775;
+        Serial.println(F("Détecté !")); // Permet de compter le nombre de détection.
     }
 }
 

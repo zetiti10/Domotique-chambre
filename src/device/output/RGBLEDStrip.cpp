@@ -624,6 +624,7 @@ void MusicsAnimationsMode::strobeEffect(int r, int g, int b, int speed)
     m_strobeEffectSpeed = speed;
     m_strobeEffectLastMillis = millis();
     m_strobeEffectStep = false;
+    m_currentEffect = STROBE_EFFECT;
 
     m_strip.setColor(r, g, b);
 }
@@ -633,14 +634,14 @@ void MusicsAnimationsMode::activate()
     if (m_activated)
         return;
 
-    MusicsAnimationsMode::activate();
+    RGBLEDStripMode::activate();
 
     m_currentEffect = SINGLE_COLOR;
 }
 
 void MusicsAnimationsMode::desactivate()
 {
-    MusicsAnimationsMode::desactivate();
+    RGBLEDStripMode::desactivate();
 }
 
 void MusicsAnimationsMode::loop()
@@ -652,9 +653,9 @@ void MusicsAnimationsMode::loop()
 
     case SMOOTH_TRANSITION:
     {
-        float progression = (millis() - m_smoothTransitionInitialMillis) / m_smoothTransitionDuration;
+        float progression = float(millis() - m_smoothTransitionInitialMillis) / float(m_smoothTransitionDuration);
 
-        if (progression > 100)
+        if (progression > 1.0f)
         {
             m_currentEffect = SINGLE_COLOR;
             break;
@@ -671,8 +672,8 @@ void MusicsAnimationsMode::loop()
 
         case OUT_CUBIC:
         {
-            float f = (progression - 1);
-            progression = f * f * f + 1;
+            float f = (progression - 1.0f);
+            progression = f * f * f + 1.0f;
             break;
         }
 
@@ -683,17 +684,17 @@ void MusicsAnimationsMode::loop()
 
             else
             {
-                float f = ((2 * progression) - 2);
-                progression = 0.5f * f * f * f + 1;
+                float f = ((2.0f * progression) - 2.0f);
+                progression = 0.5f * f * f * f + 1.0f;
             }
 
             break;
         }
         }
 
-        int newR = m_smoothTransitionInitialR + int(progression * (float(m_smoothTransitionFinalR) - float(m_smoothTransitionInitialR)));
-        int newG = m_smoothTransitionInitialG + int(progression * (float(m_smoothTransitionFinalG) - float(m_smoothTransitionInitialG)));
-        int newB = m_smoothTransitionInitialB + int(progression * (float(m_smoothTransitionFinalB) - float(m_smoothTransitionInitialB)));
+        int newR = m_smoothTransitionInitialR + int(progression * float(m_smoothTransitionFinalR - m_smoothTransitionInitialR));
+        int newG = m_smoothTransitionInitialG + int(progression * float(m_smoothTransitionFinalG - m_smoothTransitionInitialG));
+        int newB = m_smoothTransitionInitialB + int(progression * float(m_smoothTransitionFinalB - m_smoothTransitionInitialB));
 
         m_strip.setColor(newR, newG, newB);
 

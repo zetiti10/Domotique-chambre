@@ -38,15 +38,15 @@
 void setup()
 {
     // Configuration du clavier.
-    const byte KEYPAD_ROWS = 4;
-    const byte KEYPAD_COLS = 4;
-    char keypadKeys[KEYPAD_ROWS][KEYPAD_COLS] = {
+    const byte KEYPAD_ROWS PROGMEM = 4;
+    const byte KEYPAD_COLS PROGMEM = 4;
+    char keypadKeys[KEYPAD_ROWS][KEYPAD_COLS] PROGMEM = {
         {'1', '2', '3', 'A'},
         {'4', '5', '6', 'B'},
         {'7', '8', '9', 'C'},
         {'*', '0', '#', 'D'}};
-    byte keypadRowPins[KEYPAD_ROWS] = {31, 33, 35, 37};
-    byte keypadColPins[KEYPAD_COLS] = {30, 32, 34, 36};
+    byte keypadRowPins[KEYPAD_ROWS] PROGMEM = {31, 33, 35, 37};
+    byte keypadColPins[KEYPAD_COLS] PROGMEM = {30, 32, 34, 36};
 
     // Instanciation des périphériques du système.
     // Interfaces.
@@ -77,8 +77,8 @@ void setup()
     ConnectedOutput cameraLight(F("DEL de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
     // Création d'une liste contenant des références vers tous les actionneurs.
-    Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight};
-    int outputsNumber = 15;
+    Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, /*&television, */&mainLights, &sofaLight, &bedLight, &cameraLight};
+    int outputsNumber = 14; // 15
 
     // Périphériques d'entrée.
     WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
@@ -108,7 +108,7 @@ void setup()
         {9800, F("09011255255255000000000010001")},
         {11000, F("09011000000000255255255010003")},
         {17000, F("02001")},
-        {17000, F("090122552552550050")},
+        {17000, F("090122552552550100")},
     };
     Music test1;
     test1.friendlyName = F("Test 1");

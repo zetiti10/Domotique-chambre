@@ -67,8 +67,9 @@ void Television::setMicrophone(AnalogInput &microphone)
 /// @brief Initialise l'objet.
 void Television::setup()
 {
-    if (m_operational || m_microphone == nullptr || m_musicsNumber == 0)
+    if (m_operational || m_microphone == nullptr || m_musicsNumber == 0 || m_devicesNumber == 0)
         return;
+
 
     Output::setup();
 
@@ -407,7 +408,7 @@ void Television::detectTriggerSound()
     if (abs(peakFrequency - 1000.0) < 50.0)
     {
         m_waitingForTriggerSound = false;
-        m_musicStartTime = millis() - 900;
+        m_musicStartTime = millis() - 1100;
     }
 }
 
@@ -455,7 +456,7 @@ void Television::scheduleMusic()
             strip->setMode(&m_mode);
             strip->turnOn();
 
-            switch (getIntFromString(action, 5, 1))
+            switch (getIntFromString(action, 4, 1))
             {
             case 0:
                 m_mode.singleColor(this->getIntFromString(action, 5, 3), this->getIntFromString(action, 8, 3), this->getIntFromString(action, 11, 3));

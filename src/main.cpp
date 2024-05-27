@@ -67,7 +67,8 @@ void setup()
     RGBLEDStrip LEDStrip(F("Ruban de DEL"), ID_LED_STRIP, HomeAssistantConnection, display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
     AlarmMode alarmMode(F("Mode alarme"), 3, LEDStrip);
     Alarm alarm(F("Alarme"), ID_ALARM, HomeAssistantConnection, display, Serial2, doorLED, beacon, LEDStrip, alarmMode, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
-    Television television(F("Télévision"), ID_TELEVISION, HomeAssistantConnection, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME));
+    MusicsAnimationsMode musicsAnimationsMode(F("Mode musique animations"), 4, LEDStrip);
+    Television television(F("Télévision"), ID_TELEVISION, HomeAssistantConnection, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME), musicsAnimationsMode);
 
     // Périphériques de sortie à distance.
     ConnectedOutput mainLights(F("Lumières du plafond"), ID_MAIN_LIGHTS, HomeAssistantConnection, display);
@@ -86,6 +87,7 @@ void setup()
     Doorbell doorbell(F("Sonnette"), ID_DOORBELL, HomeAssistantConnection, PIN_DOORBELL_BUTTON, false, false, display, buzzer);
     AnalogInput lightSensor(F("Luminosité"), ID_LIGHT_SENSOR, HomeAssistantConnection, PIN_LIGHT_SENSOR, false);
     AnalogInput microphone(F("Microphone"), ID_MICROPHONE, HomeAssistantConnection, PIN_MICROPHONE, false);
+    television.setMicrophone(microphone);
     AirSensor airSensor(F("Air"), ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
     IRSensor iRSensor(F("Capteur infrarouge"), ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
 
@@ -102,29 +104,11 @@ void setup()
     // Musiques.
     int test1MusicActionNumber = 23;
     const Action test1Music[] PROGMEM = {
-        {7230, F("009001")},
-        {9170, F("009000")},
-        {11110, F("009001")},
-        {13060, F("009000")},
-        {16080, F("009001")},
-        {16200, F("009000")},
-        {17170, F("009001")},
-        {31080, F("009000")},
-        {31200, F("009001")},
-        {36040, F("009000")},
-        {43050, F("009001")},
-        {47050, F("009000")},
-        {40000, F("009001")},
-        {50060, F("009000")},
-        {52230, F("009001")},
-        {57200, F("009000")},
-        {101100, F("009001")},
-        {11090, F("009000")},
-        {11130, F("009001")},
-        {13030, F("009000")},
-        {16110, F("009001")},
-        {14060, F("009000")}, 
-        {16190, F("009001")},
+        {8800, F("09011000000000255255255010001")},
+        {9800, F("09011255255255000000000010001")},
+        {11000, F("09011000000000255255255010003")},
+        {17000, F("02001")},
+        {17000, F("090122552552550050")},
     };
     Music test1;
     test1.friendlyName = F("Test 1");
@@ -219,7 +203,7 @@ void setup()
 
     // Définitions des périphériques et musiques pour la musique sur la télévision.
     television.setMusicsList(musicList, musicsNumber);
-    television.setMusicDevices(outputList, outputsNumber, keypadStripList, keypadStripsNumber, keypadConnectedColorVariableLightList, keypadConnectedColorVariableLightsNumber);
+    television.setMusicDevices(outputList, outputsNumber);
 
     // Initialisation de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

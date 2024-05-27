@@ -32,8 +32,8 @@ struct Music
 class Television : public Output
 {
 public:
-    Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
-    virtual void setMusicDevices(Output *deviceList[], int &devicesNumber, RGBLEDStrip *stripList[], int &stripsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber);
+    Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode);
+    virtual void setMusicDevices(Output *deviceList[], int &devicesNumber);
     virtual void setMusicsList(Music **musicList, int &musicsNumber);
     virtual void setMicrophone(AnalogInput &microphone);
     virtual void setup() override;
@@ -52,11 +52,14 @@ public:
     virtual Music **getMusicsList();
     virtual int getMusicNumber();
     virtual void playMusic(int musicIndex);
+    virtual void stopMusic();
 
 protected:
     virtual void moveDisplayServo(int angle);
     virtual void switchDisplay();
     virtual void detectTriggerSound();
+    virtual void scheduleMusic();
+    virtual Output *getDeviceFromID(int ID);
     static String addZeros(int number, int length);
     static int getIntFromString(String &string, int position, int lenght);
 
@@ -75,10 +78,7 @@ protected:
     int m_musicsNumber;
     Output **m_deviceList;
     int m_devicesNumber;
-    RGBLEDStrip **m_stripList;
-    int m_stripsNumber;
-    ConnectedColorVariableLight **m_connectedColorVariableLightList;
-    int m_connectedColorVariableLightsNumber;
+    MusicsAnimationsMode m_mode;
 };
 
 #endif

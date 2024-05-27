@@ -42,6 +42,7 @@ private:
     friend class AlarmMode;
     friend class RainbowMode;
     friend class SoundreactMode;
+    friend class MusicsAnimationsMode;
 };
 
 // Classe représentant un mode pour un ruban de DEL.
@@ -140,6 +141,53 @@ protected:
     unsigned long m_lastColorChange;
     unsigned long m_lastTime;
     int m_maxSound;
+
+private:
+    virtual void activate() override;
+    virtual void desactivate() override;
+    virtual void loop() override;
+    friend class RGBLEDStrip;
+};
+
+enum MusicsAnimationsCurrentEffect {
+    SINGLE_COLOR,
+    SMOOTH_TRANSITION,
+    STROBE_EFFECT,
+};
+
+enum MusicsAnimationsEasing {
+    LINEAR,
+    IN_CUBIC,
+    OUT_CUBIC,
+    IN_OUT_CUBIC,
+};
+
+// Classe du mode de couleur utilisé pour le mode de vidéo animée.
+class MusicsAnimationsMode : public RGBLEDStripMode
+{
+public:
+    MusicsAnimationsMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip);
+    virtual void singleColor(int r, int g, int b);
+    virtual void smoothTransition(int initialR, int initialG, int initialB, int finalR, int finalG, int finalB, unsigned long duration, MusicsAnimationsEasing type = LINEAR);
+    virtual void strobeEffect(int r, int g, int b, int speed);
+
+protected:
+    MusicsAnimationsCurrentEffect m_currentEffect;
+    int m_smoothTransitionInitialR;
+    int m_smoothTransitionInitialG;
+    int m_smoothTransitionInitialB;
+    int m_smoothTransitionFinalR;
+    int m_smoothTransitionFinalG;
+    int m_smoothTransitionFinalB;
+    unsigned long m_smoothTransitionInitialMillis;
+    unsigned long m_smoothTransitionDuration;
+    MusicsAnimationsEasing m_smoothTransitionType;
+    int m_strobeEffectR;
+    int m_strobeEffectG;
+    int m_strobeEffectB;
+    int m_strobeEffectSpeed;
+    bool m_strobeEffectStep;
+    unsigned long m_strobeEffectLastMillis;
 
 private:
     virtual void activate() override;

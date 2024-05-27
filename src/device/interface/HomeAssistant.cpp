@@ -26,7 +26,7 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
-HomeAssistant::HomeAssistant(const __FlashStringHelper* friendlyName, int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr) {}
+HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
@@ -337,7 +337,7 @@ void HomeAssistant::processMessage()
         {
             for (int i = 0; i < m_devicesNumber; i++)
                 m_deviceList[i]->reportState();
-            
+
             for (int i = 0; i < m_inputDevicesNumber; i++)
                 m_inputDeviceList[i]->reportState();
 
@@ -631,9 +631,8 @@ String HomeAssistant::addZeros(int number, int length)
 {
     String result = String(number);
     while (result.length() < (unsigned int)length)
-    {
         result = "0" + result;
-    }
+
     return result;
 }
 

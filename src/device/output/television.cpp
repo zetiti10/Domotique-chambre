@@ -29,8 +29,15 @@ const char error[] PROGMEM = "Erreur";
 /// @param servomotorPin La broche associée à celle du servomoteur.
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
-Television::Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_stripList(nullptr), m_stripsNumber(0), m_connectedColorVariableLightList(nullptr), m_connectedColorVariableLightsNumber(0) {}
+Television::Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_microphone(nullptr), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_stripList(nullptr), m_stripsNumber(0), m_connectedColorVariableLightList(nullptr), m_connectedColorVariableLightsNumber(0) {}
 
+/// @brief Cette méthode permet d'enregistrer les périphériques du système qui pourront être contrôlés automatiquement lors de la lecture d'une vidéo.
+/// @param deviceList La liste de périphériques "basiques" à utiliser (pour les allumer / éteindre).
+/// @param devicesNumber Le nombre de périphériques de la liste `deviceList`.
+/// @param stripList La liste de ruban de DEL RVB à utilise (pour le contrôle des couleurs).
+/// @param stripsNumber Le nombre de rubans de la liste `stripList`.
+/// @param connectedColorVariableLightList La liste des lampes connectées à couleur variable, à utiliser (pour le contrôle des couleurs).
+/// @param connectedColorVariableLightsNumber Le nombre d'éléments de la liste `connectedColorVariableLightList`.
 void Television::setMusicDevices(Output *deviceList[], int &devicesNumber, RGBLEDStrip *stripList[], int &stripsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber)
 {
     m_deviceList = deviceList;
@@ -41,6 +48,9 @@ void Television::setMusicDevices(Output *deviceList[], int &devicesNumber, RGBLE
     m_connectedColorVariableLightsNumber = connectedColorVariableLightsNumber;
 }
 
+/// @brief Méthode permettant de définir la liste des musiques disponibles à la lecture.
+/// @param musicList La liste de musiques.
+/// @param musicsNumber Le nombre de musiques de la liste de musiques.
 void Television::setMusicsList(Music **musicList, int &musicsNumber)
 {
     if (musicsNumber <= 0)
@@ -50,10 +60,17 @@ void Television::setMusicsList(Music **musicList, int &musicsNumber)
     m_musicsNumber = musicsNumber;
 }
 
+/// @brief Méthode permettant de définir le microphone utilisé par la télévision pour détecter le son clé du lancement d'une vidéo.
+/// @param microphone L'objet du microphone.
+void Television::setMicrophone(AnalogInput &microphone)
+{
+    m_microphone = &microphone;
+}
+
 /// @brief Initialise l'objet.
 void Television::setup()
 {
-    if (m_operational)
+    if (m_operational || m_microphone == nullptr || m_musicsNumber == 0)
         return;
 
     Output::setup();
@@ -82,6 +99,7 @@ void Television::reportState()
         m_connection.updateTelevisionVolume(m_ID, 1);
 }
 
+/// @brief Boucle d'exécution des tâches liées à la télévision.
 void Television::loop()
 {
     if ((millis() - m_lastTime) >= 60000)
@@ -312,16 +330,22 @@ bool Television::getMute()
     return m_volumeMuted;
 }
 
+/// @brief Méthode permettant d'obtenir la liste des musiques disponibles.
+/// @return La liste des musiques disponibles.
 Music **Television::getMusicsList()
 {
     return m_musicList;
 }
 
+/// @brief Méthode permettant d'obtenir le nombre de musiques enregistré.
+/// @return Le nombre de musiques enregistré.
 int Television::getMusicNumber()
 {
     return m_musicsNumber;
 }
 
+/// @brief Méthode permettant de démarrer la lecture d'une vidéo.
+/// @param musicIndex La position de la musique dans la liste des musiques disponibles fournie par la méthode `Music **Television::getMusicsList()`.
 void Television::playMusic(int musicIndex)
 {
     if (m_locked || !m_operational || musicIndex > m_musicsNumber)

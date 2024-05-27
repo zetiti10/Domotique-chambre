@@ -13,6 +13,7 @@
 #include "device/interface/HomeAssistant.hpp"
 #include "device/output/RGBLEDStrip.hpp"
 #include "device/output/connectedOutput.hpp"
+#include "device/input/analogInput.hpp"
 
 struct Action
 {
@@ -34,6 +35,7 @@ public:
     Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume);
     virtual void setMusicDevices(Output *deviceList[], int &devicesNumber, RGBLEDStrip *stripList[], int &stripsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber);
     virtual void setMusicsList(Music **musicList, int &musicsNumber);
+    virtual void setMicrophone(AnalogInput &microphone);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop();
@@ -65,6 +67,7 @@ protected:
     bool m_volumeMuted;
     unsigned long m_lastTime;
     bool m_waitingForTriggerSound;
+    AnalogInput *m_microphone;
     unsigned long m_musicStartTime;
     unsigned int m_lastActionIndex;
     Music **m_musicList;

@@ -1064,7 +1064,7 @@ void KeypadMenuTelevision::displayHelp()
     help[1] = "+ volume";
     help[2] = "- volume";
     help[3] = "Basculer sourdinne";
-    help[3] = "Musiques";
+    help[4] = "Musiques";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }

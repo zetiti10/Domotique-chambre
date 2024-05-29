@@ -70,7 +70,6 @@ void Television::setup()
     if (m_operational || m_microphone == nullptr || m_musicsNumber == 0 || m_devicesNumber == 0)
         return;
 
-
     Output::setup();
 
     pinMode(m_servomotorPin, OUTPUT);
@@ -107,8 +106,12 @@ void Television::loop()
         m_lastTime = millis();
     }
 
-    if (m_waitingForTriggerSound)
-        detectTriggerSound();
+    if (m_waitingForTriggerSound && detectTriggerSound())
+    {
+        m_waitingForTriggerSound = false;
+        m_musicStartTime = millis() - 1100;
+        m_display.displayMessage("C'est parti !");
+    }
 
     if (m_musicStartTime != 0)
         scheduleMusic();
@@ -172,7 +175,7 @@ void Television::syncVolume(bool shareInformation)
         increaseVolume();
 
     if (shareInformation)
-        m_display.displayMessage("Calibration terminee !");
+        m_display.displayMessage("Calibration terminée !");
 }
 
 /// @brief Augmente le volume de la télévision.
@@ -322,6 +325,8 @@ void Television::playMusic(int musicIndex)
         }
     }
 
+    m_display.displayMessage("Initialisation...");
+
     // Étape 2 : préparation du terrain pour la vidéo.
     for (int i = 0; i < m_devicesNumber; i++)
     {
@@ -332,10 +337,13 @@ void Television::playMusic(int musicIndex)
     if (!m_state)
         turnOn();
 
+    for (int i = 0; i < 15; i++)
+        increaseVolume();
+
     m_connection.playVideo(m_musicList[musicIndex]->videoURL);
     m_waitingForTriggerSound = true;
     m_currentMusicIndex = musicIndex;
-    m_display.displayMessage("Initialisation...");
+    m_display.displayMessage("En attente de la vidéo.");
 }
 
 /// @brief Méthode permettant de stopper la lecture de la vidéo en cours proprement.
@@ -347,6 +355,12 @@ void Television::stopMusic()
     m_currentMusicIndex = -1;
     m_lastActionIndex = 0;
     m_musicStartTime = 0;
+
+    for (int i = 0; i < m_devicesNumber; i++)
+    {
+        m_deviceList[i]->unLock();
+        m_deviceList[i]->turnOff();
+    }
 }
 
 void Television::moveDisplayServo(int angle)
@@ -376,7 +390,7 @@ void Television::switchDisplay()
     }
 }
 
-void Television::detectTriggerSound()
+bool Television::detectTriggerSound()
 {
     const int SAMPLES = 128;
     const double SAMPLING_FREQUENCY = 5000.0;
@@ -406,10 +420,9 @@ void Television::detectTriggerSound()
     double peakFrequency = FFT.majorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
 
     if (abs(peakFrequency - 1000.0) < 50.0)
-    {
-        m_waitingForTriggerSound = false;
-        m_musicStartTime = millis() - 1100;
-    }
+        return true;
+
+    return false;
 }
 
 void Television::scheduleMusic()
@@ -502,7 +515,16 @@ void Television::scheduleMusic()
         {
             ConnectedTemperatureVariableLight *light = static_cast<ConnectedTemperatureVariableLight *>(output);
 
-            // Implémenter le contrôle de la lumière.
+            switch (getIntFromString(action, 4, 1))
+            {
+            case 0:
+                light->setColorTemperature(getIntFromString(action, 5, 4));
+                break;
+            
+            case 1:
+                light->setLuminosity(getIntFromString(action, 5, 3));
+                break;
+            }
 
             break;
         }
@@ -511,7 +533,20 @@ void Television::scheduleMusic()
         {
             ConnectedColorVariableLight *light = static_cast<ConnectedColorVariableLight *>(output);
 
-            // Implémenter le contrôle de la lumière.
+            switch (getIntFromString(action, 4, 1))
+            {
+            case 0:
+                light->setColor(getIntFromString(action, 5, 3), getIntFromString(action, 8, 3), getIntFromString(action, 11, 3));
+                break;
+            
+            case 1:
+                light->setColorTemperature(getIntFromString(action, 5, 4));
+                break;
+            
+            case 2:
+                light->setLuminosity(getIntFromString(action, 5, 3));
+                break;
+            }
 
             break;
         }

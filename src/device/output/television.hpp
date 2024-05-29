@@ -57,7 +57,7 @@ public:
 protected:
     virtual void moveDisplayServo(int angle);
     virtual void switchDisplay();
-    virtual void detectTriggerSound();
+    virtual bool detectTriggerSound();
     virtual void scheduleMusic();
     virtual Output *getDeviceFromID(int ID);
     static String addZeros(int number, int length);

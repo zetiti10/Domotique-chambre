@@ -1016,6 +1016,11 @@ void KeypadMenuTelevision::setTelevision(Television *television)
     m_television = television;
 }
 
+void KeypadMenuTelevision::setMusicSelectionMenu(KeypadMenuTelevisionMusicSelector *menu)
+{
+    m_musicSelectionMenu = menu;
+}
+
 void KeypadMenuTelevision::keyPressed(char key, bool longClick)
 {
     if (m_television == nullptr)
@@ -1059,6 +1064,32 @@ void KeypadMenuTelevision::displayHelp()
 void KeypadMenuTelevision::displayMenu()
 {
     m_keypad.getDisplay().displayKeypadMenu(TELEVISIONS, m_friendlyName);
+}
+
+KeypadMenuTelevisionMusicSelector::KeypadMenuTelevisionMusicSelector(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad) {}
+
+void KeypadMenuTelevisionMusicSelector::setTelevision(Television *television)
+{
+    m_television = television;
+}
+
+void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
+{
+    //    Test 1
+    // -> Test 2
+    //    Text 3
+
+    //
+    // -> Test 1
+    //    Test 2
+}
+
+void KeypadMenuTelevisionMusicSelector::displayHelp()
+{
+}
+
+void KeypadMenuTelevisionMusicSelector::displayMenu()
+{
 }
 
 KeypadMenuAlarm::KeypadMenuAlarm(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_alarm(nullptr) {}

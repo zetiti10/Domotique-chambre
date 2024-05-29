@@ -273,10 +273,29 @@ protected:
     KeypadMenuConnectedLightColorControl *m_colorMenu;
 };
 
+class KeypadMenuTelevisionMusicSelector;
+
 class KeypadMenuTelevision : public KeypadMenu
 {
 public:
     KeypadMenuTelevision(String friendlyName, Keypad &keypad);
+
+    virtual void setTelevision(Television *television);
+    virtual void setMusicSelectionMenu(KeypadMenuTelevisionMusicSelector *menu);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+
+protected:
+    Television *m_television;
+    KeypadMenuTelevisionMusicSelector *m_musicSelectionMenu;
+};
+
+class KeypadMenuTelevisionMusicSelector : public KeypadMenu
+{
+public:
+    KeypadMenuTelevisionMusicSelector(String friendlyName, Keypad &keypad);
 
     virtual void setTelevision(Television *television);
 

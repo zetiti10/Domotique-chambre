@@ -102,17 +102,20 @@ void setup()
     LEDStrip.setMode(&colorMode);
 
     // Musiques.
-    int test1MusicActionNumber = 23;
+    int test1MusicActionNumber = 8;
     const Action test1Music[] PROGMEM = {
         {8800, F("09011000000000255255255010001")},
         {9800, F("09011255255255000000000010001")},
         {11000, F("09011000000000255255255010003")},
         {17000, F("02001")},
         {17000, F("090122552552550100")},
+        {20000, F("09011255100000000200255030003")},
+        {25000, F("03001")},
+        {25000, F("02000")},
     };
     Music test1;
     test1.friendlyName = F("Test 1");
-    test1.videoURL = F("URL");
+    test1.videoURL = F("https://drive.google.com/uc?export=download&id=1D_TfbX1t452PTXpAH-TSHCGg7r8jDPFs");
     test1.actionList = test1Music;
     test1.actionsNumber = test1MusicActionNumber;
 

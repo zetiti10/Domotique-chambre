@@ -76,10 +76,6 @@ void setup()
     ConnectedColorVariableLight bedLight(F("Lampe de chevet"), ID_BED_LIGHT, HomeAssistantConnection, display, 2202, 6535);
     ConnectedOutput cameraLight(F("DEL de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
-    // Création d'une liste contenant des références vers tous les actionneurs.
-    Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, /*&television, */&mainLights, &sofaLight, &bedLight, &cameraLight};
-    int outputsNumber = 14; // 15
-
     // Périphériques d'entrée.
     WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
     DoorSensor doorSensor(F("Porte"), ID_DOOR_SENSOR, HomeAssistantConnection, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
@@ -142,6 +138,10 @@ void setup()
     // Liste des musiques.
     Music *musicList[] = {&test1, &test2, &test3};
     int musicsNumber = 3;
+
+    // Création d'une liste contenant des références vers tous les actionneurs utilisés par le système de musique animée.
+    Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &mainLights, &sofaLight, &bedLight, &cameraLight};
+    int outputsNumber = 14;
 
     // Création d'une liste contenant des références vers tous les périphériques du système.
     Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &keypad, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};

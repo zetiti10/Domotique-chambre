@@ -10,7 +10,7 @@ class Device
 public:
     Device(const __FlashStringHelper* friendlyName, int ID);
     virtual void setup() = 0;
-    virtual String getFriendlyName() const;
+    virtual const __FlashStringHelper* getFriendlyName() const;
     virtual int getID() const;
     virtual bool getAvailability() const;
 

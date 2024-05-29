@@ -50,7 +50,7 @@ class RGBLEDStripMode
 {
 public:
     RGBLEDStripMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip);
-    virtual String getFriendlyName() const;
+    virtual const __FlashStringHelper* getFriendlyName() const;
     virtual bool isActivated() const;
     virtual int getID() const;
 
@@ -58,7 +58,7 @@ protected:
     virtual void activate();
     virtual void desactivate();
     virtual void loop() = 0;
-    String m_friendlyName;
+    const __FlashStringHelper* m_friendlyName;
     int m_ID;
     RGBLEDStrip &m_strip;
     bool m_activated;

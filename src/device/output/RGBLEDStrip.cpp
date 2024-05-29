@@ -201,7 +201,7 @@ RGBLEDStripMode::RGBLEDStripMode(const __FlashStringHelper *friendlyName, int ID
 
 /// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
-String RGBLEDStripMode::getFriendlyName() const
+const __FlashStringHelper* RGBLEDStripMode::getFriendlyName() const
 {
     return m_friendlyName;
 }

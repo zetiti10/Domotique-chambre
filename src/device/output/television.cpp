@@ -335,10 +335,23 @@ void Television::playMusic(int musicIndex)
     }
 
     if (!m_state)
+    {
         turnOn();
+        delay(1000);
+    }
 
-    for (int i = 0; i < 15; i++)
+    if (m_volumeMuted)
+    {
+        unMute();
+        delay(1000);
+    }
+
+    delay(1000);
+
+    while (getVolume() < 17)
         increaseVolume();
+
+    delay(2000);
 
     m_connection.playVideo(m_musicList[musicIndex]->videoURL);
     m_waitingForTriggerSound = true;

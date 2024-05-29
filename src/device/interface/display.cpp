@@ -15,6 +15,7 @@
 #include "device/device.hpp"
 #include "bitmaps.hpp"
 #include "display.hpp"
+#include "device/output/television.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -356,6 +357,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
     m_display.setCursor(0, 0);
     m_display.print(F("? "));
     printAccents(menuName);
+    m_display.setTextWrap(true);
 
     display();
 }
@@ -458,6 +460,34 @@ void Display::displayPercentage(String name, int value)
     display();
 }
 
+void Display::displaySelectedMusic(Music **musicList, int musicNumber, int musicIndex)
+{
+    if (!m_operational || musicIndex > musicNumber)
+        return;
+
+    resetDisplay();
+    printCenteredAccents("Musiques", 1, 0);
+
+    m_display.setCursor(0, 25);
+    m_display.setTextWrap(false);
+    printAccents("-> " + String(musicList[musicIndex]->friendlyName));
+
+    if (musicIndex > 0)
+    {
+        m_display.setCursor(0, 17);
+        printAccents((musicIndex - 1) + ". " + String(musicList[musicIndex]->friendlyName));
+    }
+
+    if (musicIndex < musicNumber)
+    {
+        m_display.setCursor(0, 33);
+        printAccents((musicIndex + 1) + ". " + String(musicList[musicIndex]->friendlyName));
+    }
+
+    m_display.setTextWrap(true);
+    display();
+}
+
 /// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps.
 void Display::loop()
 {
@@ -534,6 +564,7 @@ void Display::printCenteredAccents(const String &string, int textSize, int y)
     m_display.setTextWrap(false);
     m_display.setTextSize(textSize);
     printAccents(string);
+    m_display.setTextWrap(true);
 }
 
 void Display::resetDisplay(bool resetHelpMenu)

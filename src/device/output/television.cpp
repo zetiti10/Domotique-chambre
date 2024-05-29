@@ -318,6 +318,8 @@ void Television::playMusic(int musicIndex)
 
     for (int i = 0; i < m_devicesNumber; i++)
     {
+        m_deviceList[i]->setup();
+
         if (!m_deviceList[i]->getAvailability() || m_deviceList[i]->isLocked())
         {
             m_display.displayMessage(unableToPerformError, error);

@@ -170,6 +170,12 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
             televisionMenu->setPreviousMenu(previousMenu);
         }
 
+        KeypadMenuTelevisionMusicSelector *musicSelector = new KeypadMenuTelevisionMusicSelector("Musiques", *this);
+        musicSelector->setTelevision(television);
+        musicSelector->setParentMenu(televisionMenu);
+
+        televisionMenu->setMusicSelectionMenu(musicSelector);
+
         previousMenu = televisionMenu;
     }
 
@@ -315,7 +321,7 @@ void Keypad::loop()
                 if (event.bit.KEY >= '1' && event.bit.KEY <= '9')
                     m_currentMenu->keyPressed(event.bit.KEY, false);
             }
-            
+
             if (m_keyPressTime != 0)
                 continue;
 
@@ -1045,7 +1051,8 @@ void KeypadMenuTelevision::keyPressed(char key, bool longClick)
         break;
 
     case '5':
-        m_television->playMusic(0);
+        m_keypad.setMenu(m_musicSelectionMenu);
+        break;
     }
 }
 
@@ -1057,6 +1064,7 @@ void KeypadMenuTelevision::displayHelp()
     help[1] = "+ volume";
     help[2] = "- volume";
     help[3] = "Basculer sourdinne";
+    help[3] = "Musiques";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }
@@ -1066,7 +1074,7 @@ void KeypadMenuTelevision::displayMenu()
     m_keypad.getDisplay().displayKeypadMenu(TELEVISIONS, m_friendlyName);
 }
 
-KeypadMenuTelevisionMusicSelector::KeypadMenuTelevisionMusicSelector(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad) {}
+KeypadMenuTelevisionMusicSelector::KeypadMenuTelevisionMusicSelector(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_index(0) {}
 
 void KeypadMenuTelevisionMusicSelector::setTelevision(Television *television)
 {
@@ -1075,21 +1083,50 @@ void KeypadMenuTelevisionMusicSelector::setTelevision(Television *television)
 
 void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
 {
-    //    Test 1
-    // -> Test 2
-    //    Text 3
+    if (m_television == nullptr)
+        return;
 
-    //
-    // -> Test 1
-    //    Test 2
+    if (m_index > m_television->getMusicNumber())
+        m_index = 0;
+
+    switch (key)
+    {
+    case '2':
+        if (m_index == 0)
+            break;
+
+        m_index--;
+        m_keypad.getDisplay().displaySelectedMusic(m_television->getMusicsList(), m_television->getMusicNumber(), m_index);
+        break;
+
+    case '5':
+        m_television->playMusic(m_index);
+        break;
+
+    case '8':
+        if (m_index == m_television->getMusicNumber())
+            break;
+
+        m_index++;
+        m_keypad.getDisplay().displaySelectedMusic(m_television->getMusicsList(), m_television->getMusicNumber(), m_index);
+        break;
+    }
 }
 
 void KeypadMenuTelevisionMusicSelector::displayHelp()
 {
+    String help[10];
+
+    help[2] = "Précédent";
+    help[5] = "Sélectionner";
+    help[8] = "Suivant";
+
+    m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }
 
 void KeypadMenuTelevisionMusicSelector::displayMenu()
 {
+    m_keypad.getDisplay().displayKeypadMenu(TELEVISIONS, m_friendlyName);
 }
 
 KeypadMenuAlarm::KeypadMenuAlarm(String friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_alarm(nullptr) {}
@@ -1139,7 +1176,7 @@ void KeypadMenuAlarm::keyPressed(char key, bool longClick)
     case '7':
         if (m_missileLauncherControlMenu == nullptr)
             break;
-        
+
         m_keypad.setMenu(m_missileLauncherControlMenu);
         break;
     }

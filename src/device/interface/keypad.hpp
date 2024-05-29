@@ -305,6 +305,7 @@ public:
 
 protected:
     Television *m_television;
+    int m_index;
 };
 
 class KeypadMenuAlarmMissileLauncherControl;

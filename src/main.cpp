@@ -102,7 +102,6 @@ void setup()
     LEDStrip.setMode(&colorMode);
 
     // Musiques.
-    int test1MusicActionNumber = 9;
     const Action test1Music[] PROGMEM = {
         {8800, F("09011000000000255255255010001")},
         {9800, F("09011255255255000000000010001")},
@@ -118,11 +117,31 @@ void setup()
     test1.friendlyName = F("Test 1");
     test1.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=6d8586b749d8159c6cf499516a189518f961287ff48b67d42d37aec932592e6d");
     test1.actionList = test1Music;
-    test1.actionsNumber = test1MusicActionNumber;
+    test1.actionsNumber = 9;
+    
+    const Action test2Music[] PROGMEM = {
+        {8800, F("09011000000000255255255010001")},
+        {9800, F("09011255255255000000000010001")},
+    };
+    Music test2;
+    test2.friendlyName = F("Test 2");
+    test2.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=6d8586b749d8159c6cf499516a189518f961287ff48b67d42d37aec932592e6d");
+    test2.actionList = test2Music;
+    test2.actionsNumber = 2;
+
+    const Action test3Music[] PROGMEM = {
+        {8800, F("09011000000000255255255010001")},
+        {9800, F("09011255255255000000000010001")},
+    };
+    Music test3;
+    test3.friendlyName = F("Test 3");
+    test3.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=6d8586b749d8159c6cf499516a189518f961287ff48b67d42d37aec932592e6d");
+    test3.actionList = test3Music;
+    test3.actionsNumber = 2;
 
     // Liste des musiques.
-    Music *musicList[] = {&test1};
-    int musicsNumber = 1;
+    Music *musicList[] = {&test1, &test2, &test3};
+    int musicsNumber = 3;
 
     // Création d'une liste contenant des références vers tous les périphériques du système.
     Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &keypad, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};

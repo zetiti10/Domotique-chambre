@@ -28,6 +28,8 @@ enum MenuIcons
     CONTROLS
 };
 
+struct Music;
+
 // Classe regroupant les méthodes de contrôle de l'écran.
 class Display : public Device
 {
@@ -50,6 +52,7 @@ public:
     virtual void displayLightColorTemperature(int minimum, int maximum, int temperature);
     virtual void displayLuminosity(int luminosity);
     virtual void displayPercentage(String name, int value);
+    virtual void displaySelectedMusic(Music **musicList, int musicNumber, int musicIndex);
     virtual void loop();
 
 protected:

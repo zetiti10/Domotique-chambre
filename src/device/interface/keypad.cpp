@@ -1086,7 +1086,7 @@ void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
     if (m_television == nullptr)
         return;
 
-    if (m_index > m_television->getMusicNumber())
+    if (m_index >= m_television->getMusicNumber())
         m_index = 0;
 
     switch (key)
@@ -1104,7 +1104,7 @@ void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
         break;
 
     case '8':
-        if (m_index == m_television->getMusicNumber())
+        if (m_index >= (m_television->getMusicNumber() - 1))
             break;
 
         m_index++;

@@ -8,11 +8,9 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
-#include <avr/pgmspace.h>
 #include <EEPROM.h>
 // Nécessaire, ne pas enlever.
 #include <IRremote.hpp>
-#include <arduinoFFT.h>
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
@@ -38,8 +36,8 @@
 void setup()
 {
     // Configuration du clavier.
-    const byte KEYPAD_ROWS PROGMEM = 4;
-    const byte KEYPAD_COLS PROGMEM = 4;
+    const byte KEYPAD_ROWS = 4;
+    const byte KEYPAD_COLS = 4;
     char keypadKeys[KEYPAD_ROWS][KEYPAD_COLS] PROGMEM = {
         {'1', '2', '3', 'A'},
         {'4', '5', '6', 'B'},
@@ -86,10 +84,6 @@ void setup()
     television.setMicrophone(microphone);
     AirSensor airSensor(F("Air"), ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
     IRSensor iRSensor(F("Capteur infrarouge"), ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
-
-    // Création d'une liste contenant des références vers tous les capteurs.
-    Input *inputList[] = {&wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
-    int inputsNumber = 8;
 
     // Modes du ruban de DEL.
     ColorMode colorMode(F("Mode couleur unique"), ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
@@ -143,6 +137,10 @@ void setup()
     Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &mainLights, &sofaLight, &bedLight, &cameraLight};
     int outputsNumber = 14;
 
+    // Création d'une liste contenant des références vers tous les capteurs.
+    Input *inputList[] = {&wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
+    int inputsNumber = 8;
+
     // Création d'une liste contenant des références vers tous les périphériques du système.
     Device *deviceList[] = {&display, &buzzer, &HomeAssistantConnection, &keypad, &tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &television, &mainLights, &sofaLight, &bedLight, &cameraLight, &wardrobeDoorSensor, &doorSensor, &presenceSensor, &doorbell, &lightSensor, &microphone, &airSensor, &iRSensor};
     int devicesNumber = 27;
@@ -183,15 +181,14 @@ void setup()
     WardrobeDoorSensor *keypadWardrobeDoorSensorList[] = {&wardrobeDoorSensor};
     int keypadWardrobeDoorSensorsList = 1;
 
+    // Un petit délai de sécurité.
+    delay(1000);
+
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
 
     // Génère une SEED pour la fonction random.
     randomSeed(analogRead(PIN_RANDOM_SEED_GENERATOR));
-
-    // Initialise les noms des périphériques.
-    for (int i = 0; i < devicesNumber; i++)
-        deviceList[i]->getFriendlyName();
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
     HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarmMode);

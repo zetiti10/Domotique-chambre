@@ -442,9 +442,12 @@ bool Television::detectTriggerSound()
 
 void Television::scheduleMusic()
 {
-    while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode <= (millis() - m_musicStartTime))
+    Action currentAction;
+    memcpy_P(&currentAction, &m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex], sizeof(Action));
+
+    while (currentAction.timecode <= (millis() - m_musicStartTime))
     {
-        String action = m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].action;
+        String action = currentAction.action;
 
         // Récupération du périphérique de sortie à partir de son ID.
         Output *output = this->getDeviceFromID(this->getIntFromString(action, 0, 2));
@@ -576,6 +579,9 @@ void Television::scheduleMusic()
             stopMusic();
             break;
         }
+
+        else
+            memcpy_P(&currentAction, &m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex], sizeof(Action));
     }
 }
 

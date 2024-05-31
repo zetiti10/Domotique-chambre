@@ -53,6 +53,7 @@ public:
     virtual const __FlashStringHelper* getFriendlyName() const;
     virtual bool isActivated() const;
     virtual int getID() const;
+    virtual void shutdown();
 
 protected:
     virtual void activate();
@@ -109,16 +110,19 @@ private:
 class RainbowMode : public RGBLEDStripMode
 {
 public:
-    RainbowMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, int speed);
+    RainbowMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, int EEPROMSpeed);
     virtual void setAnimationSpeed(int speed);
     virtual int getAnimationSpeed();
 
 protected:
     unsigned long m_lastTime;
+    unsigned long m_lastSave;
+    bool m_speedToSave;
     int m_step;
     int m_increment;
     int m_delay;
     int m_speed;
+    const int m_EEPROMSpeed;
 
 private:
     virtual void activate() override;
@@ -131,16 +135,19 @@ private:
 class SoundreactMode : public RGBLEDStripMode
 {
 public:
-    SoundreactMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int sensitivity);
+    SoundreactMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int EEPROMSensitivity);
     virtual void setSensitivity(int sensitivity);
     virtual int getSensitivity();
 
 protected:
     AnalogInput &m_microphone;
+    unsigned long m_lastSave;
+    bool m_sensitivityToSave;
     int m_sensitivity;
     unsigned long m_lastColorChange;
     unsigned long m_lastTime;
     int m_maxSound;
+    const int m_EEPROMSensitivity;
 
 private:
     virtual void activate() override;

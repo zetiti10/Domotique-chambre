@@ -19,7 +19,7 @@
 class Alarm : public Output
 {
 public:
-    Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState);
+    Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, int EEPROMBuzzerState, int EEPROMCardNumber, int EEPROMCards);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -51,10 +51,12 @@ protected:
     Buzzer &m_buzzer;
     const int m_alarmRelayPin;
     bool m_isRinging;
-    bool m_buzzerState;
     unsigned long m_lastTimeAutoTriggerOff;
     unsigned long m_lastTimeCardChecked;
     bool m_cardToStoreState;
+    const int m_EEPROMBuzzerState;
+    const int m_EEPROMCardNumber;
+    const int m_EEPROMCards;
 };
 
 #endif

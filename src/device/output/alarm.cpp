@@ -38,7 +38,7 @@
 /// @param buzzer Le buzzer.
 /// @param alarmRelayPin La broche connectée au relais de l'alarme.
 /// @param buzzerState L'activation ou non du son de l'alarme.
-Alarm::Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, bool buzzerState) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode(alarmMode), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_buzzerState(buzzerState), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false) {}
+Alarm::Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, int EEPROMBuzzerState, int EEPROMCardNumber, int EEPROMCards) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode(alarmMode), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false), m_EEPROMBuzzerState(EEPROMBuzzerState), m_EEPROMCardNumber(EEPROMCardNumber), m_EEPROMCards(EEPROMCards) {}
 
 /// @brief Initialise l'objet.
 void Alarm::setup()
@@ -258,7 +258,7 @@ void Alarm::trigger()
             return;
     }
 
-    if (m_buzzerState)
+    if (getBuzzerState())
         digitalWrite(m_alarmRelayPin, HIGH);
 
     m_beacon.unLock();
@@ -299,7 +299,7 @@ void Alarm::stopRinging()
     if (!m_isRinging)
         return;
 
-    if (m_buzzerState)
+    if (getBuzzerState())
         digitalWrite(m_alarmRelayPin, LOW);
 
     m_beacon.unLock();
@@ -336,9 +336,7 @@ void Alarm::disableBuzzer()
     if (m_locked)
         return;
 
-    m_buzzerState = false;
-
-    EEPROM.update(EEPROM_ALARM_BUZZER_STATE, m_buzzerState);
+    EEPROM.update(m_EEPROMBuzzerState, false);
 }
 
 /// @brief Active le son de l'alarme.
@@ -347,14 +345,12 @@ void Alarm::enableBuzzer()
     if (m_locked)
         return;
 
-    m_buzzerState = true;
-
-    EEPROM.update(EEPROM_ALARM_BUZZER_STATE, m_buzzerState);
+    EEPROM.update(m_EEPROMBuzzerState, true);
 }
 
 void Alarm::toggleBuzzer()
 {
-    if (m_buzzerState)
+    if (EEPROM.read(m_EEPROMBuzzerState))
         disableBuzzer();
 
     else
@@ -365,16 +361,16 @@ void Alarm::toggleBuzzer()
 /// @return L'état d'activation du buzzer.
 bool Alarm::getBuzzerState() const
 {
-    return m_buzzerState;
+    return EEPROM.read(m_EEPROMBuzzerState);
 }
 
 bool Alarm::checkCard(uint8_t card[4]) const
 {
-    int storedCardsNumber = EEPROM.read(EEPROM_STORED_CARD_COUNTER);
+    int storedCardsNumber = EEPROM.read(m_EEPROMCardNumber);
 
     for (int i = 0; i < storedCardsNumber; i++)
     {
-        if (EEPROM.read(i * 5 + EEPROM_CARDS) == card[0] && EEPROM.read(i * 5 + EEPROM_CARDS + 1) == card[1] && EEPROM.read(i * 5 + EEPROM_CARDS + 2) == card[2] && EEPROM.read(i * 5 + EEPROM_CARDS + 3) == card[3])
+        if (EEPROM.read(i * 5 + m_EEPROMCards) == card[0] && EEPROM.read(i * 5 + m_EEPROMCards + 1) == card[1] && EEPROM.read(i * 5 + m_EEPROMCards + 2) == card[2] && EEPROM.read(i * 5 + m_EEPROMCards + 3) == card[3])
             return true;
     }
 
@@ -391,12 +387,12 @@ void Alarm::storeCard(uint8_t card[4])
         return;
     }
 
-    int storeLocation = EEPROM.read(EEPROM_STORED_CARD_COUNTER) * 5 + EEPROM_CARDS;
+    int storeLocation = EEPROM.read(m_EEPROMCardNumber) * 5 + m_EEPROMCards;
 
     for (int i = 0; i < 4; i++)
         EEPROM.write(storeLocation + i, card[i]);
 
-    EEPROM.write(EEPROM_STORED_CARD_COUNTER, EEPROM.read(EEPROM_STORED_CARD_COUNTER) + 1);
+    EEPROM.write(m_EEPROMCardNumber, EEPROM.read(m_EEPROMCardNumber) + 1);
 
     m_display.displayMessage("La carte a été enregistrée dans le système.");
     m_buzzer.yesSound();

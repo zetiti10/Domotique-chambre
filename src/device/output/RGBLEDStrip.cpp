@@ -8,6 +8,7 @@
 
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
+#include <EEPROM.h>
 
 // Autres fichiers du programme.
 #include "device/output/RGBLEDStrip.hpp"
@@ -218,6 +219,11 @@ int RGBLEDStripMode::getID() const
     return m_ID;
 }
 
+/// @brief Méthode permettant d'arrêter proprement un périphérique avant l'arrêt du système.
+void RGBLEDStripMode::shutdown()
+{
+}
+
 void RGBLEDStripMode::activate()
 {
     m_activated = true;
@@ -331,12 +337,15 @@ void AlarmMode::loop()
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
 /// @param speed La vitesse de l'animation.
-RainbowMode::RainbowMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, int speed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_step(0), m_increment(1), m_delay(10), m_speed(speed) {}
+RainbowMode::RainbowMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, int EEPROMSpeed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_lastSave(0), m_speedToSave(false), m_step(0), m_increment(1), m_delay(10), m_speed(EEPROM.read(EEPROMSpeed)), m_EEPROMSpeed(EEPROMSpeed) {}
 
 /// @brief Définit la vitesse de l'animation arc-en-ciel.
 /// @param speed La vitesse, de `0` (lent) à `100` (très rapide).
 void RainbowMode::setAnimationSpeed(int speed)
 {
+    if (speed == m_speed)
+        return;
+
     if (speed < 0)
         speed = 0;
 
@@ -344,6 +353,7 @@ void RainbowMode::setAnimationSpeed(int speed)
         speed = 100;
 
     m_speed = speed;
+    m_speedToSave = true;
 
     m_increment = map(speed, 0, 100, 1, 10);
     m_delay = map(speed, 0, 100, 100, 5);
@@ -375,8 +385,14 @@ void RainbowMode::desactivate()
 
 void RainbowMode::loop()
 {
-
     unsigned long actualTime = millis();
+
+    if (m_speedToSave && ((actualTime - m_lastSave) >= 600000))
+    {
+        m_speedToSave = false;
+
+        EEPROM.update(m_EEPROMSpeed, m_speed);
+    }
 
     if ((actualTime - m_lastTime) < (unsigned long)m_delay)
         return;
@@ -408,12 +424,15 @@ void RainbowMode::loop()
     }
 }
 
-SoundreactMode::SoundreactMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int sensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_sensitivity(sensitivity), m_lastColorChange(0), m_lastTime(0), m_maxSound(0) {}
+SoundreactMode::SoundreactMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int EEPROMSensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_lastSave(0), m_sensitivityToSave(false), m_sensitivity(EEPROM.read(EEPROMSensitivity)), m_lastColorChange(0), m_lastTime(0), m_maxSound(0), m_EEPROMSensitivity(EEPROMSensitivity) {}
 
 /// @brief Méthode permettant de définir la sensibilité de l'animation son-réaction.
 /// @param sensitivity La sensibilité à définir, en pourcent (de `0` : peu sensible à `100` : très sensible).
 void SoundreactMode::setSensitivity(int sensitivity)
 {
+    if (sensitivity == m_sensitivity)
+        return;
+
     if (sensitivity < 0)
         sensitivity = 0;
 
@@ -421,6 +440,7 @@ void SoundreactMode::setSensitivity(int sensitivity)
         sensitivity = 100;
 
     m_sensitivity = sensitivity;
+    m_sensitivityToSave = true;
 }
 
 int SoundreactMode::getSensitivity()
@@ -447,6 +467,13 @@ void SoundreactMode::desactivate()
 
 void SoundreactMode::loop()
 {
+    if (m_sensitivityToSave && ((millis() - m_lastSave) >= 600000))
+    {
+        m_sensitivityToSave = false;
+
+        EEPROM.update(m_EEPROMSensitivity, m_sensitivity);
+    }
+
     int sound = m_microphone.getValue();
     sound -= 287;
     sound = abs(sound);

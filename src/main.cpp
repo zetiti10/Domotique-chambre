@@ -64,7 +64,7 @@ void setup()
     BinaryOutput doorLED(F("DEL de la porte"), ID_DOOR_LED, HomeAssistantConnection, display, PIN_DOOR_LED);
     RGBLEDStrip LEDStrip(F("Ruban de DEL"), ID_LED_STRIP, HomeAssistantConnection, display, PIN_RED_LED, PIN_GREEN_LED, PIN_BLUE_LED);
     AlarmMode alarmMode(F("Mode alarme"), 3, LEDStrip);
-    Alarm alarm(F("Alarme"), ID_ALARM, HomeAssistantConnection, display, Serial2, doorLED, beacon, LEDStrip, alarmMode, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM.read(EEPROM_ALARM_BUZZER_STATE));
+    Alarm alarm(F("Alarme"), ID_ALARM, HomeAssistantConnection, display, Serial2, doorLED, beacon, LEDStrip, alarmMode, Serial3, buzzer, PIN_ALARM_RELAY, EEPROM_ALARM_BUZZER_STATE, EEPROM_STORED_CARD_COUNTER, EEPROM_CARDS);
     MusicsAnimationsMode musicsAnimationsMode(F("Mode musique animations"), 4, LEDStrip);
     Television television(F("Télévision"), ID_TELEVISION, HomeAssistantConnection, display, PIN_SCREEN_SERVO, PIN_IR_LED, EEPROM.read(EEPROM_VOLUME), musicsAnimationsMode);
 
@@ -87,12 +87,12 @@ void setup()
 
     // Modes du ruban de DEL.
     ColorMode colorMode(F("Mode couleur unique"), ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
-    RainbowMode rainbowMode(F("Mode arc-en-ciel"), ID_RAINBOW_MODE, LEDStrip, EEPROM.read(EEPROM_RAINBOW_ANIMATION_SPEED));
-    SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM.read(EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY));
+    RainbowMode rainbowMode(F("Mode arc-en-ciel"), ID_RAINBOW_MODE, LEDStrip, EEPROM_RAINBOW_ANIMATION_SPEED);
+    SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY);
     LEDStrip.setMode(&colorMode);
 
     // Musiques.
-    const Action test1Music[] PROGMEM = {
+    const Action test1Music[] = {
         {8800, F("09011000000000255255255010001")},
         {9800, F("09011255255255000000000010001")},
         {11000, F("09011000000000255255255010003")},
@@ -108,30 +108,10 @@ void setup()
     test1.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=6d8586b749d8159c6cf499516a189518f961287ff48b67d42d37aec932592e6d");
     test1.actionList = test1Music;
     test1.actionsNumber = 9;
-    
-    const Action test2Music[] PROGMEM = {
-        {8800, F("09011000000000255255255010001")},
-        {9800, F("09011255255255000000000010001")},
-    };
-    Music test2;
-    test2.friendlyName = F("Test 2");
-    test2.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=6d8586b749d8159c6cf499516a189518f961287ff48b67d42d37aec932592e6d");
-    test2.actionList = test2Music;
-    test2.actionsNumber = 2;
-
-    const Action test3Music[] PROGMEM = {
-        {8800, F("09011000000000255255255010001")},
-        {9800, F("09011255255255000000000010001")},
-    };
-    Music test3;
-    test3.friendlyName = F("Test 3");
-    test3.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=6d8586b749d8159c6cf499516a189518f961287ff48b67d42d37aec932592e6d");
-    test3.actionList = test3Music;
-    test3.actionsNumber = 2;
 
     // Liste des musiques.
-    Music *musicList[] = {&test1, &test2, &test3};
-    int musicsNumber = 3;
+    Music *musicList[] = {&test1};
+    int musicsNumber = 1;
 
     // Création d'une liste contenant des références vers tous les actionneurs utilisés par le système de musique animée.
     Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &mainLights, &sofaLight, &bedLight, &cameraLight};

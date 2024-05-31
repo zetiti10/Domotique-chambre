@@ -11,6 +11,7 @@
 
 // Autres fichiers du programme.
 #include "device/device.hpp"
+#include "device.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -36,4 +37,10 @@ int Device::getID() const
 bool Device::getAvailability() const
 {
     return m_operational;
+}
+
+/// @brief Méthode permettant d'arrêter proprement un périphérique avant l'arrêt du système.
+void Device::shutdown()
+{
+    m_operational = false;
 }

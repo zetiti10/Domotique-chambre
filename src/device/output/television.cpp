@@ -106,11 +106,22 @@ void Television::loop()
         m_lastTime = millis();
     }
 
-    if (m_waitingForTriggerSound && detectTriggerSound())
+    if (m_waitingForTriggerSound)
     {
-        m_waitingForTriggerSound = false;
-        m_musicStartTime = millis() - 1100;
-        m_display.displayMessage("C'est parti !");
+        if (detectTriggerSound())
+        {
+            m_waitingForTriggerSound = false;
+            m_musicStartTime = millis() - 1100;
+            m_display.displayMessage("C'est parti !");
+        }
+
+        m_detectionCounter++;
+
+        if (m_detectionCounter == 1000)
+        {
+            m_waitingForTriggerSound = false;
+            m_detectionCounter = 0;
+        }
     }
 
     if (m_musicStartTime != 0)
@@ -416,23 +427,23 @@ bool Television::detectTriggerSound()
     double vReal[SAMPLES];
     double vImag[SAMPLES];
 
-    ArduinoFFT<double> FFT = ArduinoFFT<double>();
+    ArduinoFFT<double> FFT = ArduinoFFT<double>(vReal, vImag, SAMPLES, SAMPLING_FREQUENCY);
 
     for (int i = 0; i < SAMPLES; i++)
     {
         microSeconds = micros();
-        vReal[i] = m_microphone->getValue() - 287;
+        vReal[i] = m_microphone->getValue() /* - 287*/;
         vImag[i] = 0;
         while (micros() < (microSeconds + samplingPeriodUs))
         {
         }
     }
 
-    FFT.windowing(vReal, SAMPLES, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-    FFT.compute(vReal, vImag, SAMPLES, FFT_FORWARD);
-    FFT.complexToMagnitude(vReal, vImag, SAMPLES);
+    FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward);
+    FFT.compute(FFTDirection::Forward);
+    FFT.complexToMagnitude();
 
-    double peakFrequency = FFT.majorPeak(vReal, SAMPLES, SAMPLING_FREQUENCY);
+    double peakFrequency = FFT.majorPeak();
 
     if (abs(peakFrequency - 1000.0) < 50.0)
         return true;
@@ -442,12 +453,9 @@ bool Television::detectTriggerSound()
 
 void Television::scheduleMusic()
 {
-    Action currentAction;
-    memcpy_P(&currentAction, &m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex], sizeof(Action));
-
-    while (currentAction.timecode <= (millis() - m_musicStartTime))
+    while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode <= (millis() - m_musicStartTime))
     {
-        String action = currentAction.action;
+        String action = m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].action;
 
         // Récupération du périphérique de sortie à partir de son ID.
         Output *output = this->getDeviceFromID(this->getIntFromString(action, 0, 2));
@@ -579,9 +587,6 @@ void Television::scheduleMusic()
             stopMusic();
             break;
         }
-
-        else
-            memcpy_P(&currentAction, &m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex], sizeof(Action));
     }
 }
 

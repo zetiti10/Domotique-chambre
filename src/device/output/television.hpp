@@ -79,6 +79,7 @@ protected:
     Output **m_deviceList;
     int m_devicesNumber;
     MusicsAnimationsMode m_mode;
+    int m_detectionCounter;
 };
 
 #endif

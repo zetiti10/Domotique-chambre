@@ -8,11 +8,11 @@
 #include "device/device.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe mère à tous les capteurs du système de domotique.
+/// @brief Classe mère à tous les capteurs du système de domotique.
 class Input : public Device
 {
 public:
-    Input(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection);
+    Input(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection);
     virtual void setup() override;
     virtual void reportState() = 0;
     virtual void loop() = 0;

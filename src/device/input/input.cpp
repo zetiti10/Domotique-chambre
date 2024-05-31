@@ -10,7 +10,7 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/input/input.hpp"
+#include "input.hpp"
 #include "device/device.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
@@ -18,8 +18,9 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
-Input::Input(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection) : Device(friendlyName, ID), m_connection(connection) {}
+Input::Input(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection) : Device(friendlyName, ID), m_connection(connection) {}
 
+/// @brief Initialise l'objet.
 void Input::setup()
 {
     m_connection.setup();

@@ -9,17 +9,17 @@
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe représentant un périphérique de sortie basique.
+/// @brief Classe représentant un périphérique de sortie basique.
 class BinaryOutput : public Output
 {
 public:
-    BinaryOutput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin);
+    BinaryOutput(const __FlashStringHelper* friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, unsigned int pin);
     virtual void setup() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
 
 protected:
-    const int m_relayPin;
+    const unsigned int m_pin;
 };
 
 #endif

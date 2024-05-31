@@ -15,26 +15,29 @@
 #include "device/output/connectedOutput.hpp"
 #include "device/input/analogInput.hpp"
 
+/// @brief Structure stockant une liste d'actions associées à un temps pour une musique.
 struct Action
 {
     unsigned long timecode;
     const __FlashStringHelper *action;
 };
 
+/// @brief Structure stockant une musique pour le système de musique animée.
 struct Music
 {
     const __FlashStringHelper *friendlyName;
     const __FlashStringHelper *videoURL;
-    const Action *actionList;
+    Action *actionList;
     unsigned int actionsNumber;
 };
 
+/// @brief Classe représentant une télévision.
 class Television : public Output
 {
 public:
-    Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode);
-    virtual void setMusicDevices(Output *deviceList[], int &devicesNumber);
-    virtual void setMusicsList(Music **musicList, int &musicsNumber);
+    Television(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode);
+    virtual void setMusicDevices(Output *deviceList[], unsigned int devicesNumber);
+    virtual void setMusicsList(Music **musicList, unsigned int musicsNumber);
     virtual void setMicrophone(AnalogInput &microphone);
     virtual void setup() override;
     virtual void reportState() override;
@@ -44,29 +47,31 @@ public:
     virtual void syncVolume(bool shareInformation = false);
     virtual void increaseVolume(bool shareInformation = false);
     virtual void decreaseVolume(bool shareInformation = false);
-    virtual int getVolume();
+    virtual unsigned int getVolume() const;
     virtual void mute(bool shareInformation = false);
     virtual void unMute(bool shareInformation = false);
     virtual void toggleMute(bool shareInformation = false);
-    virtual bool getMute();
-    virtual Music **getMusicsList();
-    virtual int getMusicNumber();
+    virtual bool getMute() const;
+    virtual Music **getMusicsList() const;
+    virtual unsigned int getMusicNumber() const;
     virtual void playMusic(int musicIndex);
     virtual void stopMusic();
+    virtual void shutdown() override;
 
 protected:
-    virtual void moveDisplayServo(int angle);
+    virtual void moveDisplayServo(unsigned int angle);
     virtual void switchDisplay();
     virtual bool detectTriggerSound();
     virtual void scheduleMusic();
-    virtual Output *getDeviceFromID(int ID);
-    static String addZeros(int number, int length);
-    static int getIntFromString(String &string, int position, int lenght);
+    virtual Output *getDeviceFromID(unsigned int ID);
+
+    static String addZeros(unsigned int number, unsigned int length);
+    static unsigned int getIntFromString(String &string, unsigned int position, unsigned int lenght);
 
     const int m_servomotorPin;
     const int m_IRLEDPin;
     IRsend m_IRSender;
-    int m_volume;
+    unsigned int m_volume;
     bool m_volumeMuted;
     unsigned long m_lastTime;
     bool m_waitingForTriggerSound;
@@ -75,11 +80,11 @@ protected:
     unsigned int m_lastActionIndex;
     Music **m_musicList;
     int m_currentMusicIndex;
-    int m_musicsNumber;
+    unsigned int m_musicsNumber;
     Output **m_deviceList;
-    int m_devicesNumber;
-    MusicsAnimationsMode m_mode;
-    int m_detectionCounter;
+    unsigned int m_devicesNumber;
+    MusicsAnimationsMode &m_mode;
+    unsigned int m_detectionCounter;
 };
 
 #endif

@@ -11,12 +11,11 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
-#include "device/output/RGBLEDStrip.hpp"
+#include "RGBLEDStrip.hpp"
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "gammaCorrection/gammaCorrection.hpp"
-#include "RGBLEDStrip.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -26,7 +25,7 @@
 /// @param RPin La broche liée à l'alimentation du rouge des rubans de DEL.
 /// @param GPin La broche liée à l'alimentation du vert des rubans de DEL.
 /// @param BPin La broche liée à l'alimentation du bleu des rubans de DEL.
-RGBLEDStrip::RGBLEDStrip(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin) : Output(friendlyName, ID, connection, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
+RGBLEDStrip::RGBLEDStrip(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, unsigned int RPin, unsigned int GPin, unsigned int BPin) : Output(friendlyName, ID, connection, display), m_RPin(RPin), m_GPin(GPin), m_BPin(BPin), m_RState(0), m_GState(0), m_BState(0), m_mode(nullptr) {}
 
 /// @brief Initialise l'objet.
 void RGBLEDStrip::setup()
@@ -41,7 +40,6 @@ void RGBLEDStrip::setup()
     pinMode(m_BPin, OUTPUT);
 
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -64,18 +62,12 @@ void RGBLEDStrip::reportState()
 /// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void RGBLEDStrip::turnOn(bool shareInformation)
 {
-    if (!m_operational || m_locked || m_state)
-        return;
-
-    if (m_mode == nullptr)
+    if (!m_operational || m_locked || m_state || (m_mode == nullptr))
         return;
 
     m_state = true;
-
     m_mode->activate();
-
     m_connection.updateOutputDeviceState(m_ID, true);
-
     if (shareInformation)
         m_display.displayDeviceState(true);
 }
@@ -88,13 +80,9 @@ void RGBLEDStrip::turnOff(bool shareInformation)
         return;
 
     m_mode->desactivate();
-
     setColor(0, 0, 0);
-
     m_state = false;
-
     m_connection.updateOutputDeviceState(m_ID, false);
-
     if (shareInformation)
         m_display.displayDeviceState(false);
 }
@@ -130,7 +118,6 @@ void RGBLEDStrip::setMode(RGBLEDStripMode *mode, bool shareInformation)
     if (m_operational && m_state)
     {
         m_mode->activate();
-
         m_connection.updateRGBLEDStripMode(m_ID, m_mode->getID(), m_RState, m_GState, m_BState);
     }
 }
@@ -144,44 +131,35 @@ RGBLEDStripMode *RGBLEDStrip::getMode() const
 
 /// @brief Méthode renvoyant l'intensité actuelle du rouge du ruban de DEL RVB.
 /// @return L'intensité actuelle du rouge du ruban de DEL RVB.
-int RGBLEDStrip::getR() const
+unsigned int RGBLEDStrip::getR() const
 {
     return m_RState;
 }
 
 /// @brief Méthode renvoyant l'intensité actuelle du vert du ruban de DEL RVB.
 /// @return L'intensité actuelle du vert du ruban de DEL RVB.
-int RGBLEDStrip::getG() const
+unsigned int RGBLEDStrip::getG() const
 {
     return m_GState;
 }
 
 /// @brief Méthode renvoyant l'intensité actuelle du bleu du ruban de DEL RVB.
 /// @return L'intensité actuelle du bleu du ruban de DEL RVB.
-int RGBLEDStrip::getB() const
+unsigned int RGBLEDStrip::getB() const
 {
     return m_BState;
 }
 
-void RGBLEDStrip::setColor(int r, int g, int b)
+void RGBLEDStrip::setColor(unsigned int r, unsigned int g, unsigned int b)
 {
     if (!m_operational || !m_state)
         return;
 
-    if (r < 0)
-        r = 0;
-
     if (r > 255)
         r = 255;
 
-    if (g < 0)
-        g = 0;
-
     if (g > 255)
         g = 255;
-
-    if (b < 0)
-        b = 0;
 
     if (b > 255)
         b = 255;
@@ -197,12 +175,13 @@ void RGBLEDStrip::setColor(int r, int g, int b)
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du mode.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-RGBLEDStripMode::RGBLEDStripMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_ID(ID), m_strip(strip), m_activated(false) {}
+RGBLEDStripMode::RGBLEDStripMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip) : m_friendlyName(friendlyName), m_ID(ID), m_strip(strip), m_activated(false) {}
 
 /// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
-const __FlashStringHelper* RGBLEDStripMode::getFriendlyName() const
+const __FlashStringHelper *RGBLEDStripMode::getFriendlyName() const
 {
     return m_friendlyName;
 }
@@ -214,53 +193,44 @@ bool RGBLEDStripMode::isActivated() const
     return m_activated;
 }
 
-int RGBLEDStripMode::getID() const
+/// @brief Méthode permettant d'obtenir l'identifiant unique du mode.
+/// @return L'identifiant unique du mode.
+unsigned int RGBLEDStripMode::getID() const
 {
     return m_ID;
 }
 
-/// @brief Méthode permettant d'arrêter proprement un périphérique avant l'arrêt du système.
-void RGBLEDStripMode::shutdown()
-{
-}
-
+/// @brief Active le mode.
 void RGBLEDStripMode::activate()
 {
     m_activated = true;
 }
 
+/// @brief Désactive le mode.
 void RGBLEDStripMode::desactivate()
 {
     m_activated = false;
-
     m_strip.setColor(0, 0, 0);
 }
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du mode.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-ColorMode::ColorMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(255), m_G(255), m_B(255) {}
+/// @param connection L'objet utilisé pour la communication avec Home Assistant.
+ColorMode::ColorMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip, HomeAssistant &connection) : RGBLEDStripMode(friendlyName, ID, strip), m_connection(connection), m_R(255), m_G(255), m_B(255) {}
 
 /// @brief Défini la couleur du ruban de DEL RVB.
 /// @param r L'intensité du rouge.
 /// @param g L'intensité du vert.
 /// @param b L'intesité du bleu.
-void ColorMode::setColor(int r, int g, int b)
+void ColorMode::setColor(unsigned int r, unsigned int g, unsigned int b)
 {
-    if (r < 0)
-        r = 0;
-
     if (r > 255)
         r = 255;
 
-    if (g < 0)
-        g = 0;
-
     if (g > 255)
         g = 255;
-
-    if (b < 0)
-        b = 0;
 
     if (b > 255)
         b = 255;
@@ -272,52 +242,61 @@ void ColorMode::setColor(int r, int g, int b)
     if (m_activated)
     {
         m_strip.setColor(m_R, m_G, m_B);
-
         m_connection.updateRGBLEDStripMode(m_strip.getID(), m_ID, m_R, m_G, m_B);
     }
 }
 
-int ColorMode::getR() const
+/// @brief Méthode permettant d'obtenir l'intensité de la composante rouge.
+/// @return L'intensité de la composante rouge.
+unsigned int ColorMode::getR() const
 {
     return m_R;
 }
 
-int ColorMode::getG() const
+/// @brief Méthode permettant d'obtenir l'intensité de la composante verte.
+/// @return L'intensité de la composante verte.
+unsigned int ColorMode::getG() const
 {
     return m_G;
 }
 
-int ColorMode::getB() const
+/// @brief Méthode permettant d'obtenir l'intensité de la composante bleue.
+/// @return L'intensité de la composante bleue.
+unsigned int ColorMode::getB() const
 {
     return m_B;
 }
 
+/// @brief Active le mode.
 void ColorMode::activate()
 {
     RGBLEDStripMode::activate();
-
     m_strip.setColor(m_R, m_G, m_B);
 }
 
+/// @brief Désactive le mode.
 void ColorMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
 }
 
+/// @brief Méthode d'exécution des tâches liées au mode.
 void ColorMode::loop() {}
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du mode.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-AlarmMode::AlarmMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0) {}
+AlarmMode::AlarmMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0) {}
 
+/// @brief Désactive le mode.
 void AlarmMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
-
     m_lastTime = 0;
 }
 
+/// @brief Méthode d'exécution des tâches liées au mode.
 void AlarmMode::loop()
 {
     if ((millis() - m_lastTime) >= 500 && (millis() - m_lastTime) <= 600)
@@ -335,19 +314,17 @@ void AlarmMode::loop()
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du mode.
 /// @param strip Le ruban de DEL utilisé pour l'animation.
-/// @param speed La vitesse de l'animation.
-RainbowMode::RainbowMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, int EEPROMSpeed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_lastSave(0), m_speedToSave(false), m_step(0), m_increment(1), m_delay(10), m_speed(EEPROM.read(EEPROMSpeed)), m_EEPROMSpeed(EEPROMSpeed) {}
+/// @param EEPROMSpeed L'emplacement du stockage de la vitesse de l'animation dans la mémoire EEPROM.
+RainbowMode::RainbowMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip, unsigned int EEPROMSpeed) : RGBLEDStripMode(friendlyName, ID, strip), m_lastTime(0), m_lastSave(0), m_speedToSave(false), m_step(0), m_increment(1), m_delay(10), m_speed(EEPROM.read(EEPROMSpeed)), m_EEPROMSpeed(EEPROMSpeed) {}
 
 /// @brief Définit la vitesse de l'animation arc-en-ciel.
 /// @param speed La vitesse, de `0` (lent) à `100` (très rapide).
-void RainbowMode::setAnimationSpeed(int speed)
+void RainbowMode::setAnimationSpeed(unsigned int speed)
 {
     if (speed == m_speed)
         return;
-
-    if (speed < 0)
-        speed = 0;
 
     if (speed > 100)
         speed = 100;
@@ -360,29 +337,30 @@ void RainbowMode::setAnimationSpeed(int speed)
 }
 
 /// @brief Méthode permettant de connaître la vitesse actuelle du mode arc-en-ciel.
-/// @return
-int RainbowMode::getAnimationSpeed()
+/// @return La vitesse de l'animation.
+unsigned int RainbowMode::getAnimationSpeed() const
 {
     return m_speed;
 }
 
+/// @brief Active l'animation.
 void RainbowMode::activate()
 {
     RGBLEDStripMode::activate();
-
     m_strip.setColor(0, 0, 255);
-
     m_lastTime = millis();
 }
 
+/// @brief Désactive l'animation.
 void RainbowMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
-
+    EEPROM.update(m_EEPROMSpeed, m_speed);
     m_lastTime = 0;
     m_step = 0;
 }
 
+/// @brief Méthode exécutant les tâches périodiques liées au mode.
 void RainbowMode::loop()
 {
     unsigned long actualTime = millis();
@@ -390,7 +368,6 @@ void RainbowMode::loop()
     if (m_speedToSave && ((actualTime - m_lastSave) >= 600000))
     {
         m_speedToSave = false;
-
         EEPROM.update(m_EEPROMSpeed, m_speed);
     }
 
@@ -424,11 +401,17 @@ void RainbowMode::loop()
     }
 }
 
-SoundreactMode::SoundreactMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int EEPROMSensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_lastSave(0), m_sensitivityToSave(false), m_sensitivity(EEPROM.read(EEPROMSensitivity)), m_lastColorChange(0), m_lastTime(0), m_maxSound(0), m_EEPROMSensitivity(EEPROMSensitivity) {}
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du mode.
+/// @param strip Le ruban de DEL utilisé pour l'animation.
+/// @param microphone Le microphone utilisé pour l'animation.
+/// @param EEPROMSensitivity L'emplacement du stockage de la sensibilité de l'animation dans la mémoire EEPROM.
+SoundreactMode::SoundreactMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip, AnalogInput &microphone, unsigned int EEPROMSensitivity) : RGBLEDStripMode(friendlyName, ID, strip), m_microphone(microphone), m_lastSave(0), m_sensitivityToSave(false), m_sensitivity(EEPROM.read(EEPROMSensitivity)), m_lastColorChange(0), m_lastTime(0), m_maxSound(0), m_EEPROMSensitivity(EEPROMSensitivity) {}
 
 /// @brief Méthode permettant de définir la sensibilité de l'animation son-réaction.
 /// @param sensitivity La sensibilité à définir, en pourcent (de `0` : peu sensible à `100` : très sensible).
-void SoundreactMode::setSensitivity(int sensitivity)
+void SoundreactMode::setSensitivity(unsigned int sensitivity)
 {
     if (sensitivity == m_sensitivity)
         return;
@@ -443,34 +426,37 @@ void SoundreactMode::setSensitivity(int sensitivity)
     m_sensitivityToSave = true;
 }
 
-int SoundreactMode::getSensitivity()
+/// @brief Méthode permettant d'obtenir la sensibilité de l'animation.
+/// @return La sensibilité de l'animation.
+unsigned int SoundreactMode::getSensitivity() const
 {
     return m_sensitivity;
 }
 
+/// @brief Active le mode.
 void SoundreactMode::activate()
 {
     RGBLEDStripMode::activate();
-
     m_lastColorChange = millis();
     m_lastTime = millis();
 }
 
+/// @brief Désactive le mode
 void SoundreactMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
-
+    EEPROM.update(m_EEPROMSensitivity, m_sensitivity);
     m_lastColorChange = 0;
     m_lastTime = 0;
     m_maxSound = 0;
 }
 
+/// @brief Méthode d'exécution des tâches périodiques liées au mode.
 void SoundreactMode::loop()
 {
     if (m_sensitivityToSave && ((millis() - m_lastSave) >= 600000))
     {
         m_sensitivityToSave = false;
-
         EEPROM.update(m_EEPROMSensitivity, m_sensitivity);
     }
 
@@ -564,52 +550,46 @@ void SoundreactMode::loop()
     }
 }
 
-MusicsAnimationsMode::MusicsAnimationsMode(const __FlashStringHelper *friendlyName, int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_currentEffect(SINGLE_COLOR), m_smoothTransitionInitialR(0), m_smoothTransitionInitialG(0), m_smoothTransitionInitialB(0), m_smoothTransitionFinalR(0), m_smoothTransitionFinalG(0), m_smoothTransitionFinalB(0), m_smoothTransitionInitialMillis(0), m_smoothTransitionDuration(0), m_strobeEffectR(0), m_strobeEffectG(0), m_strobeEffectB(0), m_strobeEffectSpeed(0), m_strobeEffectStep(false), m_strobeEffectLastMillis(0) {}
+MusicsAnimationsMode::MusicsAnimationsMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_currentEffect(SINGLE_COLOR), m_smoothTransitionInitialR(0), m_smoothTransitionInitialG(0), m_smoothTransitionInitialB(0), m_smoothTransitionFinalR(0), m_smoothTransitionFinalG(0), m_smoothTransitionFinalB(0), m_smoothTransitionInitialMillis(0), m_smoothTransitionDuration(0), m_strobeEffectR(0), m_strobeEffectG(0), m_strobeEffectB(0), m_strobeEffectSpeed(0), m_strobeEffectStep(false), m_strobeEffectLastMillis(0) {}
 
-void MusicsAnimationsMode::singleColor(int r, int g, int b)
+/// @brief Met le ruban de DEL RVB sur une couleur unique.
+/// @param r L'intensité de la composante rouge.
+/// @param g L'intensité de la composante verte.
+/// @param b L'intensité de la composante bleue.
+void MusicsAnimationsMode::singleColor(unsigned int r, unsigned int g, unsigned int b)
 {
     m_currentEffect = SINGLE_COLOR;
-
     m_strip.setColor(r, g, b);
 }
 
-void MusicsAnimationsMode::smoothTransition(int initialR, int initialG, int initialB, int finalR, int finalG, int finalB, unsigned long duration, MusicsAnimationsEasing type)
+/// @brief Initie une animation de transition d'une couleur du ruban à une autre, avec plusieurs effets de transformation.
+/// @param initialR L'intensité initiale de la composante rouge.
+/// @param initialG L'intensité initiale de la composante verte.
+/// @param initialB L'intensité initiale de la composante bleue.
+/// @param finalR L'intensité finale de la composante rouge.
+/// @param finalG L'intensité finale de la composante verte.
+/// @param finalB L'intensité finale de la composante bleue.
+/// @param duration La durée de transition entre la couleur initiale et la couleur finale.
+/// @param type L'effet de transition.
+void MusicsAnimationsMode::smoothTransition(unsigned int initialR, unsigned int initialG, unsigned int initialB, unsigned int finalR, unsigned int finalG, unsigned int finalB, unsigned int duration, MusicsAnimationsEasing type)
 {
     if (initialR > 255)
         initialR = 255;
 
-    if (initialR < 0)
-        initialR = 0;
-
     if (initialG > 255)
         initialG = 255;
-
-    if (initialG < 0)
-        initialG = 0;
 
     if (initialB > 255)
         initialB = 255;
 
-    if (initialB < 0)
-        initialB = 0;
-
     if (finalR > 255)
         finalR = 255;
-
-    if (finalR < 0)
-        finalR = 0;
 
     if (finalG > 255)
         finalG = 255;
 
-    if (finalG < 0)
-        finalG = 0;
-
     if (finalB > 255)
         finalB = 255;
-
-    if (finalB < 0)
-        finalB = 0;
 
     m_currentEffect = SMOOTH_TRANSITION;
     m_smoothTransitionType = type;
@@ -625,22 +605,18 @@ void MusicsAnimationsMode::smoothTransition(int initialR, int initialG, int init
     m_strip.setColor(initialR, initialG, initialB);
 }
 
-void MusicsAnimationsMode::strobeEffect(int r, int g, int b, int speed)
+/// @brief Initie une effet stroboscopique (clignottement rapide de la lumière).
+/// @param r L'intensité de la composante rouge.
+/// @param g L'intensité de la composante verte.
+/// @param b L'intensité de la composante bleue.
+/// @param speed Le délai entre chaque transition.
+void MusicsAnimationsMode::strobeEffect(unsigned int r, unsigned int g, unsigned int b, unsigned int speed)
 {
-    if (r < 0)
-        r = 0;
-
     if (r > 255)
         r = 255;
 
-    if (g < 0)
-        g = 0;
-
     if (g > 255)
         g = 255;
-
-    if (b < 0)
-        b = 0;
 
     if (b > 255)
         b = 255;
@@ -656,21 +632,23 @@ void MusicsAnimationsMode::strobeEffect(int r, int g, int b, int speed)
     m_strip.setColor(r, g, b);
 }
 
+/// @brief Active le mode.
 void MusicsAnimationsMode::activate()
 {
     if (m_activated)
         return;
 
     RGBLEDStripMode::activate();
-
     m_currentEffect = SINGLE_COLOR;
 }
 
+/// @brief Désactive le mode.
 void MusicsAnimationsMode::desactivate()
 {
     RGBLEDStripMode::desactivate();
 }
 
+/// @brief Méthode d'exécution des tâches périodiques liées au mode.
 void MusicsAnimationsMode::loop()
 {
     switch (m_currentEffect)
@@ -730,7 +708,7 @@ void MusicsAnimationsMode::loop()
 
     case STROBE_EFFECT:
     {
-        if (m_strobeEffectLastMillis <= (millis() - m_strobeEffectSpeed))
+        if ((millis() - m_strobeEffectLastMillis) >= m_strobeEffectSpeed)
         {
             if (m_strobeEffectStep)
                 m_strip.setColor(m_strobeEffectR, m_strobeEffectG, m_strobeEffectB);

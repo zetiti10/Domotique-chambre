@@ -15,11 +15,11 @@
 #include "device/output/binaryOutput.hpp"
 #include "device/output/RGBLEDStrip.hpp"
 
-// Classe intégrant toutes les fonctionnalités nécessaires au fonctionnement d'une alarme.
+/// @brief Classe intégrant toutes les fonctionnalités nécessaires au fonctionnement d'une alarme.
 class Alarm : public Output
 {
 public:
-    Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, int EEPROMBuzzerState, int EEPROMCardNumber, int EEPROMCards);
+    Alarm(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, unsigned int alarmRelayPin, unsigned int EEPROMBuzzerState, unsigned int EEPROMCardNumber, unsigned int EEPROMCards);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -29,8 +29,8 @@ public:
     virtual void removeCards();
     virtual void trigger();
     virtual void stopRinging();
-    virtual MissileLauncher &getMissileLauncher();
-    virtual AlarmMode &getAlarmStripMode();
+    virtual MissileLauncher &getMissileLauncher() const;
+    virtual AlarmMode &getAlarmStripMode() const;
     virtual void disableBuzzer();
     virtual void enableBuzzer();
     virtual void toggleBuzzer();
@@ -49,14 +49,14 @@ protected:
     RGBLEDStripMode *m_previousMode;
     MissileLauncher m_missileLauncher;
     Buzzer &m_buzzer;
-    const int m_alarmRelayPin;
+    const unsigned int m_alarmRelayPin;
     bool m_isRinging;
     unsigned long m_lastTimeAutoTriggerOff;
     unsigned long m_lastTimeCardChecked;
     bool m_cardToStoreState;
-    const int m_EEPROMBuzzerState;
-    const int m_EEPROMCardNumber;
-    const int m_EEPROMCards;
+    const unsigned int m_EEPROMBuzzerState;
+    const unsigned int m_EEPROMCardNumber;
+    const unsigned int m_EEPROMCards;
 };
 
 #endif

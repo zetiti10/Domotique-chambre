@@ -24,7 +24,7 @@ class KeypadMenu;
 class Keypad : public Device
 {
 public:
-    Keypad(const __FlashStringHelper* friendlyName, int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols);
+    Keypad(const __FlashStringHelper* friendlyName, unsigned int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols);
     virtual void setDevices(
         Output *deviceList[], int &devicesNumber,
         Output *lightList[], int &lightsNumber,

@@ -33,7 +33,7 @@ const static uint8_t PROGMEM GammaCorrectionTable[] = {
 /// @brief Fonction permettant d'appliquer une correction gamma à un entier sur 8 bit.
 /// @param value Le chiffre pour lequel appliquer la correction gamma. C'est un entier sur `8` bit, donc de `0` à `255`.
 /// @return La valeur corrigée.
-int gammaCorrection(int value)
+unsigned int gammaCorrection(unsigned int value)
 {
     return pgm_read_byte(&GammaCorrectionTable[value]);
 }

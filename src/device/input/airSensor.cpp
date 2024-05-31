@@ -1,7 +1,7 @@
 /**
  * @file device/input/airSensor.cpp
  * @author Louis L
- * @brief Classe représentant un capteur DHT22.
+ * @brief Classe représentant un capteur DHT11.
  * @version 2.0 dev
  * @date 2024-01-20
  */
@@ -11,17 +11,16 @@
 #include <DHT_U.h>
 
 // Autres fichiers du programme.
-#include "device/input/airSensor.hpp"
+#include "airSensor.hpp"
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
-#include "airSensor.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin Broche liée au capteur.
-AirSensor::AirSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
+AirSensor::AirSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void AirSensor::setup()
@@ -30,22 +29,18 @@ void AirSensor::setup()
         return;
 
     Input::setup();
-
     m_sensor.begin();
+
     sensors_event_t event;
     m_sensor.temperature().getEvent(&event);
     if (isnan(event.temperature))
         return;
 
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
-
     m_temperature = event.temperature;
-
     m_sensor.humidity().getEvent(&event);
     m_humidity = event.relative_humidity;
-
     m_lastTime = millis();
 }
 
@@ -69,17 +64,13 @@ void AirSensor::loop()
     if (isnan(event.temperature))
     {
         m_operational = false;
-
         return;
     }
 
     m_temperature = event.temperature;
-
     m_sensor.humidity().getEvent(&event);
     m_humidity = event.relative_humidity;
-
     m_lastTime = millis();
-
     m_connection.updateAirSensor(m_ID, m_temperature, m_humidity);
 }
 

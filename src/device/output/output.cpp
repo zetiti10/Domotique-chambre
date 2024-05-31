@@ -10,16 +10,15 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/output/output.hpp"
+#include "output.hpp"
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
-#include "output.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-Output::Output(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display) : Device(friendlyName, ID), m_display(display), m_connection(connection), m_state(false), m_locked(false) {}
+Output::Output(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display) : Device(friendlyName, ID), m_display(display), m_connection(connection), m_state(false), m_locked(false) {}
 
 /// @brief Initialise l'objet.
 void Output::setup()
@@ -41,14 +40,14 @@ void Output::reportState()
 /// @param shareInformation Affiche ou non à l'écran l'animation de changement d'état.
 void Output::toggle(bool shareInformation)
 {
-    if (m_operational && !m_locked)
-    {
-        if (m_state)
-            turnOff(shareInformation);
+    if (!m_operational || m_locked)
+        return;
 
-        else
-            turnOn(shareInformation);
-    }
+    if (m_state)
+        this->turnOff(shareInformation);
+
+    else
+        this->turnOn(shareInformation);
 }
 
 /// @brief Méthode permettant de récupérer l'état actuel du périphrique.
@@ -62,7 +61,6 @@ bool Output::getState() const
 void Output::lock()
 {
     m_locked = true;
-
     m_connection.updateDeviceAvailability(m_ID, false);
 }
 
@@ -70,7 +68,6 @@ void Output::lock()
 void Output::unLock()
 {
     m_locked = false;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -79,4 +76,11 @@ void Output::unLock()
 bool Output::isLocked() const
 {
     return m_locked;
+}
+
+/// @brief Méthode arrêtant le périphérique avant l'arrêt du système.
+void Output::shutdown()
+{
+    this->turnOff();
+    Device::shutdown();
 }

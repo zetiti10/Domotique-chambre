@@ -11,15 +11,16 @@
 class Buzzer : public Device
 {
 public:
-    Buzzer(const __FlashStringHelper* friendlyName, int ID, int pin);
+    Buzzer(const __FlashStringHelper* friendlyName, unsigned int ID, unsigned int pin);
     virtual void setup() override;
     virtual void clickSound();
     virtual void yesSound();
     virtual void noSound();
     virtual void doorbellMusic();
+    virtual void shutdown() override;
 
 protected:
-    const int m_pin;
+    const unsigned int m_pin;
 };
 
 #endif

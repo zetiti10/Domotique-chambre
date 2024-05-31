@@ -34,7 +34,7 @@ struct Music;
 class Display : public Device
 {
 public:
-    Display(const __FlashStringHelper* friendlyName, int ID);
+    Display(const __FlashStringHelper* friendlyName, unsigned int ID);
     virtual void setup() override;
     virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
     virtual void displayBell();
@@ -54,6 +54,7 @@ public:
     virtual void displayPercentage(String name, int value);
     virtual void displaySelectedMusic(Music **musicList, int musicNumber, int musicIndex);
     virtual void loop();
+    virtual void shutdown() override;
 
 protected:
     virtual void printAccents(const String &string);

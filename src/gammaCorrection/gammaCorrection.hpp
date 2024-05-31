@@ -1,6 +1,6 @@
 #ifndef GAMMA_CORRECTION_DEFINITIONS
 #define GAMMA_CORRECTION_DEFINITIONS
 
-int gammaCorrection(int value);
+unsigned int gammaCorrection(unsigned int value);
 
 #endif

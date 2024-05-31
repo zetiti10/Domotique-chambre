@@ -10,10 +10,9 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/input/analogInput.hpp"
+#include "analogInput.hpp"
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
-#include "analogInput.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -21,7 +20,7 @@
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche liée au capteur.
 /// @param connected Permet d'envoyer l'état du capteur à Home Assistant ou non.
-AnalogInput::AnalogInput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool connected) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin), m_connected(connected), m_lastTime(0) {}
+AnalogInput::AnalogInput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool connected) : Input(friendlyName, ID, connection), m_value(0), m_pin(pin), m_connected(connected), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void AnalogInput::setup()
@@ -30,11 +29,8 @@ void AnalogInput::setup()
         return;
 
     Input::setup();
-
     pinMode(m_pin, INPUT);
-
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -53,14 +49,13 @@ void AnalogInput::loop()
     if (m_connected && ((millis() - m_lastTime) >= 10000))
     {
         m_connection.updateAnalogInput(m_ID, getValue());
-
         m_lastTime = millis();
     }
 }
 
 /// @brief Méthode permettant de récupérer la valeur actuelle du capteur.
 /// @return La valeur actuelle du capteur.
-int AnalogInput::getValue()
+unsigned int AnalogInput::getValue()
 {
     if (m_operational)
         m_value = analogRead(m_pin);

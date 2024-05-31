@@ -1,7 +1,7 @@
 /**
  * @file device/output/binaryOutput.cpp
  * @author Louis L
- * @brief Objet simple incluant en plus de l'héritage de Device, une broche de l'Arduino pour la contrôler.
+ * @brief Objet simple incluant, en plus de l'héritage de Device, une broche de l'Arduino pour la contrôler.
  * @version 2.0 dev
  * @date 2024-01-20
  */
@@ -10,7 +10,7 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/output/binaryOutput.hpp"
+#include "binaryOutput.hpp"
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
@@ -20,8 +20,8 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-/// @param relayPin La broche de l'Arduino liée au relai qui contrôle le périphérique.
-BinaryOutput::BinaryOutput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int relayPin) : Output(friendlyName, ID, connection, display), m_relayPin(relayPin) {}
+/// @param pin La broche de l'Arduino liée au périphérique (relai ou autre).
+BinaryOutput::BinaryOutput(const __FlashStringHelper* friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, unsigned int pin) : Output(friendlyName, ID, connection, display), m_pin(pin) {}
 
 /// @brief Initialise l'objet.
 void BinaryOutput::setup()
@@ -31,10 +31,9 @@ void BinaryOutput::setup()
 
     Output::setup();
 
-    pinMode(m_relayPin, OUTPUT);
+    pinMode(m_pin, OUTPUT);
 
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -45,10 +44,9 @@ void BinaryOutput::turnOn(bool shareInformation)
     if (!m_operational || m_locked || m_state)
         return;
 
-    digitalWrite(m_relayPin, HIGH);
+    digitalWrite(m_pin, HIGH);
 
     m_state = true;
-
     m_connection.updateOutputDeviceState(m_ID, true);
 
     if (shareInformation)
@@ -62,10 +60,9 @@ void BinaryOutput::turnOff(bool shareInformation)
     if (!m_operational || m_locked || !m_state)
         return;
 
-    digitalWrite(m_relayPin, LOW);
+    digitalWrite(m_pin, LOW);
 
     m_state = false;
-
     m_connection.updateOutputDeviceState(m_ID, false);
 
     if (shareInformation)

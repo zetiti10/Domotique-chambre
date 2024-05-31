@@ -10,24 +10,23 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/device.hpp"
 #include "device.hpp"
 
 /// @brief Constructeur de la classe.
-/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param friendlyName Le nom du périphérique formaté pour être présenté à l'utilisateur.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Device::Device(const __FlashStringHelper* friendlyName, int ID) : m_friendlyName(friendlyName), m_ID(ID), m_operational(false) {}
+Device::Device(const __FlashStringHelper *friendlyName, unsigned int ID) : m_friendlyName(friendlyName), m_ID(ID), m_operational(false) {}
 
-/// @brief Méthode permettant d'obtenir le nom formaté pour être présenté à l'utilisateur du périphérique.
-/// @return Le nom formaté pour être présenté à l'utilisateur du périphérique.
-const __FlashStringHelper* Device::getFriendlyName() const
+/// @brief Méthode permettant d'obtenir le nom du périphérique formaté pour être présenté à l'utilisateur.
+/// @return Le nom du périphérique formaté pour être présenté à l'utilisateur.
+const __FlashStringHelper *Device::getFriendlyName() const
 {
     return m_friendlyName;
 }
 
 /// @brief Méthode permettant d'obtenir l'identifiant unique du périphérique.
 /// @return L'identifiant unique du périphérique.
-int Device::getID() const
+const int Device::getID() const
 {
     return m_ID;
 }
@@ -39,7 +38,7 @@ bool Device::getAvailability() const
     return m_operational;
 }
 
-/// @brief Méthode permettant d'arrêter proprement un périphérique avant l'arrêt du système.
+/// @brief Méthode arrêtant le périphérique avant l'arrêt du système.
 void Device::shutdown()
 {
     m_operational = false;

@@ -10,11 +10,11 @@
 #include "device/interface/HomeAssistant.hpp"
 #include "device/input/analogInput.hpp"
 
-// Classe gérant un ruban de DEL.
+/// @brief Classe gérant un ruban de DEL.
 class RGBLEDStrip : public Output
 {
 public:
-    RGBLEDStrip(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int RPin, int GPin, int BPin);
+    RGBLEDStrip(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, unsigned int RPin, unsigned int GPin, unsigned int BPin);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -22,21 +22,22 @@ public:
     virtual void loop();
     virtual void setMode(RGBLEDStripMode *mode, bool shareInformation = false);
     virtual RGBLEDStripMode *getMode() const;
-    virtual int getR() const;
-    virtual int getG() const;
-    virtual int getB() const;
+    virtual unsigned int getR() const;
+    virtual unsigned int getG() const;
+    virtual unsigned int getB() const;
 
 protected:
-    const int m_RPin;
-    const int m_GPin;
-    const int m_BPin;
-    int m_RState;
-    int m_GState;
-    int m_BState;
+    const unsigned int m_RPin;
+    const unsigned int m_GPin;
+    const unsigned int m_BPin;
+    unsigned int m_RState;
+    unsigned int m_GState;
+    unsigned int m_BState;
     RGBLEDStripMode *m_mode;
 
 private:
-    virtual void setColor(int r, int g, int b);
+    virtual void setColor(unsigned int r, unsigned int g, unsigned int b);
+
     friend class RGBLEDStripMode;
     friend class ColorMode;
     friend class AlarmMode;
@@ -45,22 +46,22 @@ private:
     friend class MusicsAnimationsMode;
 };
 
-// Classe représentant un mode pour un ruban de DEL.
+/// @brief Classe représentant un mode pour un ruban de DEL.
 class RGBLEDStripMode
 {
 public:
-    RGBLEDStripMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip);
-    virtual const __FlashStringHelper* getFriendlyName() const;
+    RGBLEDStripMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip);
+    virtual const __FlashStringHelper *getFriendlyName() const;
     virtual bool isActivated() const;
-    virtual int getID() const;
-    virtual void shutdown();
+    virtual unsigned int getID() const;
 
 protected:
     virtual void activate();
     virtual void desactivate();
     virtual void loop() = 0;
-    const __FlashStringHelper* m_friendlyName;
-    int m_ID;
+
+    const __FlashStringHelper *m_friendlyName;
+    unsigned const int m_ID;
     RGBLEDStrip &m_strip;
     bool m_activated;
 
@@ -68,34 +69,35 @@ private:
     friend class RGBLEDStrip;
 };
 
-// Classe du mode couleur unique.
+/// @brief Classe du mode couleur unique.
 class ColorMode : public RGBLEDStripMode
 {
 public:
-    ColorMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, HomeAssistant &connection);
-    virtual void setColor(int r, int g, int b);
-    virtual int getR() const;
-    virtual int getG() const;
-    virtual int getB() const;
+    ColorMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip, HomeAssistant &connection);
+    virtual void setColor(unsigned int r, unsigned int g, unsigned int b);
+    virtual unsigned int getR() const;
+    virtual unsigned int getG() const;
+    virtual unsigned int getB() const;
 
 protected:
     HomeAssistant &m_connection;
-    int m_R;
-    int m_G;
-    int m_B;
+    unsigned int m_R;
+    unsigned int m_G;
+    unsigned int m_B;
 
 private:
     virtual void activate() override;
     virtual void desactivate() override;
     virtual void loop() override;
+
     friend class RGBLEDStrip;
 };
 
-// Classe du mode de couleur de l'alarme qui sonne.
+/// @brief Classe du mode de couleur de l'alarme qui sonne.
 class AlarmMode : public RGBLEDStripMode
 {
 public:
-    AlarmMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip);
+    AlarmMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip);
 
 protected:
     unsigned long m_lastTime;
@@ -106,93 +108,99 @@ private:
     friend class RGBLEDStrip;
 };
 
-// Classe du mode de couleur arc-en-ciel.
+/// @brief Classe du mode de couleur arc-en-ciel.
 class RainbowMode : public RGBLEDStripMode
 {
 public:
-    RainbowMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, int EEPROMSpeed);
-    virtual void setAnimationSpeed(int speed);
-    virtual int getAnimationSpeed();
+    RainbowMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip, unsigned int EEPROMSpeed);
+    virtual void setAnimationSpeed(unsigned int speed);
+    virtual unsigned int getAnimationSpeed() const;
 
 protected:
     unsigned long m_lastTime;
     unsigned long m_lastSave;
     bool m_speedToSave;
-    int m_step;
-    int m_increment;
-    int m_delay;
-    int m_speed;
-    const int m_EEPROMSpeed;
+    unsigned int m_step;
+    unsigned int m_increment;
+    unsigned int m_delay;
+    unsigned int m_speed;
+    const unsigned int m_EEPROMSpeed;
 
 private:
     virtual void activate() override;
     virtual void desactivate() override;
     virtual void loop() override;
+
     friend class RGBLEDStrip;
 };
 
-// Classe du mode de couleur son-réaction.
+/// @brief Classe du mode de couleur son-réaction.
 class SoundreactMode : public RGBLEDStripMode
 {
 public:
-    SoundreactMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip, AnalogInput &microphone, int EEPROMSensitivity);
-    virtual void setSensitivity(int sensitivity);
-    virtual int getSensitivity();
+    SoundreactMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip, AnalogInput &microphone, unsigned int EEPROMSensitivity);
+    virtual void setSensitivity(unsigned int sensitivity);
+    virtual unsigned int getSensitivity() const;
 
 protected:
     AnalogInput &m_microphone;
     unsigned long m_lastSave;
     bool m_sensitivityToSave;
-    int m_sensitivity;
+    unsigned int m_sensitivity;
     unsigned long m_lastColorChange;
     unsigned long m_lastTime;
-    int m_maxSound;
-    const int m_EEPROMSensitivity;
+    unsigned int m_maxSound;
+    const unsigned int m_EEPROMSensitivity;
 
 private:
     virtual void activate() override;
     virtual void desactivate() override;
     virtual void loop() override;
+
     friend class RGBLEDStrip;
 };
 
-enum MusicsAnimationsCurrentEffect {
+/// @brief Structure utilisée par le mode de couleur `MusicsAnimationsMode` pour enregistrer l'animation en cours d'exécution.
+enum MusicsAnimationsCurrentEffect
+{
     SINGLE_COLOR,
     SMOOTH_TRANSITION,
     STROBE_EFFECT,
 };
 
-enum MusicsAnimationsEasing {
+/// @brief Différents effets possibles pour la transition d'une couleur à l'autre.
+enum MusicsAnimationsEasing
+{
     LINEAR,
     IN_CUBIC,
     OUT_CUBIC,
     IN_OUT_CUBIC,
 };
 
-// Classe du mode de couleur utilisé pour le mode de vidéo animée.
+/// @brief Classe du mode de couleur utilisé pour le mode de vidéo animée.
 class MusicsAnimationsMode : public RGBLEDStripMode
 {
 public:
-    MusicsAnimationsMode(const __FlashStringHelper* friendlyName, int ID, RGBLEDStrip &strip);
-    virtual void singleColor(int r, int g, int b);
-    virtual void smoothTransition(int initialR, int initialG, int initialB, int finalR, int finalG, int finalB, unsigned long duration, MusicsAnimationsEasing type = LINEAR);
-    virtual void strobeEffect(int r, int g, int b, int speed);
+    MusicsAnimationsMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip);
+    virtual void singleColor(unsigned int r, unsigned int g, unsigned int b);
+    virtual void smoothTransition(unsigned int initialR, unsigned int initialG, unsigned int initialB, unsigned int finalR, unsigned int finalG, unsigned int finalB, unsigned int duration, MusicsAnimationsEasing type = LINEAR);
+    virtual void strobeEffect(unsigned int r, unsigned int g, unsigned int b, unsigned int speed);
 
 protected:
     MusicsAnimationsCurrentEffect m_currentEffect;
-    int m_smoothTransitionInitialR;
-    int m_smoothTransitionInitialG;
-    int m_smoothTransitionInitialB;
-    int m_smoothTransitionFinalR;
-    int m_smoothTransitionFinalG;
-    int m_smoothTransitionFinalB;
+    unsigned int m_smoothTransitionInitialR;
+    unsigned int m_smoothTransitionInitialG;
+    unsigned int m_smoothTransitionInitialB;
+    unsigned int m_smoothTransitionFinalR;
+    unsigned int m_smoothTransitionFinalG;
+    unsigned int m_smoothTransitionFinalB;
     unsigned long m_smoothTransitionInitialMillis;
-    unsigned long m_smoothTransitionDuration;
+    unsigned int m_smoothTransitionDuration;
     MusicsAnimationsEasing m_smoothTransitionType;
-    int m_strobeEffectR;
-    int m_strobeEffectG;
-    int m_strobeEffectB;
-    int m_strobeEffectSpeed;
+    unsigned int m_strobeEffectR;
+    unsigned int m_strobeEffectG;
+    unsigned int m_strobeEffectB;
+    unsigned int m_strobeEffectSpeed;
     bool m_strobeEffectStep;
     unsigned long m_strobeEffectLastMillis;
 
@@ -200,6 +208,7 @@ private:
     virtual void activate() override;
     virtual void desactivate() override;
     virtual void loop() override;
+
     friend class RGBLEDStrip;
 };
 

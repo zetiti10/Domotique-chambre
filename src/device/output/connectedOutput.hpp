@@ -9,11 +9,11 @@
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe représentant une lampe contrôlée depuis le réseau.
+/// @brief Classe représentant un périphérique contrôlé depuis le réseau.
 class ConnectedOutput : public Output
 {
 public:
-    ConnectedOutput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display);
+    ConnectedOutput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void turnOn(bool shareInformation = false) override;
@@ -22,48 +22,54 @@ public:
 protected:
     virtual void updateOn(bool shareInformation = false);
     virtual void updateOff(bool shareInformation = false);
+
     virtual void setAvailable();
     virtual void setUnavailable();
+
     friend class HomeAssistant;
 };
 
-// Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
+/// @brief Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
 class ConnectedTemperatureVariableLight : public ConnectedOutput
 {
 public:
-    ConnectedTemperatureVariableLight(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature);
-    virtual void setColorTemperature(int temperature, bool shareInformation = false);
-    virtual void setLuminosity(int luminosity, bool shareInformation = false);
-    virtual int getColorTemperature();
-    virtual int getLuminosity();
+    ConnectedTemperatureVariableLight(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, unsigned int minimalColorTemperature, unsigned int maximalColorTemperature);
+    virtual void setColorTemperature(unsigned int temperature, bool shareInformation = false);
+    virtual void setLuminosity(unsigned int luminosity, bool shareInformation = false);
+    virtual unsigned int getColorTemperature() const;
+    virtual unsigned int getLuminosity() const;
 
 protected:
-    virtual void updateColorTemperature(int temperature, bool shareInformation = false);
-    virtual void updateLuminosity(int luminosity, bool shareInformation = false);
-    int m_minimalColorTemperature;
-    int m_maximalColorTemperature;
-    int m_colorTemperature;
-    int m_luminosity;
+    virtual void updateColorTemperature(unsigned int temperature, bool shareInformation = false);
+    virtual void updateLuminosity(unsigned int luminosity, bool shareInformation = false);
+
+    unsigned int m_minimalColorTemperature;
+    unsigned int m_maximalColorTemperature;
+    unsigned int m_colorTemperature;
+    unsigned int m_luminosity;
+
     friend class HomeAssistant;
 };
 
-// Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
+/// @brief Classe représentant une lampe à température de couleur variable contrôlée depuis le réseau.
 class ConnectedColorVariableLight : public ConnectedTemperatureVariableLight
 {
 public:
-    ConnectedColorVariableLight(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, int minimalColorTemperature, int maximalColorTemperature);
-    virtual void setColor(int r, int g, int b, bool shareInformation = false);
-    virtual void setColorTemperature(int temperature, bool shareInformation = false) override;
-    virtual void setLuminosity(int luminosity, bool shareInformation = false) override;
-    virtual int getRLuminosity();
-    virtual int getGLuminosity();
-    virtual int getBLuminosity();
+    ConnectedColorVariableLight(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, unsigned int minimalColorTemperature, unsigned int maximalColorTemperature);
+    virtual void setColor(unsigned int r, unsigned int g, unsigned int b, bool shareInformation = false);
+    virtual void setColorTemperature(unsigned int temperature, bool shareInformation = false) override;
+    virtual void setLuminosity(unsigned int luminosity, bool shareInformation = false) override;
+    virtual unsigned int getRLuminosity() const;
+    virtual unsigned int getGLuminosity() const;
+    virtual unsigned int getBLuminosity() const;
 
 protected:
-    virtual void updateColor(int r, int g, int b, bool shareInformation = false);
-    int m_RColor;
-    int m_GColor;
-    int m_BColor;
+    virtual void updateColor(unsigned int r, unsigned int g, unsigned int b, bool shareInformation = false);
+
+    unsigned int m_RColor;
+    unsigned int m_GColor;
+    unsigned int m_BColor;
+
     friend class HomeAssistant;
 };
 

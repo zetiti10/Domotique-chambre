@@ -9,11 +9,11 @@
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe commune à tous les périphériques de sortie (actionneurs).
+/// @brief Classe commune à tous les périphériques de sortie (actionneurs).
 class Output : public Device
 {
 public:
-    Output(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display);
+    Output(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display);
     virtual void setup() override;
     virtual void reportState();
     virtual void turnOn(bool shareInformation = false) = 0;
@@ -23,6 +23,7 @@ public:
     virtual void lock();
     virtual void unLock();
     virtual bool isLocked() const;
+    virtual void shutdown() override;
 
 protected:
     Display &m_display;

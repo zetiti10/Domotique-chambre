@@ -27,36 +27,36 @@ class ConnectedColorVariableLight;
 class HomeAssistant : public Device
 {
 public:
-    HomeAssistant(const __FlashStringHelper* friendlyName, int ID, HardwareSerial &serial, Display &display);
+    HomeAssistant(const __FlashStringHelper* friendlyName, unsigned int ID, HardwareSerial &serial, Display &display);
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
     virtual void setup() override;
     virtual void loop();
     virtual void processMessage();
-    virtual void turnOnConnectedDevice(int ID);
-    virtual void turnOffConnectedDevice(int ID);
-    virtual void toggleConnectedDevice(int ID);
-    virtual void setConnectedTemperatureVariableLightTemperature(int ID, int temperature);
-    virtual void setConnectedTemperatureVariableLightLuminosity(int ID, int luminosity);
-    virtual void setConnectedColorVariableLightColor(int ID, int r, int g, int b);
-    virtual void setConnectedColorVariableLightTemperature(int ID, int temperature);
-    virtual void setConnectedColorVariableLightLuminosity(int ID, int luminosity);
-    virtual void updateDeviceAvailability(int ID, bool availability);
-    virtual void updateOutputDeviceState(int ID, bool state);
-    virtual void updateRGBLEDStripMode(int ID, int mode, int r = 0, int g = 0, int b = 0);
-    virtual void updateAlarmTriggeredState(int ID, bool state);
-    virtual void updateAlarmMissileLauncherBaseAngle(int ID, int angle);
-    virtual void updateAlarmMissileLauncherAngleAngle(int ID, int angle);
-    virtual void updateAlarmMissileLauncherMissilesState(int ID, int firstMissile, int secondMissile, int thirdMissile);
-    virtual void updateTelevisionVolume(int ID, int mode, int volume = 0);
-    virtual void updateBinaryInput(int ID, bool state);
-    virtual void updateAnalogInput(int ID, int state);
-    virtual void updateAirSensor(int ID, float temperature, float humidity);
+    virtual void turnOnConnectedDevice(unsigned int ID);
+    virtual void turnOffConnectedDevice(unsigned int ID);
+    virtual void toggleConnectedDevice(unsigned int ID);
+    virtual void setConnectedTemperatureVariableLightTemperature(unsigned int ID, int temperature);
+    virtual void setConnectedTemperatureVariableLightLuminosity(unsigned int ID, int luminosity);
+    virtual void setConnectedColorVariableLightColor(unsigned int ID, int r, int g, int b);
+    virtual void setConnectedColorVariableLightTemperature(unsigned int ID, int temperature);
+    virtual void setConnectedColorVariableLightLuminosity(unsigned int ID, int luminosity);
+    virtual void updateDeviceAvailability(unsigned int ID, bool availability);
+    virtual void updateOutputDeviceState(unsigned int ID, bool state);
+    virtual void updateRGBLEDStripMode(unsigned int ID, int mode, int r = 0, int g = 0, int b = 0);
+    virtual void updateAlarmTriggeredState(unsigned int ID, bool state);
+    virtual void updateAlarmMissileLauncherBaseAngle(unsigned int ID, int angle);
+    virtual void updateAlarmMissileLauncherAngleAngle(unsigned int ID, int angle);
+    virtual void updateAlarmMissileLauncherMissilesState(unsigned int ID, int firstMissile, int secondMissile, int thirdMissile);
+    virtual void updateTelevisionVolume(unsigned int ID, int mode, int volume = 0);
+    virtual void updateBinaryInput(unsigned int ID, bool state);
+    virtual void updateAnalogInput(unsigned int ID, int state);
+    virtual void updateAirSensor(unsigned int ID, float temperature, float humidity);
     virtual void sayMessage(String message);
     virtual void playVideo(String videoURL);
 
 protected:
-    virtual Output *getDeviceFromID(int ID);
-    virtual ConnectedOutput *getRemoteDeviceFromID(int ID);
+    virtual Output *getDeviceFromID(unsigned int ID);
+    virtual ConnectedOutput *getRemoteDeviceFromID(unsigned int ID);
     static String addZeros(int number, int length);
     static int getIntFromString(String &string, int position, int lenght);
     HardwareSerial &m_serial;

@@ -13,12 +13,13 @@
 // Autres fichiers du programme.
 #include "device/interface/buzzer.hpp"
 #include "device/device.hpp"
+#include "buzzer.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param pin La broche reliée au buzzer du système de domotique.
-Buzzer::Buzzer(const __FlashStringHelper* friendlyName, int ID, int pin) : Device(friendlyName, ID), m_pin(pin) {}
+Buzzer::Buzzer(const __FlashStringHelper* friendlyName, unsigned int ID, unsigned int pin) : Device(friendlyName, ID), m_pin(pin) {}
 
 /// @brief Initialise l'objet.
 void Buzzer::setup()
@@ -27,7 +28,6 @@ void Buzzer::setup()
         return;
 
     pinMode(m_pin, OUTPUT);
-
     m_operational = true;
 }
 
@@ -56,4 +56,10 @@ void Buzzer::doorbellMusic()
     TimerFreeTone(m_pin, 400, 100);
     TimerFreeTone(m_pin, 600, 150);
     TimerFreeTone(m_pin, 800, 200);
+}
+
+/// @brief Arrête proprement le périphérique.
+void Buzzer::shutdown()
+{
+    this->noSound();
 }

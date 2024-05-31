@@ -11,15 +11,11 @@
 #include <EEPROM.h>
 
 // Autres fichiers du programme.
-#include "device/output/television.hpp"
+#include "television.hpp"
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "EEPROM.hpp"
-#include "television.hpp"
-
-const char unableToPerformError[] PROGMEM = "Impossible d'effectuer cette action.";
-const char error[] PROGMEM = "Erreur";
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -30,16 +26,12 @@ const char error[] PROGMEM = "Erreur";
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
 /// @param mode Le mode utilisé lors de vidéos animées pour contrôler le ruban de DEL RVB.
-Television::Television(const __FlashStringHelper *friendlyName, int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_microphone(nullptr), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_mode(mode) {}
+Television::Television(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_microphone(nullptr), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_mode(mode), m_detectionCounter(0) {}
 
 /// @brief Cette méthode permet d'enregistrer les périphériques du système qui pourront être contrôlés automatiquement lors de la lecture d'une vidéo.
-/// @param deviceList La liste de périphériques "basiques" à utiliser (pour les allumer / éteindre).
+/// @param deviceList La liste de périphériques à utiliser.
 /// @param devicesNumber Le nombre de périphériques de la liste `deviceList`.
-/// @param stripList La liste de ruban de DEL RVB à utilise (pour le contrôle des couleurs).
-/// @param stripsNumber Le nombre de rubans de la liste `stripList`.
-/// @param connectedColorVariableLightList La liste des lampes connectées à couleur variable, à utiliser (pour le contrôle des couleurs).
-/// @param connectedColorVariableLightsNumber Le nombre d'éléments de la liste `connectedColorVariableLightList`.
-void Television::setMusicDevices(Output *deviceList[], int &devicesNumber)
+void Television::setMusicDevices(Output *deviceList[], unsigned int devicesNumber)
 {
     m_deviceList = deviceList;
     m_devicesNumber = devicesNumber;
@@ -48,7 +40,7 @@ void Television::setMusicDevices(Output *deviceList[], int &devicesNumber)
 /// @brief Méthode permettant de définir la liste des musiques disponibles à la lecture.
 /// @param musicList La liste de musiques.
 /// @param musicsNumber Le nombre de musiques de la liste de musiques.
-void Television::setMusicsList(Music **musicList, int &musicsNumber)
+void Television::setMusicsList(Music **musicList, unsigned int musicsNumber)
 {
     if (musicsNumber <= 0)
         return;
@@ -71,14 +63,10 @@ void Television::setup()
         return;
 
     Output::setup();
-
     pinMode(m_servomotorPin, OUTPUT);
     m_IRSender.begin(m_IRLEDPin);
-
     m_lastTime = millis();
-
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -89,9 +77,7 @@ void Television::reportState()
         return;
 
     Output::reportState();
-
     m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
-
     if (m_volumeMuted)
         m_connection.updateTelevisionVolume(m_ID, 1);
 }
@@ -102,7 +88,6 @@ void Television::loop()
     if ((millis() - m_lastTime) >= 60000)
     {
         EEPROM.update(EEPROM_VOLUME, m_volume);
-
         m_lastTime = millis();
     }
 
@@ -117,7 +102,7 @@ void Television::loop()
 
         m_detectionCounter++;
 
-        if (m_detectionCounter == 1000)
+        if (m_detectionCounter >= 1000)
         {
             m_waitingForTriggerSound = false;
             m_detectionCounter = 0;
@@ -136,12 +121,9 @@ void Television::turnOn(bool shareInformation)
         return;
 
     m_connection.updateOutputDeviceState(m_ID, true);
-
     switchDisplay();
     m_IRSender.sendNEC(0x44C1, 0x87, 3);
-
     m_state = true;
-
     if (shareInformation)
         m_display.displayDeviceState(true);
 }
@@ -154,13 +136,10 @@ void Television::turnOff(bool shareInformation)
         return;
 
     m_connection.updateOutputDeviceState(m_ID, false);
-
     stopMusic();
     switchDisplay();
     m_IRSender.sendNEC(0x44C1, 0x87, 3);
-
     m_state = false;
-
     if (shareInformation)
         m_display.displayDeviceState(false);
 }
@@ -172,7 +151,7 @@ void Television::syncVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_currentMusicIndex != -1))
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, error);
+            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
         return;
     }
@@ -180,10 +159,11 @@ void Television::syncVolume(bool shareInformation)
     if (shareInformation)
         m_display.displayMessage("Calibration du son...");
 
-    IrSender.sendNEC(0x44C1, 0xC7, 50);
+    for (int i = 0; i < 26; i++)
+        IrSender.sendNEC(0x44C1, 0xC7, 3);
 
     for (int i = 0; i < m_volume; i++)
-        increaseVolume();
+        this->increaseVolume();
 
     if (shareInformation)
         m_display.displayMessage("Calibration terminée !");
@@ -196,7 +176,7 @@ void Television::increaseVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 25))
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, error);
+            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
         return;
     }
@@ -205,7 +185,6 @@ void Television::increaseVolume(bool shareInformation)
         m_IRSender.sendNEC(0x44C1, 0x47, 3);
 
     m_volume++;
-
     m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
 
     if (shareInformation)
@@ -219,7 +198,7 @@ void Television::decreaseVolume(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational || (m_volume == 0))
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, error);
+            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
         return;
     }
@@ -228,7 +207,6 @@ void Television::decreaseVolume(bool shareInformation)
         m_IRSender.sendNEC(0x44C1, 0xC7, 3);
 
     m_volume--;
-
     m_connection.updateTelevisionVolume(m_ID, 0, m_volume);
 
     if (shareInformation)
@@ -237,7 +215,7 @@ void Television::decreaseVolume(bool shareInformation)
 
 /// @brief Méthode permettant de récupérer le volume actuel de la télévision.
 /// @return Le volume actuel de la télévision.
-int Television::getVolume()
+unsigned int Television::getVolume() const
 {
     return m_volume;
 }
@@ -249,14 +227,13 @@ void Television::mute(bool shareInformation)
     if (!m_state || m_locked || m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, error);
+            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
         return;
     }
 
     m_IRSender.sendNEC(0x44C1, 0x77, 3);
     m_volumeMuted = true;
-
     m_connection.updateTelevisionVolume(m_ID, 1);
 
     if (shareInformation)
@@ -270,14 +247,13 @@ void Television::unMute(bool shareInformation)
     if (!m_state || m_locked || !m_volumeMuted || !m_operational)
     {
         if (shareInformation)
-            m_display.displayMessage(unableToPerformError, error);
+            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
 
         return;
     }
 
     m_IRSender.sendNEC(0x44C1, 0x77, 3);
     m_volumeMuted = false;
-
     m_connection.updateTelevisionVolume(m_ID, 2);
 
     if (shareInformation)
@@ -289,29 +265,29 @@ void Television::unMute(bool shareInformation)
 void Television::toggleMute(bool shareInformation)
 {
     if (m_volumeMuted)
-        unMute();
+        this->unMute();
 
     else
-        mute();
+        this->mute();
 }
 
 /// @brief Méthode permettant de récupérer l'état actuel du mode sourdinne de la télévision.
 /// @return L'état actuel du mode sourdinne de la télévision.
-bool Television::getMute()
+bool Television::getMute() const
 {
     return m_volumeMuted;
 }
 
 /// @brief Méthode permettant d'obtenir la liste des musiques disponibles.
 /// @return La liste des musiques disponibles.
-Music **Television::getMusicsList()
+Music **Television::getMusicsList() const
 {
     return m_musicList;
 }
 
 /// @brief Méthode permettant d'obtenir le nombre de musiques enregistré.
 /// @return Le nombre de musiques enregistré.
-int Television::getMusicNumber()
+unsigned int Television::getMusicNumber() const
 {
     return m_musicsNumber;
 }
@@ -323,7 +299,8 @@ void Television::playMusic(int musicIndex)
     // Étape 1 : vérification que toutes les conditions sont remplies pour démarrer la vidéo.
     if (m_locked || !m_operational || musicIndex > m_musicsNumber)
     {
-        m_display.displayMessage(unableToPerformError, error);
+        m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+
         return;
     }
 
@@ -333,7 +310,8 @@ void Television::playMusic(int musicIndex)
 
         if (!m_deviceList[i]->getAvailability() || m_deviceList[i]->isLocked())
         {
-            m_display.displayMessage(unableToPerformError, error);
+            m_display.displayMessage("Impossible d'effectuer cette action.", "Erreur");
+
             return;
         }
     }
@@ -349,20 +327,20 @@ void Television::playMusic(int musicIndex)
 
     if (!m_state)
     {
-        turnOn();
+        this->turnOn();
         delay(1000);
     }
 
     if (m_volumeMuted)
     {
-        unMute();
+        this->unMute();
         delay(1000);
     }
 
     delay(1000);
 
-    while (getVolume() < 17)
-        increaseVolume();
+    while (this->getVolume() < 17)
+        this->increaseVolume();
 
     delay(2000);
 
@@ -389,7 +367,17 @@ void Television::stopMusic()
     }
 }
 
-void Television::moveDisplayServo(int angle)
+/// @brief Méthode arrêtant le périphérique avant l'arrêt du système.
+void Television::shutdown()
+{
+    EEPROM.update(EEPROM_VOLUME, m_volume);
+
+    Output::shutdown();
+}
+
+/// @brief Envoie une impulsion pour contrôler le servomoteur.
+/// @param angle L'angle sélectionné en degré.
+void Television::moveDisplayServo(unsigned int angle)
 {
     int pulseWidth = map(angle, 0, 180, 600, 2400);
     digitalWrite(m_servomotorPin, HIGH);
@@ -398,24 +386,27 @@ void Television::moveDisplayServo(int angle)
     delay(2);
 }
 
+/// @brief Effectue un clic sur le bouton de l'écran à l'aide d'un servomoteur.
 void Television::switchDisplay()
 {
     for (int pos = 80; pos <= 130; pos++)
     {
-        moveDisplayServo(pos);
+        this->moveDisplayServo(pos);
         delay(1);
     }
 
     for (int i = 0; i < 100; i++)
-        moveDisplayServo(130);
+        this->moveDisplayServo(130);
 
     for (int pos = 130; pos >= 80; pos--)
     {
-        moveDisplayServo(pos);
+        this->moveDisplayServo(pos);
         delay(1);
     }
 }
 
+/// @brief Méthode permettant de détecter un son à une fréquence particulière.
+/// @return Le résultat de l'analyse.
 bool Television::detectTriggerSound()
 {
     const int SAMPLES = 128;
@@ -451,6 +442,7 @@ bool Television::detectTriggerSound()
     return false;
 }
 
+/// @brief Méthode d'exécution des tâches périodiques liées au mode musique animée.
 void Television::scheduleMusic()
 {
     while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode <= (millis() - m_musicStartTime))
@@ -546,7 +538,7 @@ void Television::scheduleMusic()
             case 0:
                 light->setColorTemperature(getIntFromString(action, 5, 4));
                 break;
-            
+
             case 1:
                 light->setLuminosity(getIntFromString(action, 5, 3));
                 break;
@@ -564,11 +556,11 @@ void Television::scheduleMusic()
             case 0:
                 light->setColor(getIntFromString(action, 5, 3), getIntFromString(action, 8, 3), getIntFromString(action, 11, 3));
                 break;
-            
+
             case 1:
                 light->setColorTemperature(getIntFromString(action, 5, 4));
                 break;
-            
+
             case 2:
                 light->setLuminosity(getIntFromString(action, 5, 3));
                 break;
@@ -590,7 +582,10 @@ void Television::scheduleMusic()
     }
 }
 
-Output *Television::getDeviceFromID(int ID)
+/// @brief Méthode permettant d'obtenir un objet à partir de son identifiant unique.
+/// @param ID L'identifiant unique du périphérique cherché.
+/// @return Un pointeur vers l'objet cherche (renvoie `nullptr` s'il na pas été trouvé).
+Output *Television::getDeviceFromID(unsigned int ID)
 {
     for (int i = 0; i < m_devicesNumber; i++)
     {
@@ -601,7 +596,11 @@ Output *Television::getDeviceFromID(int ID)
     return nullptr;
 }
 
-String Television::addZeros(int number, int length)
+/// @brief Méthode permettant de convertir un entier en un `String` complété de zéros pour avoir une longueur fixée.
+/// @param number Le nombre à convertir.
+/// @param length La longueur de la chaîne de caractères voulue. Le `String` sera complété de zéros si nécessaire.
+/// @return Le `String` demandé.
+String Television::addZeros(unsigned int number, unsigned int length)
 {
     String result = String(number);
     while (result.length() < (unsigned int)length)
@@ -610,7 +609,12 @@ String Television::addZeros(int number, int length)
     return result;
 }
 
-int Television::getIntFromString(String &string, int position, int lenght)
+/// @brief Méthode permettant d'extraire un entier à partir d'un `String`.
+/// @param string La chaîne de caractères en entrée.
+/// @param position La position de l'entier dans la chaîne de caractères.
+/// @param lenght La longueur de l'entier.
+/// @return L'entier voulu.
+unsigned int Television::getIntFromString(String &string, unsigned int position, unsigned int lenght)
 {
     int result = 0;
 

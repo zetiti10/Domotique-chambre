@@ -12,11 +12,11 @@
 #include "device/interface/buzzer.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe représentant un capteur dont la valeur mesurée est binaire.
+/// @brief Classe représentant un capteur dont la valeur mesurée est binaire.
 class BinaryInput : public Input
 {
 public:
-    BinaryInput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert = false, bool pullup = false);
+    BinaryInput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert = false, bool pullup = false);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop() override;
@@ -24,16 +24,16 @@ public:
 
 protected:
     bool m_state;
-    const int m_pin;
+    const unsigned int m_pin;
     const bool m_reverted;
     const bool m_pullup;
 };
 
-// Classe représentant un capteur de porte d'armoire.
+/// @brief Classe représentant un capteur de porte d'armoire.
 class WardrobeDoorSensor : public BinaryInput
 {
 public:
-    WardrobeDoorSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup, BinaryOutput &output);
+    WardrobeDoorSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup, BinaryOutput &output);
     virtual void setup() override;
     virtual void loop() override;
     virtual void activate();
@@ -46,11 +46,11 @@ protected:
     bool m_activated;
 };
 
-// Classe représentant un capteur de porte de chambre.
+/// @brief Classe représentant un capteur de porte de chambre.
 class DoorSensor : public BinaryInput
 {
 public:
-    DoorSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup, Alarm &alarm);
+    DoorSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup, Alarm &alarm);
     virtual void setup() override;
     virtual void loop() override;
 
@@ -58,11 +58,11 @@ protected:
     Alarm &m_alarm;
 };
 
-// Classe représentant un bouton de sonnette.
+/// @brief Classe représentant un bouton de sonnette.
 class Doorbell : public BinaryInput
 {
 public:
-    Doorbell(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer);
+    Doorbell(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer);
     virtual void setup() override;
     virtual void loop() override;
 

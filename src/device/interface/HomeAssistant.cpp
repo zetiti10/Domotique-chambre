@@ -26,7 +26,7 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
-HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr) {}
+HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
@@ -352,7 +352,7 @@ void HomeAssistant::processMessage()
     m_receivedMessage = "";
 }
 
-void HomeAssistant::turnOnConnectedDevice(int ID)
+void HomeAssistant::turnOnConnectedDevice(unsigned int ID)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -361,7 +361,7 @@ void HomeAssistant::turnOnConnectedDevice(int ID)
     m_serial.println(1);
 }
 
-void HomeAssistant::turnOffConnectedDevice(int ID)
+void HomeAssistant::turnOffConnectedDevice(unsigned int ID)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -370,7 +370,7 @@ void HomeAssistant::turnOffConnectedDevice(int ID)
     m_serial.println(0);
 }
 
-void HomeAssistant::toggleConnectedDevice(int ID)
+void HomeAssistant::toggleConnectedDevice(unsigned int ID)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -379,7 +379,7 @@ void HomeAssistant::toggleConnectedDevice(int ID)
     m_serial.println(2);
 }
 
-void HomeAssistant::setConnectedTemperatureVariableLightTemperature(int ID, int temperature)
+void HomeAssistant::setConnectedTemperatureVariableLightTemperature(unsigned int ID, int temperature)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -395,7 +395,7 @@ void HomeAssistant::setConnectedTemperatureVariableLightTemperature(int ID, int 
     m_serial.println(this->addZeros(temperature, 4));
 }
 
-void HomeAssistant::setConnectedTemperatureVariableLightLuminosity(int ID, int luminosity)
+void HomeAssistant::setConnectedTemperatureVariableLightLuminosity(unsigned int ID, int luminosity)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -411,7 +411,7 @@ void HomeAssistant::setConnectedTemperatureVariableLightLuminosity(int ID, int l
     m_serial.println(this->addZeros(luminosity, 3));
 }
 
-void HomeAssistant::setConnectedColorVariableLightColor(int ID, int r, int g, int b)
+void HomeAssistant::setConnectedColorVariableLightColor(unsigned int ID, int r, int g, int b)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -441,7 +441,7 @@ void HomeAssistant::setConnectedColorVariableLightColor(int ID, int r, int g, in
     m_serial.println(this->addZeros(b, 3));
 }
 
-void HomeAssistant::setConnectedColorVariableLightTemperature(int ID, int temperature)
+void HomeAssistant::setConnectedColorVariableLightTemperature(unsigned int ID, int temperature)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -457,7 +457,7 @@ void HomeAssistant::setConnectedColorVariableLightTemperature(int ID, int temper
     m_serial.println(this->addZeros(temperature, 4));
 }
 
-void HomeAssistant::setConnectedColorVariableLightLuminosity(int ID, int luminosity)
+void HomeAssistant::setConnectedColorVariableLightLuminosity(unsigned int ID, int luminosity)
 {
     m_serial.print(0);
     m_serial.print(this->addZeros(ID, 2));
@@ -473,7 +473,7 @@ void HomeAssistant::setConnectedColorVariableLightLuminosity(int ID, int luminos
     m_serial.println(this->addZeros(luminosity, 3));
 }
 
-void HomeAssistant::updateDeviceAvailability(int ID, bool availability)
+void HomeAssistant::updateDeviceAvailability(unsigned int ID, bool availability)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -482,7 +482,7 @@ void HomeAssistant::updateDeviceAvailability(int ID, bool availability)
     m_serial.println(availability);
 }
 
-void HomeAssistant::updateOutputDeviceState(int ID, bool state)
+void HomeAssistant::updateOutputDeviceState(unsigned int ID, bool state)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -491,7 +491,7 @@ void HomeAssistant::updateOutputDeviceState(int ID, bool state)
     m_serial.println(state);
 }
 
-void HomeAssistant::updateRGBLEDStripMode(int ID, int mode, int r, int g, int b)
+void HomeAssistant::updateRGBLEDStripMode(unsigned int ID, int mode, int r, int g, int b)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -509,7 +509,7 @@ void HomeAssistant::updateRGBLEDStripMode(int ID, int mode, int r, int g, int b)
     m_serial.println();
 }
 
-void HomeAssistant::updateAlarmTriggeredState(int ID, bool state)
+void HomeAssistant::updateAlarmTriggeredState(unsigned int ID, bool state)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -518,7 +518,7 @@ void HomeAssistant::updateAlarmTriggeredState(int ID, bool state)
     m_serial.println(state);
 }
 
-void HomeAssistant::updateAlarmMissileLauncherBaseAngle(int ID, int angle)
+void HomeAssistant::updateAlarmMissileLauncherBaseAngle(unsigned int ID, int angle)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -527,7 +527,7 @@ void HomeAssistant::updateAlarmMissileLauncherBaseAngle(int ID, int angle)
     m_serial.print(2);
     m_serial.println(this->addZeros(angle, 3));
 }
-void HomeAssistant::updateAlarmMissileLauncherAngleAngle(int ID, int angle)
+void HomeAssistant::updateAlarmMissileLauncherAngleAngle(unsigned int ID, int angle)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -536,7 +536,7 @@ void HomeAssistant::updateAlarmMissileLauncherAngleAngle(int ID, int angle)
     m_serial.print(3);
     m_serial.println(this->addZeros(angle, 3));
 }
-void HomeAssistant::updateAlarmMissileLauncherMissilesState(int ID, int firstMissile, int secondMissile, int thirdMissile)
+void HomeAssistant::updateAlarmMissileLauncherMissilesState(unsigned int ID, int firstMissile, int secondMissile, int thirdMissile)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -547,7 +547,7 @@ void HomeAssistant::updateAlarmMissileLauncherMissilesState(int ID, int firstMis
     m_serial.print(secondMissile);
     m_serial.println(thirdMissile);
 }
-void HomeAssistant::updateTelevisionVolume(int ID, int mode, int volume)
+void HomeAssistant::updateTelevisionVolume(unsigned int ID, int mode, int volume)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -561,7 +561,7 @@ void HomeAssistant::updateTelevisionVolume(int ID, int mode, int volume)
     m_serial.println();
 }
 
-void HomeAssistant::updateBinaryInput(int ID, bool state)
+void HomeAssistant::updateBinaryInput(unsigned int ID, bool state)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -570,7 +570,7 @@ void HomeAssistant::updateBinaryInput(int ID, bool state)
     m_serial.println(state);
 }
 
-void HomeAssistant::updateAnalogInput(int ID, int state)
+void HomeAssistant::updateAnalogInput(unsigned int ID, int state)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -579,7 +579,7 @@ void HomeAssistant::updateAnalogInput(int ID, int state)
     m_serial.println(this->addZeros(state, 4));
 }
 
-void HomeAssistant::updateAirSensor(int ID, float temperature, float humidity)
+void HomeAssistant::updateAirSensor(unsigned int ID, float temperature, float humidity)
 {
     m_serial.print(1);
     m_serial.print(this->addZeros(ID, 2));
@@ -605,7 +605,7 @@ void HomeAssistant::playVideo(String videoURL)
     m_serial.println(videoURL);
 }
 
-Output *HomeAssistant::getDeviceFromID(int ID)
+Output *HomeAssistant::getDeviceFromID(unsigned int ID)
 {
     for (int i = 0; i < m_devicesNumber; i++)
     {
@@ -616,7 +616,7 @@ Output *HomeAssistant::getDeviceFromID(int ID)
     return nullptr;
 }
 
-ConnectedOutput *HomeAssistant::getRemoteDeviceFromID(int ID)
+ConnectedOutput *HomeAssistant::getRemoteDeviceFromID(unsigned int ID)
 {
     for (int i = 0; i < m_remoteDevicesNumber; i++)
     {

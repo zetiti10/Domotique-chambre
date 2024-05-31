@@ -10,14 +10,13 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/input/binaryInput.hpp"
+#include "binaryInput.hpp"
 #include "device/input/input.hpp"
 #include "device/output/binaryOutput.hpp"
 #include "device/output/alarm.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
 #include "device/interface/buzzer.hpp"
-#include "binaryInput.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -26,7 +25,7 @@
 /// @param pin La broche liée au capteur.
 /// @param revert Inversionou non de l'état du capteur.
 /// @param pullup Activation ou non du mode `PULLUP`.
-BinaryInput::BinaryInput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup) : Input(friendlyName, ID, connection), m_state(false), m_pin(pin), m_reverted(revert), m_pullup(pullup) {}
+BinaryInput::BinaryInput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup) : Input(friendlyName, ID, connection), m_state(false), m_pin(pin), m_reverted(revert), m_pullup(pullup) {}
 
 /// @brief Initialise l'objet.
 void BinaryInput::setup()
@@ -43,7 +42,6 @@ void BinaryInput::setup()
         pinMode(m_pin, INPUT);
 
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -61,7 +59,7 @@ void BinaryInput::loop()
 {
     bool previousState = m_state;
 
-    getState();
+    this->getState();
 
     if (previousState != m_state)
         m_connection.updateBinaryInput(m_ID, m_state);
@@ -117,7 +115,7 @@ bool BinaryInput::getState()
 /// @param revert Inversionou non de l'état du capteur.
 /// @param pullup Activation ou non du mode `PULLUP`.
 /// @param output L'armoire à contrôler
-WardrobeDoorSensor::WardrobeDoorSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup, BinaryOutput &output) : BinaryInput(friendlyName, ID, connection, pin, revert, pullup), m_output(output), m_activated(true) {}
+WardrobeDoorSensor::WardrobeDoorSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup, BinaryOutput &output) : BinaryInput(friendlyName, ID, connection, pin, revert, pullup), m_output(output), m_activated(true) {}
 
 /// @brief Initialise l'objet.
 void WardrobeDoorSensor::setup()
@@ -159,10 +157,10 @@ void WardrobeDoorSensor::desactivate()
 void WardrobeDoorSensor::toggleActivation()
 {
     if (m_activated)
-        desactivate();
-    
+        this->desactivate();
+
     else
-        activate();
+        this->activate();
 }
 
 /// @brief Méthode permettant de savoir si le mode automatique est activé ou non.
@@ -178,13 +176,12 @@ bool WardrobeDoorSensor::getActivation() const
 /// @param revert Inversionou non de l'état du capteur.
 /// @param pullup Activation ou non du mode `PULLUP`.
 /// @param alarm L'alarme liée au capteur.
-DoorSensor::DoorSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup, Alarm &alarm) : BinaryInput(friendlyName, ID, connection, pin, revert, pullup), m_alarm(alarm) {}
+DoorSensor::DoorSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup, Alarm &alarm) : BinaryInput(friendlyName, ID, connection, pin, revert, pullup), m_alarm(alarm) {}
 
 /// @brief Initialise l'objet.
 void DoorSensor::setup()
 {
     BinaryInput::setup();
-
     m_alarm.setup();
 }
 
@@ -204,23 +201,21 @@ void DoorSensor::loop()
 /// @param pullup Activation ou non du mode `PULLUP`.
 /// @param display L'écran utilisé pour l'animation.
 /// @param buzzer Le buzzer à faire sonner.
-Doorbell::Doorbell(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, ID, connection, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_lastTime(0) {}
+Doorbell::Doorbell(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool revert, bool pullup, Display &display, Buzzer &buzzer) : BinaryInput(friendlyName, ID, connection, pin, revert, pullup), m_display(display), m_buzzer(buzzer), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void Doorbell::setup()
 {
     BinaryInput::setup();
-
     m_display.setup();
     m_buzzer.setup();
-
     m_lastTime = millis();
 }
 
 /// @brief Méthode d'exécution des tâches liées au capteur. Envoi à Home Assistant de l'état lorque la sonnette est déclenchée.
 void Doorbell::loop()
 {
-    getState();
+    this->getState();
 
     if (m_state && ((millis() - m_lastTime) >= 10000))
     {

@@ -10,17 +10,16 @@
 #include <Arduino.h>
 
 // Autres fichiers du programme.
-#include "device/input/IRSensor.hpp"
+#include "IRSensor.hpp"
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
-#include "IRSensor.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche de l'Arduino liée au capteur infrarouge.
-IRSensor::IRSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
+IRSensor::IRSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
 
 /// @brief Initialise l'objet.
 void IRSensor::setup()
@@ -29,13 +28,9 @@ void IRSensor::setup()
         return;
 
     Input::setup();
-
     m_sensor.enableIRIn();
-
     m_lastTime = millis();
-
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 

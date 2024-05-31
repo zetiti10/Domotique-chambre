@@ -10,17 +10,17 @@
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe implémentant la gestion d'un capteur infrarouge.
+/// @brief Classe implémentant la gestion d'un capteur infrarouge.
 class IRSensor : public Input
 {
 public:
-    IRSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin);
+    IRSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop() override;
 
 protected:
-    const int m_pin;
+    const unsigned int m_pin;
     IRrecv m_sensor;
     unsigned long m_lastTime;
 };

@@ -32,6 +32,8 @@
 #include "device/input/airSensor.hpp"
 #include "device/input/IRSensor.hpp"
 
+bool systemToShutdown = false;
+
 // Initialisation du système.
 void setup()
 {
@@ -92,7 +94,7 @@ void setup()
     LEDStrip.setMode(&colorMode);
 
     // Musiques.
-    const Action test1Music[] = {
+    Action test1Music[] = {
         {8800, F("09011000000000255255255010001")},
         {9800, F("09011255255255000000000010001")},
         {11000, F("09011000000000255255255010003")},
@@ -226,7 +228,14 @@ void setup()
         HomeAssistantConnection.loop();
         keypad.loop();
         television.loop();
+
+        if (systemToShutdown)
+            break;
     }
+
+    // Arrêt de tous les périphériques de la liste.
+    for (int i = 0; i < devicesNumber; i++)
+        deviceList[i]->shutdown();
 }
 
 void loop()

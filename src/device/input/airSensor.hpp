@@ -9,11 +9,11 @@
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe permettant d'interagir avec un capteur d'air DHT22.
+/// @brief Classe permettant d'interagir avec un capteur d'air DHT22.
 class AirSensor : public Input
 {
 public:
-    AirSensor(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin);
+    AirSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop() override;
@@ -21,7 +21,7 @@ public:
     virtual float getHumidity() const;
 
 protected:
-    const int m_pin;
+    const unsigned int m_pin;
     DHT_Unified m_sensor;
     float m_temperature;
     float m_humidity;

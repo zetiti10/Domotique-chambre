@@ -37,8 +37,10 @@
 /// @param missileLauncherSerial Le port série connecté au lance-missile.
 /// @param buzzer Le buzzer.
 /// @param alarmRelayPin La broche connectée au relais de l'alarme.
-/// @param buzzerState L'activation ou non du son de l'alarme.
-Alarm::Alarm(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, int alarmRelayPin, int EEPROMBuzzerState, int EEPROMCardNumber, int EEPROMCards) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode(alarmMode), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false), m_EEPROMBuzzerState(EEPROMBuzzerState), m_EEPROMCardNumber(EEPROMCardNumber), m_EEPROMCards(EEPROMCards) {}
+/// @param EEPROMBuzzerState L'emplacement du stockage de l'état du buzzer dans la mémoire EEPROM.
+/// @param EEPROMCardNumber L'emplacement du stockage du nombre de cartes enregistrées dans la mémoire EEPROM.
+/// @param EEPROMCards L'emplacement du stockage initial des cartes enregistrées dans la mémoire EEPROM.
+Alarm::Alarm(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, HardwareSerial &serial, BinaryOutput &doorLED, BinaryOutput &beacon, RGBLEDStrip &strip, AlarmMode &alarmMode, HardwareSerial &missileLauncherSerial, Buzzer &buzzer, unsigned int alarmRelayPin, unsigned int EEPROMBuzzerState, unsigned int EEPROMCardNumber, unsigned int EEPROMCards) : Output(friendlyName, ID, connection, display), m_pn532hsu(serial), m_nfcReader(m_pn532hsu), m_doorLED(doorLED), m_beacon(beacon), m_strip(strip), m_alarmStripMode(alarmMode), m_previousMode(nullptr), m_missileLauncher(&missileLauncherSerial), m_buzzer(buzzer), m_alarmRelayPin(alarmRelayPin), m_isRinging(false), m_lastTimeAutoTriggerOff(0), m_lastTimeCardChecked(0), m_cardToStoreState(false), m_EEPROMBuzzerState(EEPROMBuzzerState), m_EEPROMCardNumber(EEPROMCardNumber), m_EEPROMCards(EEPROMCards) {}
 
 /// @brief Initialise l'objet.
 void Alarm::setup()
@@ -50,23 +52,21 @@ void Alarm::setup()
 
     pinMode(m_alarmRelayPin, OUTPUT);
 
+    if (!m_missileLauncher.begin(200))
+        return;
+
     m_doorLED.setup();
     m_beacon.setup();
     m_strip.setup();
     m_buzzer.setup();
 
-    if (!m_missileLauncher.begin(200))
-        return;
-
     m_nfcReader.begin();
     m_nfcReader.SAMConfig();
     uint32_t versiondata = m_nfcReader.getFirmwareVersion();
-
     if (!versiondata)
         return;
 
     m_operational = true;
-
     m_connection.updateDeviceAvailability(m_ID, true);
 }
 
@@ -117,7 +117,6 @@ void Alarm::turnOn(bool shareInformation)
     m_strip.lock();
 
     m_state = true;
-
     m_connection.updateOutputDeviceState(m_ID, true);
 
     if (shareInformation)
@@ -132,7 +131,7 @@ void Alarm::turnOff(bool shareInformation)
         return;
 
     if (m_isRinging)
-        stopRinging();
+        this->stopRinging();
 
     m_doorLED.unLock();
     m_beacon.unLock();
@@ -143,7 +142,6 @@ void Alarm::turnOff(bool shareInformation)
     m_doorLED.turnOff();
 
     m_state = false;
-
     m_connection.updateOutputDeviceState(m_ID, false);
 
     if (shareInformation)
@@ -163,7 +161,7 @@ void Alarm::loop()
         {
             if (m_cardToStoreState)
             {
-                storeCard(uid);
+                this->storeCard(uid);
                 m_cardToStoreState = false;
             }
 
@@ -172,10 +170,10 @@ void Alarm::loop()
                 m_buzzer.yesSound();
 
                 if (m_isRinging)
-                    stopRinging();
+                    this->stopRinging();
 
                 else
-                    toggle();
+                    this->toggle();
             }
         }
 
@@ -198,12 +196,9 @@ void Alarm::loop()
     if (firstMissile != -1)
         m_connection.updateAlarmMissileLauncherMissilesState(m_ID, firstMissile, secondMissile, thirdMissile);
 
-    if (!m_isRinging)
-        return;
-
     // Gestion de l'arrêt automatique de l'alarme.
-    if ((millis() - m_lastTimeAutoTriggerOff) >= 5000)
-        stopRinging();
+    if (m_isRinging && (millis() - m_lastTimeAutoTriggerOff) >= 5000)
+        this->stopRinging();
 }
 
 /// @brief Démarre le mode enregistrement de carte.
@@ -246,19 +241,18 @@ void Alarm::trigger()
     if (m_isRinging)
     {
         m_lastTimeAutoTriggerOff = millis();
-
         return;
     }
 
     if (!m_state)
     {
-        turnOn();
+        this->turnOn();
 
         if (!m_state)
             return;
     }
 
-    if (getBuzzerState())
+    if (this->getBuzzerState())
         digitalWrite(m_alarmRelayPin, HIGH);
 
     m_beacon.unLock();
@@ -299,7 +293,7 @@ void Alarm::stopRinging()
     if (!m_isRinging)
         return;
 
-    if (getBuzzerState())
+    if (this->getBuzzerState())
         digitalWrite(m_alarmRelayPin, LOW);
 
     m_beacon.unLock();
@@ -318,14 +312,14 @@ void Alarm::stopRinging()
 
 /// @brief Méthode permettant de récupérer l'objet du lance-missile.
 /// @return Le lance-missile.
-MissileLauncher &Alarm::getMissileLauncher()
+MissileLauncher &Alarm::getMissileLauncher() const
 {
     return m_missileLauncher;
 }
 
 /// @brief Méthode permettant de récupérer l'objet du mode alarme pour le ruban de DEL RVB.
 /// @return Le mode de l'alarme.
-AlarmMode &Alarm::getAlarmStripMode()
+AlarmMode &Alarm::getAlarmStripMode() const
 {
     return m_alarmStripMode;
 }
@@ -348,9 +342,10 @@ void Alarm::enableBuzzer()
     EEPROM.update(m_EEPROMBuzzerState, true);
 }
 
+/// @brief Bascule l'état du son de l'alarme.
 void Alarm::toggleBuzzer()
 {
-    if (EEPROM.read(m_EEPROMBuzzerState))
+    if (this->getBuzzerState())
         disableBuzzer();
 
     else
@@ -377,9 +372,11 @@ bool Alarm::checkCard(uint8_t card[4]) const
     return false;
 }
 
+/// @brief Enregistre une carte dans l'EEPROM, avec les vérifications nécessaires.
+/// @param card L'identifiant de la carte à enregistrer.
 void Alarm::storeCard(uint8_t card[4])
 {
-    if (checkCard(card))
+    if (this->checkCard(card))
     {
         m_display.displayMessage("Cette carte a déjà été enregistrée.", "Erreur");
         m_buzzer.noSound();

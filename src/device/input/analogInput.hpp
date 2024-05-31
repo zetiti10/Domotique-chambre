@@ -8,19 +8,19 @@
 #include "device/input/input.hpp"
 #include "device/interface/HomeAssistant.hpp"
 
-// Classe représentant un capteur dont la valeur mesurée est analogique.
+/// @brief Classe représentant un capteur dont la valeur mesurée est analogique.
 class AnalogInput : public Input
 {
 public:
-    AnalogInput(const __FlashStringHelper* friendlyName, int ID, HomeAssistant &connection, int pin, bool connected);
+    AnalogInput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, bool connected);
     virtual void setup() override;
     virtual void reportState() override;
     virtual void loop() override;
-    virtual int getValue();
+    virtual unsigned int getValue();
 
 protected:
-    int m_value;
-    const int m_pin;
+    unsigned int m_value;
+    const unsigned int m_pin;
     bool m_connected;
     unsigned long m_lastTime;
 };

@@ -20,7 +20,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Display::Display(const __FlashStringHelper *friendlyName, int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0), m_menuHelpList(nullptr), m_menuHelpMenu(1) {}
+Display::Display(const __FlashStringHelper *friendlyName, unsigned int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0), m_menuHelpList(nullptr), m_menuHelpMenu(1) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()
@@ -31,6 +31,8 @@ void Display::setup()
     m_display.clearDisplay();
     m_display.cp437(true);
     m_display.setTextColor(WHITE);
+
+    this->displayMessage("Initialisation en cours...");
 
     m_operational = true;
 }
@@ -499,6 +501,12 @@ void Display::loop()
         m_menuHelpList = nullptr;
         m_menuHelpMenu = 1;
     }
+}
+
+void Display::shutdown()
+{
+    this->resetDisplay();
+    m_display.display();
 }
 
 void Display::printAccents(const String &string)

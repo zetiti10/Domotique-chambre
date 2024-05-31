@@ -697,9 +697,9 @@ void MusicsAnimationsMode::loop()
         }
         }
 
-        int newR = m_smoothTransitionInitialR + int(progression * float(m_smoothTransitionFinalR - m_smoothTransitionInitialR));
-        int newG = m_smoothTransitionInitialG + int(progression * float(m_smoothTransitionFinalG - m_smoothTransitionInitialG));
-        int newB = m_smoothTransitionInitialB + int(progression * float(m_smoothTransitionFinalB - m_smoothTransitionInitialB));
+        int newR = m_smoothTransitionInitialR + int(progression * float(int(m_smoothTransitionFinalR) - int(m_smoothTransitionInitialR)));
+        int newG = m_smoothTransitionInitialG + int(progression * float(int(m_smoothTransitionFinalG) - int(m_smoothTransitionInitialG)));
+        int newB = m_smoothTransitionInitialB + int(progression * float(int(m_smoothTransitionFinalB) - int(m_smoothTransitionInitialB)));
 
         m_strip.setColor(newR, newG, newB);
 

@@ -339,7 +339,7 @@ void Television::playMusic(unsigned int musicIndex)
 
     delay(1000);
 
-    while (this->getVolume() < 17)
+    while (this->getVolume() < 18)
         this->increaseVolume();
 
     delay(2000);
@@ -410,20 +410,20 @@ void Television::switchDisplay()
 bool Television::detectTriggerSound()
 {
     const int SAMPLES = 128;
-    const double SAMPLING_FREQUENCY = 5000.0;
+    const float SAMPLING_FREQUENCY = 5000.0;
 
     unsigned int samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
     unsigned long microSeconds;
 
-    double vReal[SAMPLES];
-    double vImag[SAMPLES];
+    float vReal[SAMPLES];
+    float vImag[SAMPLES];
 
-    ArduinoFFT<double> FFT = ArduinoFFT<double>(vReal, vImag, SAMPLES, SAMPLING_FREQUENCY);
+    ArduinoFFT<float> FFT(vReal, vImag, SAMPLES, SAMPLING_FREQUENCY);
 
     for (int i = 0; i < SAMPLES; i++)
     {
         microSeconds = micros();
-        vReal[i] = m_microphone->getValue() /* - 287*/;
+        vReal[i] = m_microphone->getValue() - 287;
         vImag[i] = 0;
         while (micros() < (microSeconds + samplingPeriodUs))
         {
@@ -434,9 +434,9 @@ bool Television::detectTriggerSound()
     FFT.compute(FFTDirection::Forward);
     FFT.complexToMagnitude();
 
-    double peakFrequency = FFT.majorPeak();
+    float peakFrequency = FFT.majorPeak();
 
-    if (abs(peakFrequency - 1000.0) < 50.0)
+    if (abs(peakFrequency - 1000.0) < 100.0)
         return true;
 
     return false;

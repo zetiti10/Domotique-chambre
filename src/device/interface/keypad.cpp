@@ -1053,6 +1053,10 @@ void KeypadMenuTelevision::keyPressed(char key, bool longClick)
     case '5':
         m_keypad.setMenu(m_musicSelectionMenu);
         break;
+
+    case '6':
+        m_television->syncVolume(true);
+        break;
     }
 }
 
@@ -1065,6 +1069,7 @@ void KeypadMenuTelevision::displayHelp()
     help[2] = "- volume";
     help[3] = "Basculer sourdinne";
     help[4] = "Musiques";
+    help[5] = "Synchroniser";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }

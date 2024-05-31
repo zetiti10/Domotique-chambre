@@ -151,6 +151,9 @@ void Alarm::turnOff(bool shareInformation)
 /// @brief Méthode d'exécution des tâches liées à l'alarme.
 void Alarm::loop()
 {
+    if (!m_operational || m_locked)
+        return;
+
     // Vérification des cartes NFC une fois par seconde.
     if ((millis() - m_lastTimeCardChecked) >= 1000)
     {

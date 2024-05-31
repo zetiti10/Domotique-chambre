@@ -460,9 +460,9 @@ void SoundreactMode::loop()
         EEPROM.update(m_EEPROMSensitivity, m_sensitivity);
     }
 
-    int sound = m_microphone.getValue();
-    sound -= 287;
-    sound = abs(sound);
+    int baseSound = m_microphone.getValue();
+    baseSound -= 287;
+    unsigned int sound = abs(baseSound);
 
     bool maxChanged = false;
     if (sound > m_maxSound)
@@ -550,7 +550,7 @@ void SoundreactMode::loop()
     }
 }
 
-MusicsAnimationsMode::MusicsAnimationsMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_currentEffect(SINGLE_COLOR), m_smoothTransitionInitialR(0), m_smoothTransitionInitialG(0), m_smoothTransitionInitialB(0), m_smoothTransitionFinalR(0), m_smoothTransitionFinalG(0), m_smoothTransitionFinalB(0), m_smoothTransitionInitialMillis(0), m_smoothTransitionDuration(0), m_strobeEffectR(0), m_strobeEffectG(0), m_strobeEffectB(0), m_strobeEffectSpeed(0), m_strobeEffectStep(false), m_strobeEffectLastMillis(0) {}
+MusicsAnimationsMode::MusicsAnimationsMode(const __FlashStringHelper *friendlyName, unsigned int ID, RGBLEDStrip &strip) : RGBLEDStripMode(friendlyName, ID, strip), m_currentEffect(SINGLE_COLOR), m_smoothTransitionInitialR(0), m_smoothTransitionInitialG(0), m_smoothTransitionInitialB(0), m_smoothTransitionFinalR(0), m_smoothTransitionFinalG(0), m_smoothTransitionFinalB(0), m_smoothTransitionInitialMillis(0), m_smoothTransitionDuration(0), m_smoothTransitionType(LINEAR), m_strobeEffectR(0), m_strobeEffectG(0), m_strobeEffectB(0), m_strobeEffectSpeed(0), m_strobeEffectStep(false), m_strobeEffectLastMillis(0) {}
 
 /// @brief Met le ruban de DEL RVB sur une couleur unique.
 /// @param r L'intensité de la composante rouge.

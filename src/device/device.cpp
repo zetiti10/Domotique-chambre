@@ -26,7 +26,7 @@ const __FlashStringHelper *Device::getFriendlyName() const
 
 /// @brief Méthode permettant d'obtenir l'identifiant unique du périphérique.
 /// @return L'identifiant unique du périphérique.
-const int Device::getID() const
+const unsigned int Device::getID() const
 {
     return m_ID;
 }

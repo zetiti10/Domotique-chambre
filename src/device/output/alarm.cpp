@@ -312,7 +312,7 @@ void Alarm::stopRinging()
 
 /// @brief Méthode permettant de récupérer l'objet du lance-missile.
 /// @return Le lance-missile.
-MissileLauncher &Alarm::getMissileLauncher() const
+MissileLauncher &Alarm::getMissileLauncher()
 {
     return m_missileLauncher;
 }

@@ -162,7 +162,7 @@ void Television::syncVolume(bool shareInformation)
     for (int i = 0; i < 26; i++)
         IrSender.sendNEC(0x44C1, 0xC7, 3);
 
-    for (int i = 0; i < m_volume; i++)
+    for (unsigned int i = 0; i < m_volume; i++)
         this->increaseVolume();
 
     if (shareInformation)
@@ -294,7 +294,7 @@ unsigned int Television::getMusicNumber() const
 
 /// @brief Méthode permettant de démarrer la lecture d'une vidéo.
 /// @param musicIndex La position de la musique dans la liste des musiques disponibles fournie par la méthode `Music **Television::getMusicsList()`.
-void Television::playMusic(int musicIndex)
+void Television::playMusic(unsigned int musicIndex)
 {
     // Étape 1 : vérification que toutes les conditions sont remplies pour démarrer la vidéo.
     if (m_locked || !m_operational || musicIndex > m_musicsNumber)
@@ -304,7 +304,7 @@ void Television::playMusic(int musicIndex)
         return;
     }
 
-    for (int i = 0; i < m_devicesNumber; i++)
+    for (unsigned int i = 0; i < m_devicesNumber; i++)
     {
         m_deviceList[i]->setup();
 
@@ -319,7 +319,7 @@ void Television::playMusic(int musicIndex)
     m_display.displayMessage("Initialisation...");
 
     // Étape 2 : préparation du terrain pour la vidéo.
-    for (int i = 0; i < m_devicesNumber; i++)
+    for (unsigned int i = 0; i < m_devicesNumber; i++)
     {
         m_deviceList[i]->turnOff();
         m_deviceList[i]->lock();
@@ -360,7 +360,7 @@ void Television::stopMusic()
     m_lastActionIndex = 0;
     m_musicStartTime = 0;
 
-    for (int i = 0; i < m_devicesNumber; i++)
+    for (unsigned int i = 0; i < m_devicesNumber; i++)
     {
         m_deviceList[i]->unLock();
         m_deviceList[i]->turnOff();
@@ -587,7 +587,7 @@ void Television::scheduleMusic()
 /// @return Un pointeur vers l'objet cherche (renvoie `nullptr` s'il na pas été trouvé).
 Output *Television::getDeviceFromID(unsigned int ID)
 {
-    for (int i = 0; i < m_devicesNumber; i++)
+    for (unsigned int i = 0; i < m_devicesNumber; i++)
     {
         if (m_deviceList[i]->getID() == ID)
             return m_deviceList[i];
@@ -618,11 +618,11 @@ unsigned int Television::getIntFromString(String &string, unsigned int position,
 {
     int result = 0;
 
-    for (int i = 0; i < lenght; i++)
+    for (unsigned int i = 0; i < lenght; i++)
     {
         int power = 1;
 
-        for (int j = 0; j < ((lenght - i) - 1); j++)
+        for (unsigned int j = 0; j < ((lenght - i) - 1); j++)
             power *= 10;
 
         result += (string.charAt(position + i) - '0') * power;

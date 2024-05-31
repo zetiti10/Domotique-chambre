@@ -1015,7 +1015,7 @@ void KeypadMenuConnectedLightColorControl::displayMenu()
     m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }
 
-KeypadMenuTelevision::KeypadMenuTelevision(const __FlashStringHelper* friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_television(nullptr) {}
+KeypadMenuTelevision::KeypadMenuTelevision(const __FlashStringHelper* friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_television(nullptr), m_musicSelectionMenu(nullptr) {}
 
 void KeypadMenuTelevision::setTelevision(Television *television)
 {
@@ -1074,7 +1074,7 @@ void KeypadMenuTelevision::displayMenu()
     m_keypad.getDisplay().displayKeypadMenu(TELEVISIONS, m_friendlyName);
 }
 
-KeypadMenuTelevisionMusicSelector::KeypadMenuTelevisionMusicSelector(const __FlashStringHelper* friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_index(0) {}
+KeypadMenuTelevisionMusicSelector::KeypadMenuTelevisionMusicSelector(const __FlashStringHelper* friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_television(nullptr), m_index(0) {}
 
 void KeypadMenuTelevisionMusicSelector::setTelevision(Television *television)
 {
@@ -1129,7 +1129,7 @@ void KeypadMenuTelevisionMusicSelector::displayMenu()
     m_keypad.getDisplay().displayKeypadMenu(TELEVISIONS, m_friendlyName);
 }
 
-KeypadMenuAlarm::KeypadMenuAlarm(const __FlashStringHelper* friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_alarm(nullptr) {}
+KeypadMenuAlarm::KeypadMenuAlarm(const __FlashStringHelper* friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_alarm(nullptr), m_missileLauncherControlMenu(nullptr) {}
 
 void KeypadMenuAlarm::setAlarm(Alarm *alarm)
 {

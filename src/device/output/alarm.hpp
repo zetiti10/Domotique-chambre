@@ -29,7 +29,7 @@ public:
     virtual void removeCards();
     virtual void trigger();
     virtual void stopRinging();
-    virtual MissileLauncher &getMissileLauncher() const;
+    virtual MissileLauncher &getMissileLauncher();
     virtual AlarmMode &getAlarmStripMode() const;
     virtual void disableBuzzer();
     virtual void enableBuzzer();

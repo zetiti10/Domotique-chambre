@@ -54,7 +54,7 @@ public:
     virtual bool getMute() const;
     virtual Music **getMusicsList() const;
     virtual unsigned int getMusicNumber() const;
-    virtual void playMusic(int musicIndex);
+    virtual void playMusic(unsigned int musicIndex);
     virtual void stopMusic();
     virtual void shutdown() override;
 

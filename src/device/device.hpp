@@ -11,7 +11,7 @@ public:
     Device(const __FlashStringHelper *friendlyName, unsigned int ID);
     virtual void setup() = 0;
     virtual const __FlashStringHelper *getFriendlyName() const;
-    virtual const int getID() const;
+    virtual const unsigned int getID() const;
     virtual bool getAvailability() const;
     virtual void shutdown();
 

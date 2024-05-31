@@ -107,7 +107,7 @@ void setup()
     };
     Music test1;
     test1.friendlyName = F("Test 1");
-    test1.videoURL = F("https://www.udrop.com/LJNZ/Test_1.mp4?download_token=128b18fd35932a7d4a4290eb7d099f9f1b14f17ea59069c0caee8150e706172e");
+    test1.videoURL = F("https://www.udrop.com/LK18/Test_1.mp4?download_token=6ae5d678b2fc48fd8943f475f48412619ea441890ddad19467a3482be3a73928");
     test1.actionList = test1Music;
     test1.actionsNumber = 9;
 

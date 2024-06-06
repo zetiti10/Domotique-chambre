@@ -5,7 +5,6 @@
 #include <Arduino.h>
 #define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
 #include <IRremote.hpp>
-#include <arduinoFFT.h>
 
 // Autres fichiers du programme.
 #include "device/output/output.hpp"

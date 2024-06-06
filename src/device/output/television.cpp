@@ -96,7 +96,7 @@ void Television::loop()
         if (detectTriggerSound())
         {
             m_waitingForTriggerSound = false;
-            m_musicStartTime = millis() - 1100;
+            m_musicStartTime = millis() - 1000;
             m_display.displayMessage("C'est parti !");
         }
 
@@ -156,14 +156,26 @@ void Television::syncVolume(bool shareInformation)
         return;
     }
 
+    unsigned int savedVolume = m_volume;
+
     if (shareInformation)
         m_display.displayMessage("Calibration du son...");
 
-    for (int i = 0; i < 26; i++)
-        IrSender.sendNEC(0x44C1, 0xC7, 3);
+    for (int i = 0; i < 25; i++)
+    {
+        for (int i = 0; i < 2; i++)
+            m_IRSender.sendNEC(0x44C1, 0xC7, 3);
 
-    for (unsigned int i = 0; i < m_volume; i++)
-        this->increaseVolume();
+        delay(50);
+    }
+
+    for (unsigned int i = 0; i < savedVolume; i++)
+    {
+        for (int i = 0; i < 2; i++)
+            m_IRSender.sendNEC(0x44C1, 0x47, 3);
+
+        delay(50);
+    }
 
     if (shareInformation)
         m_display.displayMessage("Calibration terminée !");
@@ -412,35 +424,38 @@ void Television::switchDisplay()
 /// @return Le résultat de l'analyse.
 bool Television::detectTriggerSound()
 {
-    const int SAMPLES = 128;
-    const float SAMPLING_FREQUENCY = 5000.0;
-
-    unsigned int samplingPeriodUs = round(1000000 * (1.0 / SAMPLING_FREQUENCY));
-    unsigned long microSeconds;
-
-    float vReal[SAMPLES];
-    float vImag[SAMPLES];
-
-    ArduinoFFT<float> FFT(vReal, vImag, SAMPLES, SAMPLING_FREQUENCY);
-
-    for (int i = 0; i < SAMPLES; i++)
+    unsigned long startTime = millis();
+    unsigned long previousPeakTime = millis();
+    int previousValue = 0;
+    int maxValue = 0;
+    int counter = 0;
+    while ((millis() - startTime) <= 500)
     {
-        microSeconds = micros();
-        vReal[i] = m_microphone->getValue() - 287;
-        vImag[i] = 0;
-        while (micros() < (microSeconds + samplingPeriodUs))
+        int currentValue = m_microphone->getValue() - 287;
+
+        if (currentValue > maxValue)
+            maxValue = currentValue;
+
+        if (currentValue < previousValue)
         {
+            if (previousValue >= (maxValue * 0.75))
+            {
+                unsigned long frequency = uint64_t(1.0 / double(double(millis() - previousPeakTime) / 1000.0));
+
+                if (abs(int(frequency) - 1000) < 50)
+                {
+                    if (counter == 5)
+                        return true;
+
+                    counter++;
+                }
+
+                previousPeakTime = millis();
+            }
         }
+
+        previousValue = currentValue;
     }
-
-    FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward);
-    FFT.compute(FFTDirection::Forward);
-    FFT.complexToMagnitude();
-
-    float peakFrequency = FFT.majorPeak();
-
-    if (abs(peakFrequency - 1000.0) < 100.0)
-        return true;
 
     return false;
 }
@@ -488,6 +503,7 @@ void Television::scheduleMusic()
         {
             RGBLEDStrip *strip = static_cast<RGBLEDStrip *>(output);
             strip->setMode(&m_mode);
+
             strip->turnOn();
 
             switch (getIntFromString(action, 4, 1))

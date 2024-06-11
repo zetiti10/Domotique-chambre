@@ -462,7 +462,7 @@ void Display::displayPercentage(String name, int value)
     display();
 }
 
-void Display::displaySelectedMusic(Music **musicList, int musicNumber, int musicIndex)
+void Display::displaySelectedMusic(const Music **musicList, int musicNumber, int musicIndex)
 {
     if (!m_operational || musicIndex >= musicNumber)
         return;
@@ -472,7 +472,7 @@ void Display::displaySelectedMusic(Music **musicList, int musicNumber, int music
 
     m_display.setCursor(0, 25);
     m_display.setTextWrap(false);
-    printAccents("-> " + String(musicList[musicIndex]->friendlyName));
+    printAccents("-> " + String(musicList[musicIndex]->friendlyName)); // Pas sûr que ça marche.
 
     if (musicIndex > 0)
     {

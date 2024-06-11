@@ -12,6 +12,7 @@
 
 // Autres fichiers du programme.
 #include "television.hpp"
+#include "utils/readPROGMEMString.hpp"
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
@@ -40,7 +41,7 @@ void Television::setMusicDevices(Output *deviceList[], unsigned int devicesNumbe
 /// @brief Méthode permettant de définir la liste des musiques disponibles à la lecture.
 /// @param musicList La liste de musiques.
 /// @param musicsNumber Le nombre de musiques de la liste de musiques.
-void Television::setMusicsList(Music **musicList, unsigned int musicsNumber)
+void Television::setMusicsList(const Music **musicList, unsigned int musicsNumber)
 {
     if (musicsNumber <= 0)
         return;
@@ -292,7 +293,7 @@ bool Television::getMute() const
 
 /// @brief Méthode permettant d'obtenir la liste des musiques disponibles.
 /// @return La liste des musiques disponibles.
-Music **Television::getMusicsList() const
+const Music **Television::getMusicsList() const
 {
     return m_musicList;
 }
@@ -359,7 +360,7 @@ void Television::playMusic(unsigned int musicIndex)
 
     delay(2000);
 
-    m_connection.playVideo(m_musicList[musicIndex]->videoURL);
+    m_connection.playVideo(readProgmemString(m_musicList[musicIndex]->videoURL));
     m_waitingForTriggerSound = true;
     m_currentMusicIndex = musicIndex;
     m_display.displayMessage("En attente de la vidéo.");
@@ -463,9 +464,12 @@ bool Television::detectTriggerSound()
 /// @brief Méthode d'exécution des tâches périodiques liées au mode musique animée.
 void Television::scheduleMusic()
 {
-    while (m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].timecode <= (millis() - m_musicStartTime))
+    Action currentAction;
+    memcpy_P(&currentAction, &m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex], sizeof(Action)); // Pas sûr que ça marche : il faut peut-être déjà récupérer la musique parmis la liste.
+
+    while (currentAction.timecode <= (millis() - m_musicStartTime))
     {
-        String action = m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex].action;
+        String action = currentAction.action;
 
         // Récupération du périphérique de sortie à partir de son ID.
         Output *output = this->getDeviceFromID(this->getIntFromString(action, 0, 2));
@@ -593,7 +597,7 @@ void Television::scheduleMusic()
 
         m_lastActionIndex++;
 
-        if (m_lastActionIndex >= m_musicList[m_currentMusicIndex]->actionsNumber)
+        if (m_lastActionIndex >= m_musicList[m_currentMusicIndex]->actionsNumber) // Pas sûr que ça marche non plus.
         {
             stopMusic();
             break;

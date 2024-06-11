@@ -15,7 +15,7 @@
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
-#include "gammaCorrection/gammaCorrection.hpp"
+#include "utils/gammaCorrection.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.

@@ -7,6 +7,7 @@
 #include <IRremote.hpp>
 
 // Autres fichiers du programme.
+#include "utils/readPROGMEMString.hpp"
 #include "device/output/output.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/HomeAssistant.hpp"
@@ -18,15 +19,15 @@
 struct Action
 {
     unsigned long timecode;
-    const __FlashStringHelper *action;
+    char action[32];
 };
 
 /// @brief Structure stockant une musique pour le système de musique animée.
 struct Music
 {
-    const __FlashStringHelper *friendlyName;
-    const __FlashStringHelper *videoURL;
-    Action *actionList;
+    const char *friendlyName;
+    const char *videoURL;
+    const Action *actionList;
     unsigned int actionsNumber;
 };
 
@@ -36,7 +37,7 @@ class Television : public Output
 public:
     Television(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode);
     virtual void setMusicDevices(Output *deviceList[], unsigned int devicesNumber);
-    virtual void setMusicsList(Music **musicList, unsigned int musicsNumber);
+    virtual void setMusicsList(const Music **musicList, unsigned int musicsNumber);
     virtual void setMicrophone(AnalogInput &microphone);
     virtual void setup() override;
     virtual void reportState() override;
@@ -51,7 +52,7 @@ public:
     virtual void unMute(bool shareInformation = false);
     virtual void toggleMute(bool shareInformation = false);
     virtual bool getMute() const;
-    virtual Music **getMusicsList() const;
+    virtual const Music **getMusicsList() const;
     virtual unsigned int getMusicNumber() const;
     virtual void playMusic(unsigned int musicIndex);
     virtual void stopMusic();
@@ -77,7 +78,7 @@ protected:
     AnalogInput *m_microphone;
     unsigned long m_musicStartTime;
     unsigned int m_lastActionIndex;
-    Music **m_musicList;
+    const Music **m_musicList;
     int m_currentMusicIndex;
     unsigned int m_musicsNumber;
     Output **m_deviceList;

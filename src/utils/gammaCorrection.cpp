@@ -1,5 +1,5 @@
 /**
- * @file gammaCorrection/gammaCorrection.cpp
+ * @file utils/gammaCorrection.cpp
  * @author Louis L
  * @brief Fichier contenant la fonction d'application de la correction gamma.
  * @version 2.0 dev

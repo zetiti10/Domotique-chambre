@@ -16,7 +16,6 @@
 #include "pinDefinitions.hpp"
 #include "deviceID.hpp"
 #include "EEPROM.hpp"
-#include "musics.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/buzzer.hpp"
 #include "device/interface/keypad.hpp"
@@ -31,6 +30,7 @@
 #include "device/input/analogInput.hpp"
 #include "device/input/airSensor.hpp"
 #include "device/input/IRSensor.hpp"
+#include "musics.hpp"
 
 bool systemToShutdown = false;
 
@@ -93,26 +93,8 @@ void setup()
     SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY);
     LEDStrip.setMode(&colorMode);
 
-    // Musiques.
-    Action test1Music[] = {
-        {8800, F("09011000000000255255255010001")},
-        {9800, F("09011255255255000000000010001")},
-        {11000, F("09011000000000255255255010003")},
-        {17000, F("02001")},
-        {17000, F("090122552552550100")},
-        {20000, F("09011255100000000200255030003")},
-        {25000, F("03001")},
-        {25000, F("02000")},
-        {30000, F("03000")},
-    };
-    Music test1;
-    test1.friendlyName = F("Test 1");
-    test1.videoURL = F("https://www.udrop.com/LK18/Test_1.mp4?download_token=6ae5d678b2fc48fd8943f475f48412619ea441890ddad19467a3482be3a73928");
-    test1.actionList = test1Music;
-    test1.actionsNumber = 9;
-
     // Liste des musiques.
-    Music *musicList[] = {&test1};
+    const Music *musicList[] = {&test1};
     int musicsNumber = 1;
 
     // Création d'une liste contenant des références vers tous les actionneurs utilisés par le système de musique animée.

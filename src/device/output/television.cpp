@@ -307,6 +307,9 @@ unsigned int Television::getMusicNumber() const
 
 const Music *Television::getMusicFromIndex(unsigned int index)
 {
+    if (index >= m_musicsNumber)
+        return nullptr;
+
     const Music *musicPtr;
     memcpy_P(&musicPtr, &m_musicList[index], sizeof(Music *));
     return musicPtr;
@@ -367,7 +370,7 @@ void Television::playMusic(unsigned int musicIndex)
 
     delay(2000);
 
-    m_connection.playVideo(readProgmemString(m_musicList[musicIndex]->videoURL));
+    m_connection.playVideo(readProgmemString(getMusicFromIndex(musicIndex)->videoURL));
     m_waitingForTriggerSound = true;
     m_currentMusicIndex = musicIndex;
     m_display.displayMessage("En attente de la vidéo.");
@@ -477,7 +480,7 @@ void Television::scheduleMusic()
     while (currentAction.timecode <= (millis() - m_musicStartTime))
     {
         currentAction = getAction(currentMusic, m_lastActionIndex);
-        String action = currentAction.action;
+        String action = readProgmemString(currentAction.action);
 
         // Récupération du périphérique de sortie à partir de son ID.
         Output *output = this->getDeviceFromID(this->getIntFromString(action, 0, 2));
@@ -629,6 +632,9 @@ Output *Television::getDeviceFromID(unsigned int ID)
 
 Action Television::getAction(const Music *music, unsigned int actionIndex)
 {
+    if (actionIndex >= music->actionsNumber)
+        return Action();
+
     Action action;
     memcpy_P(&action, &music->actionList[actionIndex], sizeof(Action));
     return action;

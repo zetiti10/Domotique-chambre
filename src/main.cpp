@@ -196,6 +196,13 @@ void setup()
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);
 
+    delay(1000);
+    const Music *ptr = television.getMusicFromIndex(0);
+    Serial.println(readProgmemString(ptr->friendlyName)); // Don't work
+    Music m;
+    memcpy_P(&m, ptr, sizeof(Music));
+    Serial.println(readProgmemString(m.friendlyName)); // Work
+
     // Boucle d'exécution des tâches du système.
     while (1)
     {

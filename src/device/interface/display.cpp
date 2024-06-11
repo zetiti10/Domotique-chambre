@@ -16,6 +16,7 @@
 #include "bitmaps.hpp"
 #include "display.hpp"
 #include "device/output/television.hpp"
+#include "utils/readPROGMEMString.hpp"
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
@@ -462,7 +463,7 @@ void Display::displayPercentage(String name, int value)
     display();
 }
 
-void Display::displaySelectedMusic(Television &television, int musicIndex)
+void Display::displaySelectedMusic(Television &television, unsigned int musicIndex)
 {
     if (!m_operational || musicIndex >= television.getMusicNumber())
         return;
@@ -473,20 +474,20 @@ void Display::displaySelectedMusic(Television &television, int musicIndex)
     m_display.setCursor(0, 25);
     m_display.setTextWrap(false);
     const Music *music = television.getMusicFromIndex(musicIndex);
-    printAccents("-> " + String(music->friendlyName)); // Pas sûr que ça marche.
+    printAccents("-> " + readProgmemString(music->friendlyName));
 
     if (musicIndex > 0)
     {
         m_display.setCursor(0, 17);
-        const Music *music = television.getMusicFromIndex(musicIndex - 1);
-        printAccents(String(musicIndex) + ". " + String(music->friendlyName));
+        const Music *previousMusic = television.getMusicFromIndex(musicIndex - 1);
+        printAccents(String(musicIndex) + ". " + readProgmemString(previousMusic->friendlyName));
     }
 
     if (musicIndex < (television.getMusicNumber() - 1))
     {
         m_display.setCursor(0, 33);
-        const Music *music = television.getMusicFromIndex(musicIndex + 1);
-        printAccents(String(musicIndex + 2) + ". " + String(music->friendlyName));
+        const Music *nextMusic = television.getMusicFromIndex(musicIndex + 1);
+        printAccents(String(musicIndex + 2) + ". " + readProgmemString(nextMusic->friendlyName));
     }
 
     m_display.setTextWrap(true);

@@ -1101,7 +1101,7 @@ void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
             break;
 
         m_index--;
-        m_keypad.getDisplay().displaySelectedMusic(m_television->getMusicsList(), m_television->getMusicNumber(), m_index);
+        m_keypad.getDisplay().displaySelectedMusic(*m_television, m_index);
         break;
 
     case '5':
@@ -1113,7 +1113,7 @@ void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
             break;
 
         m_index++;
-        m_keypad.getDisplay().displaySelectedMusic(m_television->getMusicsList(), m_television->getMusicNumber(), m_index);
+        m_keypad.getDisplay().displaySelectedMusic(*m_television, m_index);
         break;
     }
 }

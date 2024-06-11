@@ -305,6 +305,13 @@ unsigned int Television::getMusicNumber() const
     return m_musicsNumber;
 }
 
+const Music *Television::getMusicFromIndex(unsigned int index)
+{
+    const Music *musicPtr;
+    memcpy_P(&musicPtr, &m_musicList[index], sizeof(Music *));
+    return musicPtr;
+}
+
 /// @brief Méthode permettant de démarrer la lecture d'une vidéo.
 /// @param musicIndex La position de la musique dans la liste des musiques disponibles fournie par la méthode `Music **Television::getMusicsList()`.
 void Television::playMusic(unsigned int musicIndex)
@@ -464,16 +471,12 @@ bool Television::detectTriggerSound()
 /// @brief Méthode d'exécution des tâches périodiques liées au mode musique animée.
 void Television::scheduleMusic()
 {
-    const Music *currentMusicPtr;
-    memcpy_P(&currentMusicPtr, &m_musicList[m_currentMusicIndex], sizeof(Music *));
-    Music currentMusic;
-    memcpy_P(&currentMusic, currentMusicPtr, sizeof(Music));
-    Action currentAction;
-    memcpy_P(&currentAction, &currentMusic.actionList[m_lastActionIndex], sizeof(Action));
+    const Music *currentMusic = getMusicFromIndex(m_currentMusicIndex);
+    Action currentAction = getAction(currentMusic, m_lastActionIndex);
 
     while (currentAction.timecode <= (millis() - m_musicStartTime))
     {
-        memcpy_P(&currentAction, &currentMusic.actionList[m_lastActionIndex], sizeof(Action));
+        currentAction = getAction(currentMusic, m_lastActionIndex);
         String action = currentAction.action;
 
         // Récupération du périphérique de sortie à partir de son ID.
@@ -602,7 +605,7 @@ void Television::scheduleMusic()
 
         m_lastActionIndex++;
 
-        if (m_lastActionIndex >= currentMusic.actionsNumber)
+        if (m_lastActionIndex >= currentMusic->actionsNumber)
         {
             stopMusic();
             break;
@@ -622,6 +625,13 @@ Output *Television::getDeviceFromID(unsigned int ID)
     }
 
     return nullptr;
+}
+
+Action Television::getAction(const Music *music, unsigned int actionIndex)
+{
+    Action action;
+    memcpy_P(&action, &music->actionList[actionIndex], sizeof(Action));
+    return action;
 }
 
 /// @brief Méthode permettant de convertir un entier en un `String` complété de zéros pour avoir une longueur fixée.

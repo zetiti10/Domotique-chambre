@@ -462,9 +462,9 @@ void Display::displayPercentage(String name, int value)
     display();
 }
 
-void Display::displaySelectedMusic(const Music *const *musicList, int musicNumber, int musicIndex)
+void Display::displaySelectedMusic(Television &television, int musicIndex)
 {
-    if (!m_operational || musicIndex >= musicNumber)
+    if (!m_operational || musicIndex >= television.getMusicNumber())
         return;
 
     resetDisplay();
@@ -472,30 +472,21 @@ void Display::displaySelectedMusic(const Music *const *musicList, int musicNumbe
 
     m_display.setCursor(0, 25);
     m_display.setTextWrap(false);
-    const Music *musicPtr;
-    memcpy_P(&musicPtr, &musicList[musicIndex], sizeof(Music *));
-    Music music;
-    memcpy_P(&music, musicPtr, sizeof(Music));
-    printAccents("-> " + String(music.friendlyName)); // Pas sûr que ça marche.
+    const Music *music = television.getMusicFromIndex(musicIndex);
+    printAccents("-> " + String(music->friendlyName)); // Pas sûr que ça marche.
 
     if (musicIndex > 0)
     {
         m_display.setCursor(0, 17);
-        const Music *musicPtr;
-        memcpy_P(&musicPtr, &musicList[musicIndex - 1], sizeof(Music *));
-        Music music;
-        memcpy_P(&music, musicPtr, sizeof(Music));
-        printAccents(String(musicIndex) + ". " + String(music.friendlyName));
+        const Music *music = television.getMusicFromIndex(musicIndex - 1);
+        printAccents(String(musicIndex) + ". " + String(music->friendlyName));
     }
 
-    if (musicIndex < (musicNumber - 1))
+    if (musicIndex < (television.getMusicNumber() - 1))
     {
         m_display.setCursor(0, 33);
-        const Music *musicPtr;
-        memcpy_P(&musicPtr, &musicList[musicIndex + 1], sizeof(Music *));
-        Music music;
-        memcpy_P(&music, musicPtr, sizeof(Music));
-        printAccents(String(musicIndex + 2) + ". " + String(music.friendlyName));
+        const Music *music = television.getMusicFromIndex(musicIndex + 1);
+        printAccents(String(musicIndex + 2) + ". " + String(music->friendlyName));
     }
 
     m_display.setTextWrap(true);

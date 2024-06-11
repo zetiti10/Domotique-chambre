@@ -37,7 +37,7 @@ class Television : public Output
 public:
     Television(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode);
     virtual void setMusicDevices(Output *deviceList[], unsigned int devicesNumber);
-    virtual void setMusicsList(const Music **musicList, unsigned int musicsNumber);
+    virtual void setMusicsList(const Music *const *musicList, unsigned int musicsNumber);
     virtual void setMicrophone(AnalogInput &microphone);
     virtual void setup() override;
     virtual void reportState() override;
@@ -52,7 +52,7 @@ public:
     virtual void unMute(bool shareInformation = false);
     virtual void toggleMute(bool shareInformation = false);
     virtual bool getMute() const;
-    virtual const Music **getMusicsList() const;
+    virtual const Music *const *getMusicsList() const;
     virtual unsigned int getMusicNumber() const;
     virtual void playMusic(unsigned int musicIndex);
     virtual void stopMusic();
@@ -78,7 +78,7 @@ protected:
     AnalogInput *m_microphone;
     unsigned long m_musicStartTime;
     unsigned int m_lastActionIndex;
-    const Music **m_musicList;
+    const Music *const *m_musicList;
     int m_currentMusicIndex;
     unsigned int m_musicsNumber;
     Output **m_deviceList;

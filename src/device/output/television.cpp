@@ -41,7 +41,7 @@ void Television::setMusicDevices(Output *deviceList[], unsigned int devicesNumbe
 /// @brief Méthode permettant de définir la liste des musiques disponibles à la lecture.
 /// @param musicList La liste de musiques.
 /// @param musicsNumber Le nombre de musiques de la liste de musiques.
-void Television::setMusicsList(const Music **musicList, unsigned int musicsNumber)
+void Television::setMusicsList(const Music *const *musicList, unsigned int musicsNumber)
 {
     if (musicsNumber <= 0)
         return;
@@ -293,7 +293,7 @@ bool Television::getMute() const
 
 /// @brief Méthode permettant d'obtenir la liste des musiques disponibles.
 /// @return La liste des musiques disponibles.
-const Music **Television::getMusicsList() const
+const Music *const *Television::getMusicsList() const
 {
     return m_musicList;
 }
@@ -464,11 +464,16 @@ bool Television::detectTriggerSound()
 /// @brief Méthode d'exécution des tâches périodiques liées au mode musique animée.
 void Television::scheduleMusic()
 {
+    const Music *currentMusicPtr;
+    memcpy_P(&currentMusicPtr, &m_musicList[m_currentMusicIndex], sizeof(Music *));
+    Music currentMusic;
+    memcpy_P(&currentMusic, currentMusicPtr, sizeof(Music));
     Action currentAction;
-    memcpy_P(&currentAction, &m_musicList[m_currentMusicIndex]->actionList[m_lastActionIndex], sizeof(Action)); // Pas sûr que ça marche : il faut peut-être déjà récupérer la musique parmis la liste.
+    memcpy_P(&currentAction, &currentMusic.actionList[m_lastActionIndex], sizeof(Action));
 
     while (currentAction.timecode <= (millis() - m_musicStartTime))
     {
+        memcpy_P(&currentAction, &currentMusic.actionList[m_lastActionIndex], sizeof(Action));
         String action = currentAction.action;
 
         // Récupération du périphérique de sortie à partir de son ID.
@@ -597,7 +602,7 @@ void Television::scheduleMusic()
 
         m_lastActionIndex++;
 
-        if (m_lastActionIndex >= m_musicList[m_currentMusicIndex]->actionsNumber) // Pas sûr que ça marche non plus.
+        if (m_lastActionIndex >= currentMusic.actionsNumber)
         {
             stopMusic();
             break;

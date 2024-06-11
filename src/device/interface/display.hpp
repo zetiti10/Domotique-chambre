@@ -52,7 +52,7 @@ public:
     virtual void displayLightColorTemperature(int minimum, int maximum, int temperature);
     virtual void displayLuminosity(int luminosity);
     virtual void displayPercentage(String name, int value);
-    virtual void displaySelectedMusic(const Music **musicList, int musicNumber, int musicIndex);
+    virtual void displaySelectedMusic(const Music *const *musicList, int musicNumber, int musicIndex);
     virtual void loop();
     virtual void shutdown() override;
 

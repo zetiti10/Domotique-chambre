@@ -462,7 +462,7 @@ void Display::displayPercentage(String name, int value)
     display();
 }
 
-void Display::displaySelectedMusic(const Music **musicList, int musicNumber, int musicIndex)
+void Display::displaySelectedMusic(const Music *const *musicList, int musicNumber, int musicIndex)
 {
     if (!m_operational || musicIndex >= musicNumber)
         return;
@@ -472,18 +472,30 @@ void Display::displaySelectedMusic(const Music **musicList, int musicNumber, int
 
     m_display.setCursor(0, 25);
     m_display.setTextWrap(false);
-    printAccents("-> " + String(musicList[musicIndex]->friendlyName)); // Pas sûr que ça marche.
+    const Music *musicPtr;
+    memcpy_P(&musicPtr, &musicList[musicIndex], sizeof(Music *));
+    Music music;
+    memcpy_P(&music, musicPtr, sizeof(Music));
+    printAccents("-> " + String(music.friendlyName)); // Pas sûr que ça marche.
 
     if (musicIndex > 0)
     {
         m_display.setCursor(0, 17);
-        printAccents(String(musicIndex) + ". " + String(musicList[musicIndex - 1]->friendlyName));
+        const Music *musicPtr;
+        memcpy_P(&musicPtr, &musicList[musicIndex - 1], sizeof(Music *));
+        Music music;
+        memcpy_P(&music, musicPtr, sizeof(Music));
+        printAccents(String(musicIndex) + ". " + String(music.friendlyName));
     }
 
     if (musicIndex < (musicNumber - 1))
     {
         m_display.setCursor(0, 33);
-        printAccents(String(musicIndex + 2) + ". " + String(musicList[musicIndex + 1]->friendlyName));
+        const Music *musicPtr;
+        memcpy_P(&musicPtr, &musicList[musicIndex + 1], sizeof(Music *));
+        Music music;
+        memcpy_P(&music, musicPtr, sizeof(Music));
+        printAccents(String(musicIndex + 2) + ". " + String(music.friendlyName));
     }
 
     m_display.setTextWrap(true);

@@ -357,17 +357,14 @@ void Television::playMusic(unsigned int musicIndex)
     }
 
     if (m_volumeMuted)
-    {
         this->unMute();
-        delay(1000);
-    }
 
     delay(1000);
 
-    while (this->getVolume() < 18)
+    while (this->getVolume() < 15)
     {
         this->increaseVolume();
-        delay(100);
+        delay(500);
     }
 
     delay(2000);

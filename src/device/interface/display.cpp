@@ -383,6 +383,10 @@ void Display::displayTray(bool on, bool shareInformation)
             m_display.drawLine(28, 11 + i, 100, 11 + i, WHITE);
             if (shareInformation)
                 m_display.display();
+
+            else
+                delay(15);
+
             delay(15);
         }
     }
@@ -400,6 +404,10 @@ void Display::displayTray(bool on, bool shareInformation)
             m_display.drawLine(28, 50 - i, 100, 50 - i, BLACK);
             if (shareInformation)
                 m_display.display();
+
+            else
+                delay(15);
+                
             delay(15);
         }
     }

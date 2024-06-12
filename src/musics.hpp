@@ -16,6 +16,7 @@ const Action worldsSmallestViolinActions[] PROGMEM = {
     {17500, "09010200000000"},
     {19225, "09010125000000"},
     {21225, "09010050000000"},
+    {21226, "98000"},
     {23225, "01001"},
     {25000, "04001"},
     {27400, "05001"},
@@ -27,7 +28,6 @@ const Action worldsSmallestViolinActions[] PROGMEM = {
     {58002, "03000"},
     {58003, "04000"},
     {58004, "09000"},
-    {58005, "97000"},
     {58005, "97000"},
 };
 const char worldsSmallestViolinName[] PROGMEM = "Test PPAP";

@@ -473,21 +473,21 @@ void Display::displaySelectedMusic(Television &television, unsigned int musicInd
 
     m_display.setCursor(0, 25);
     m_display.setTextWrap(false);
-    const Music *music = television.getMusicFromIndex(musicIndex);
-    printAccents("-> " + readProgmemString(music->friendlyName));
+    Music music = television.getMusicFromIndex(musicIndex);
+    printAccents("-> " + readProgmemString(music.friendlyName));
 
     if (musicIndex > 0)
     {
         m_display.setCursor(0, 17);
-        const Music *previousMusic = television.getMusicFromIndex(musicIndex - 1);
-        printAccents(String(musicIndex) + ". " + readProgmemString(previousMusic->friendlyName));
+        Music previousMusic = television.getMusicFromIndex(musicIndex - 1);
+        printAccents(String(musicIndex) + ". " + readProgmemString(previousMusic.friendlyName));
     }
 
     if (musicIndex < (television.getMusicNumber() - 1))
     {
         m_display.setCursor(0, 33);
-        const Music *nextMusic = television.getMusicFromIndex(musicIndex + 1);
-        printAccents(String(musicIndex + 2) + ". " + readProgmemString(nextMusic->friendlyName));
+        Music nextMusic = television.getMusicFromIndex(musicIndex + 1);
+        printAccents(String(musicIndex + 2) + ". " + readProgmemString(nextMusic.friendlyName));
     }
 
     m_display.setTextWrap(true);

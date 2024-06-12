@@ -54,7 +54,7 @@ public:
     virtual bool getMute() const;
     virtual const Music *const *getMusicsList() const;
     virtual unsigned int getMusicNumber() const;
-    virtual const Music *getMusicFromIndex(unsigned int index);
+    virtual Music getMusicFromIndex(unsigned int index);
     virtual void playMusic(unsigned int musicIndex);
     virtual void stopMusic();
     virtual void shutdown() override;
@@ -65,7 +65,7 @@ protected:
     virtual bool detectTriggerSound();
     virtual void scheduleMusic();
     virtual Output *getDeviceFromID(unsigned int ID);
-    virtual Action getAction(const Music *music, unsigned int actionIndex);
+    virtual Action getAction(Music music, unsigned int actionIndex);
 
     static String addZeros(unsigned int number, unsigned int length);
     static unsigned int getIntFromString(String &string, unsigned int position, unsigned int lenght);

@@ -305,14 +305,16 @@ unsigned int Television::getMusicNumber() const
     return m_musicsNumber;
 }
 
-const Music *Television::getMusicFromIndex(unsigned int index)
+Music Television::getMusicFromIndex(unsigned int index)
 {
     if (index >= m_musicsNumber)
-        return nullptr;
+        return Music();
 
     const Music *musicPtr;
     memcpy_P(&musicPtr, &m_musicList[index], sizeof(Music *));
-    return musicPtr;
+    Music music;
+    memcpy_P(&music, musicPtr, sizeof(Music));
+    return music;
 }
 
 /// @brief Méthode permettant de démarrer la lecture d'une vidéo.
@@ -370,7 +372,7 @@ void Television::playMusic(unsigned int musicIndex)
 
     delay(2000);
 
-    m_connection.playVideo(readProgmemString(getMusicFromIndex(musicIndex)->videoURL));
+    m_connection.playVideo(readProgmemString(getMusicFromIndex(musicIndex).videoURL));
     m_waitingForTriggerSound = true;
     m_currentMusicIndex = musicIndex;
     m_display.displayMessage("En attente de la vidéo.");
@@ -474,13 +476,12 @@ bool Television::detectTriggerSound()
 /// @brief Méthode d'exécution des tâches périodiques liées au mode musique animée.
 void Television::scheduleMusic()
 {
-    const Music *currentMusic = getMusicFromIndex(m_currentMusicIndex);
+    Music currentMusic = getMusicFromIndex(m_currentMusicIndex);
     Action currentAction = getAction(currentMusic, m_lastActionIndex);
 
     while (currentAction.timecode <= (millis() - m_musicStartTime))
     {
-        currentAction = getAction(currentMusic, m_lastActionIndex);
-        String action = readProgmemString(currentAction.action);
+        String action = currentAction.action;
 
         // Récupération du périphérique de sortie à partir de son ID.
         Output *output = this->getDeviceFromID(this->getIntFromString(action, 0, 2));
@@ -608,11 +609,13 @@ void Television::scheduleMusic()
 
         m_lastActionIndex++;
 
-        if (m_lastActionIndex >= currentMusic->actionsNumber)
+        if (m_lastActionIndex >= currentMusic.actionsNumber)
         {
             stopMusic();
             break;
         }
+
+        currentAction = getAction(currentMusic, m_lastActionIndex);
     }
 }
 
@@ -630,13 +633,13 @@ Output *Television::getDeviceFromID(unsigned int ID)
     return nullptr;
 }
 
-Action Television::getAction(const Music *music, unsigned int actionIndex)
+Action Television::getAction(Music music, unsigned int actionIndex)
 {
-    if (actionIndex >= music->actionsNumber)
+    if (actionIndex >= music.actionsNumber)
         return Action();
 
     Action action;
-    memcpy_P(&action, &music->actionList[actionIndex], sizeof(Action));
+    memcpy_P(&action, &music.actionList[actionIndex], sizeof(Action));
     return action;
 }
 

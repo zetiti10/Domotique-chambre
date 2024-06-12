@@ -62,10 +62,13 @@ void IRSensor::loop()
         {
 
         case 4244768519: // ON/OFF.
+        {
             m_television.toggle(true);
             break;
+        }
 
         case 4261480199: // Source.
+        {
             bool devicesOff = true;
             for (int i = 0; i < m_devicesNumber; i++)
             {
@@ -85,17 +88,27 @@ void IRSensor::loop()
                     m_deviceList[i]->turnOff(true);
             }
             break;
+        }
 
         case 4161210119: // Vol+.
+        {
             m_television.increaseVolume(true);
             break;
+        }
 
         case 4094363399: // Vol-.
+        {
             m_television.decreaseVolume(true);
             break;
+        }
 
         case 4027516679: // Mute.
+        {
             m_television.toggleMute(true);
+            break;
+        }
+
+        default:
             break;
         }
     }

@@ -97,7 +97,7 @@ void Television::loop()
         if (detectTriggerSound())
         {
             m_waitingForTriggerSound = false;
-            m_musicStartTime = millis() - 1000;
+            m_musicStartTime = millis() - 1250;
             m_display.displayMessage("C'est parti !");
         }
 

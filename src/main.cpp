@@ -78,7 +78,7 @@ void setup()
 
     // Liste des périphériques contrôlés par la télécommande Google.
     Output *remoteDeviceList[] = {&LEDStrip, &LEDCube};
-    int remoteDevicesNumber = 14;
+    int remoteDevicesNumber = 2;
 
     // Périphériques d'entrée.
     WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);

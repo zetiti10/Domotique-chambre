@@ -3,7 +3,6 @@
 
 #include "device/output/television.hpp"
 
-// Musiques.
 const Action test1Music[] PROGMEM = {
     {8800, "09011000000000255255255010001"},
     {9800, "09011255255255000000000010001"},
@@ -15,13 +14,32 @@ const Action test1Music[] PROGMEM = {
     {25000, "02000"},
     {30000, "03000"},
 };
-const char friendlyName[] PROGMEM = "Test 1";
-const char videoURL[] PROGMEM = "https://www.udrop.com/LK18/Test_1.mp4?download_token=6ae5d678b2fc48fd8943f475f48412619ea441890ddad19467a3482be3a73928";
+const char friendlyName1[] PROGMEM = "Test PPAP";
+const char videoURL1[] PROGMEM = "https://www.udrop.com/";
 
 const Music test1 PROGMEM = {
-    friendlyName,
-    videoURL,
+    friendlyName1,
+    videoURL1,
     test1Music,
     9};
+
+const Action test2Music[] PROGMEM = {
+    {1600, "03001"},
+    {3600, "03000"},
+    {5600, "03001"},
+    {7600, "03000"},
+    {8600, "03001"},
+    {9600, "03000"},
+    {10600, "09011000000000255255255010001"},
+    {11600, "09011255255255000000000010001"},
+};
+const char friendlyName2[] PROGMEM = "Test Couleurs";
+const char videoURL2[] PROGMEM = "https://www.udrop.com/";
+
+const Music test2 PROGMEM = {
+    friendlyName2,
+    videoURL2,
+    test2Music,
+    8};
 
 #endif

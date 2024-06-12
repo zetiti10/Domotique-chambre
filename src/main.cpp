@@ -76,6 +76,10 @@ void setup()
     ConnectedColorVariableLight bedLight(F("Lampe de chevet"), ID_BED_LIGHT, HomeAssistantConnection, display, 2202, 6535);
     ConnectedOutput cameraLight(F("DEL de la caméra"), ID_CAMERA_LIGHT, HomeAssistantConnection, display);
 
+    // Liste des périphériques contrôlés par la télécommande Google.
+    Output *remoteDeviceList[] = {&LEDStrip, &LEDCube};
+    int remoteDevicesNumber = 14;
+
     // Périphériques d'entrée.
     WardrobeDoorSensor wardrobeDoorSensor(F("Armoire"), ID_WARDROBE_DOOR_SENSOR, HomeAssistantConnection, PIN_WARDROBE_DOOR_SENSOR, true, true, wardrobeLights);
     DoorSensor doorSensor(F("Porte"), ID_DOOR_SENSOR, HomeAssistantConnection, PIN_BEDROOM_DOOR_SENSOR, false, false, alarm);
@@ -85,7 +89,7 @@ void setup()
     AnalogInput microphone(F("Microphone"), ID_MICROPHONE, HomeAssistantConnection, PIN_MICROPHONE, false);
     television.setMicrophone(microphone);
     AirSensor airSensor(F("Air"), ID_AIR_SENSOR, HomeAssistantConnection, PIN_AIR_SENSOR);
-    IRSensor iRSensor(F("Capteur infrarouge"), ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR);
+    IRSensor iRSensor(F("Capteur infrarouge"), ID_IR_SENSOR, HomeAssistantConnection, PIN_IR_SENSOR, television, remoteDeviceList, remoteDevicesNumber);
 
     // Modes du ruban de DEL.
     ColorMode colorMode(F("Mode couleur unique"), ID_COLOR_MODE, LEDStrip, HomeAssistantConnection);
@@ -94,7 +98,7 @@ void setup()
     LEDStrip.setMode(&colorMode);
 
     // Liste des musiques.
-    const static Music *const musicList[] PROGMEM = {&test1, &test1};
+    const static Music *const musicList[] PROGMEM = {&test1, &test2};
     int musicsNumber = 2;
 
     // Création d'une liste contenant des références vers tous les actionneurs utilisés par le système de musique animée.

@@ -19,7 +19,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin La broche de l'Arduino liée au capteur infrarouge.
-IRSensor::IRSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin), m_lastTime(0) {}
+IRSensor::IRSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin, Television &television, Output *deviceList[], int devicesNumber) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin), m_lastTime(0), m_television(television), m_deviceList(deviceList), m_devicesNumber(devicesNumber) {}
 
 /// @brief Initialise l'objet.
 void IRSensor::setup()
@@ -29,6 +29,18 @@ void IRSensor::setup()
 
     Input::setup();
     m_sensor.enableIRIn();
+
+    m_television.setup();
+    if (!m_television.getAvailability())
+        return;
+
+    for (int i = 0; i < m_devicesNumber; i++)
+    {
+        m_deviceList[i]->setup();
+        if (!m_deviceList[i]->getAvailability())
+            return;
+    }
+
     m_lastTime = millis();
     m_operational = true;
     m_connection.updateDeviceAvailability(m_ID, true);
@@ -50,35 +62,40 @@ void IRSensor::loop()
         {
 
         case 4244768519: // ON/OFF.
-            // switchTV(TOGGLE, true); // Le constructeur pourrait prendre en paramètre une méthode à éxecuter lors d'un clic.
+            m_television.toggle(true);
             break;
 
         case 4261480199: // Source.
-            /*if (LEDCubeState == LOW && multicolorState == false)
+            bool devicesOff = true;
+            for (int i = 0; i < m_devicesNumber; i++)
             {
-                switchMulticolor(SWITCH_ON, false);
-                switchLEDCube(SWITCH_ON, false);
-                displayDeviceState(true);
+                if (m_deviceList[i]->getState())
+                    devicesOff = false;
+            }
+
+            if (devicesOff)
+            {
+                for (int i = 0; i < m_devicesNumber; i++)
+                    m_deviceList[i]->turnOn(true);
             }
 
             else
             {
-                switchMulticolor(SWITCH_OFF, false);
-                switchLEDCube(SWITCH_OFF, false);
-                displayDeviceState(false);
-            }*/
+                for (int i = 0; i < m_devicesNumber; i++)
+                    m_deviceList[i]->turnOff(true);
+            }
             break;
 
         case 4161210119: // Vol+.
-            // volumeSono(INCREASE, true);
+            m_television.increaseVolume(true);
             break;
 
         case 4094363399: // Vol-.
-            // volumeSono(DECREASE, true);
+            m_television.decreaseVolume(true);
             break;
 
         case 4027516679: // Mute.
-            // volumeSono(TOGGLE_MUTE, true);
+            m_television.toggleMute(true);
             break;
         }
     }

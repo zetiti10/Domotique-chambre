@@ -384,4 +384,14 @@ protected:
     WardrobeDoorSensor &m_sensor;
 };
 
+class KeypadMenuSettings : public KeypadMenu
+{
+public:
+    KeypadMenuSettings(const __FlashStringHelper* friendlyName, Keypad &keypad);
+
+    virtual void keyPressed(char key, bool longClick) override;
+    virtual void displayHelp() override;
+    virtual void displayMenu() override;
+};
+
 #endif

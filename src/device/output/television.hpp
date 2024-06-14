@@ -86,7 +86,7 @@ protected:
     Output **m_deviceList;
     unsigned int m_devicesNumber;
     MusicsAnimationsMode &m_mode;
-    unsigned int m_detectionCounter;
+    unsigned long m_detectionStartTime;
 };
 
 #endif

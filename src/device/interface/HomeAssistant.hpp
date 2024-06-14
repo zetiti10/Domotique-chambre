@@ -53,6 +53,7 @@ public:
     virtual void updateAirSensor(unsigned int ID, float temperature, float humidity);
     virtual void sayMessage(String message);
     virtual void playVideo(String videoURL);
+    virtual void stopSystem(bool restart = false);
 
 protected:
     virtual Output *getDeviceFromID(unsigned int ID);

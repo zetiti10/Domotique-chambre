@@ -11,6 +11,7 @@
 #include <Adafruit_Keypad.h>
 
 // Autres fichiers du programme.
+#include "utils/restart.hpp"
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 #include "device/output/tray.hpp"
@@ -285,6 +286,12 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
 
         previousMenu = sensorsMenu;
     }
+
+    // Création du menu des paramètres.
+    KeypadMenuSettings *menu = new KeypadMenuSettings(F("Paramètres"), *this);
+    menu->setPreviousMenu(previousMenu);
+    previousMenu->setNextMenu(menu);
+    previousMenu = menu;
 
     m_devicesDefined = true;
 }
@@ -1096,6 +1103,11 @@ void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
 
     switch (key)
     {
+    case '1':
+        m_television->stopMusic();
+        m_keypad.getDisplay().displayMessage("Musique arrêtée");
+        break;
+
     case '2':
         if (m_index == 0)
             break;
@@ -1122,9 +1134,10 @@ void KeypadMenuTelevisionMusicSelector::displayHelp()
 {
     String help[10];
 
-    help[2] = "Précédent";
-    help[5] = "Sélectionner";
-    help[8] = "Suivant";
+    help[0] = "Arrêt de la lecture";
+    help[1] = "Précédent";
+    help[4] = "Sélectionner";
+    help[7] = "Suivant";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }
@@ -1382,10 +1395,12 @@ KeypadMenuWardrobeControl::KeypadMenuWardrobeControl(const __FlashStringHelper* 
 
 void KeypadMenuWardrobeControl::keyPressed(char key, bool longClick)
 {
-    if (key == '1')
+    switch (key)
     {
+    case '1':
         m_sensor.toggleActivation();
         m_keypad.getDisplay().displayDeviceState(m_sensor.getActivation());
+        break;
     }
 }
 
@@ -1399,6 +1414,39 @@ void KeypadMenuWardrobeControl::displayHelp()
 }
 
 void KeypadMenuWardrobeControl::displayMenu()
+{
+    m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
+}
+
+KeypadMenuSettings::KeypadMenuSettings(const __FlashStringHelper *friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad) {}
+
+void KeypadMenuSettings::keyPressed(char key, bool longClick)
+{
+    switch (key)
+    {
+    case '1':
+        systemToShutdown = true;
+        systemToRestart = false;
+        break;
+
+    case '2':
+        systemToShutdown = true;
+        systemToRestart = true;
+        break;
+    }
+}
+
+void KeypadMenuSettings::displayHelp()
+{
+    String help[10];
+
+    help[0] = "Arrêter le système";
+    help[0] = "Redémarrer le système";
+
+    m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
+}
+
+void KeypadMenuSettings::displayMenu()
 {
     m_keypad.getDisplay().displayKeypadMenu(CONTROLS, m_friendlyName);
 }

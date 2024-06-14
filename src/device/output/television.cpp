@@ -27,7 +27,7 @@
 /// @param IRLEDPin La broche associée à celle de la DEL infrarouge.
 /// @param volume Le volume récupéré de l'EEPROM.
 /// @param mode Le mode utilisé lors de vidéos animées pour contrôler le ruban de DEL RVB.
-Television::Television(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_microphone(nullptr), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_mode(mode), m_detectionCounter(0) {}
+Television::Television(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display, int servomotorPin, int IRLEDPin, int volume, MusicsAnimationsMode &mode) : Output(friendlyName, ID, connection, display), m_servomotorPin(servomotorPin), m_IRLEDPin(IRLEDPin), m_IRSender(), m_volume(volume), m_volumeMuted(false), m_lastTime(0), m_waitingForTriggerSound(false), m_microphone(nullptr), m_musicStartTime(0), m_lastActionIndex(0), m_musicList(nullptr), m_currentMusicIndex(-1), m_musicsNumber(0), m_deviceList(nullptr), m_devicesNumber(0), m_mode(mode), m_detectionStartTime(0) {}
 
 /// @brief Cette méthode permet d'enregistrer les périphériques du système qui pourront être contrôlés automatiquement lors de la lecture d'une vidéo.
 /// @param deviceList La liste de périphériques à utiliser.
@@ -101,12 +101,10 @@ void Television::loop()
             m_display.displayMessage("C'est parti !");
         }
 
-        m_detectionCounter++;
-
-        if (m_detectionCounter >= 1000)
+        if ((millis() - m_detectionStartTime) >= 20000)
         {
-            m_waitingForTriggerSound = false;
-            m_detectionCounter = 0;
+            stopMusic();
+            m_display.displayMessage("Musique non détectée", "Erreur");
         }
     }
 
@@ -372,6 +370,7 @@ void Television::playMusic(unsigned int musicIndex)
     m_connection.playVideo(readProgmemString(getMusicFromIndex(musicIndex).videoURL));
     m_waitingForTriggerSound = true;
     m_currentMusicIndex = musicIndex;
+    m_detectionStartTime = millis();
     m_display.displayMessage("En attente de la vidéo.");
 }
 
@@ -384,6 +383,8 @@ void Television::stopMusic()
     m_currentMusicIndex = -1;
     m_lastActionIndex = 0;
     m_musicStartTime = 0;
+    m_detectionStartTime = 0;
+    m_waitingForTriggerSound = false;
 
     for (unsigned int i = 0; i < m_devicesNumber; i++)
     {

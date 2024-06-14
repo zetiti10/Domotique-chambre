@@ -16,6 +16,7 @@
 #include "pinDefinitions.hpp"
 #include "deviceID.hpp"
 #include "EEPROM.hpp"
+#include "utils/restart.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/buzzer.hpp"
 #include "device/interface/keypad.hpp"
@@ -31,8 +32,6 @@
 #include "device/input/airSensor.hpp"
 #include "device/input/IRSensor.hpp"
 #include "musics.hpp"
-
-bool systemToShutdown = false;
 
 // Initialisation du système.
 void setup()
@@ -218,6 +217,9 @@ void setup()
         if (systemToShutdown)
             break;
     }
+
+    // L'alimentation permet un délai entre la coupure du courant et la coupure de la sortie.
+    HomeAssistantConnection.stopSystem(systemToRestart);
 
     // Arrêt de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

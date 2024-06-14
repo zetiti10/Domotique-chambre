@@ -605,6 +605,12 @@ void HomeAssistant::playVideo(String videoURL)
     m_serial.println(videoURL);
 }
 
+void HomeAssistant::stopSystem(bool restart)
+{
+    m_serial.print(2);
+    m_serial.println(restart);
+}
+
 Output *HomeAssistant::getDeviceFromID(unsigned int ID)
 {
     for (int i = 0; i < m_devicesNumber; i++)

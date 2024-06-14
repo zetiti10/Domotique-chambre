@@ -1441,7 +1441,7 @@ void KeypadMenuSettings::displayHelp()
     String help[10];
 
     help[0] = "Arrêter le système";
-    help[0] = "Redémarrer le système";
+    help[1] = "Redémarrer le système";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }

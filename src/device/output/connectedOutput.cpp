@@ -35,15 +35,13 @@ void ConnectedOutput::setup()
     m_operational = true;
 }
 
-/// @brief Met à jour l'état du périphérique virtuel.
+/// @brief Met à jour l'état du périphérique virtuel. Cette méthode doit être exécutée deux fois, afin de basculer deux fois l'état du périphérique.
 void ConnectedOutput::reportState()
 {
     if (!m_operational)
         return;
 
     // Changement de l'état de l'appareil pour reçevoir une mise à jour de son état.
-    this->toggle();
-    delay(500);
     this->toggle();
 }
 

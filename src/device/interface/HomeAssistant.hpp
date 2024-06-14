@@ -73,6 +73,7 @@ protected:
     RainbowMode *m_rainbowMode;
     SoundreactMode *m_soundreactMode;
     AlarmMode *m_alarmMode;
+    unsigned long m_reportStateMillis;
 };
 
 #endif

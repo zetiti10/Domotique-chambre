@@ -8,3 +8,4 @@
 
 bool systemToRestart = false;
 bool systemToShutdown = false;
+bool powerSupplyToShutdown = false;

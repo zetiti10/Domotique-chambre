@@ -1427,11 +1427,19 @@ void KeypadMenuSettings::keyPressed(char key, bool longClick)
     case '1':
         systemToShutdown = true;
         systemToRestart = false;
+        powerSupplyToShutdown = false;
         break;
 
     case '2':
         systemToShutdown = true;
+        systemToRestart = false;
+        powerSupplyToShutdown = true;
+        break;
+
+    case '3':
+        systemToShutdown = true;
         systemToRestart = true;
+        powerSupplyToShutdown = true;
         break;
     }
 }
@@ -1441,7 +1449,8 @@ void KeypadMenuSettings::displayHelp()
     String help[10];
 
     help[0] = "Arrêter le système";
-    help[1] = "Redémarrer le système";
+    help[1] = "Eteindre le système";
+    help[2] = "Redémarrer le système";
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }

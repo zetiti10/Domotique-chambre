@@ -3,5 +3,6 @@
 
 extern bool systemToRestart;
 extern bool systemToShutdown;
+extern bool powerSupplyToShutdown;
 
 #endif

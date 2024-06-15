@@ -262,11 +262,11 @@ void HomeAssistant::processMessage()
             switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
-                output->updateOff(true);
+                output->updateOff((m_reportStateMillis == 0));
                 break;
 
             case 1:
-                output->updateOn(true);
+                output->updateOn((m_reportStateMillis == 0));
                 break;
             }
 
@@ -281,11 +281,11 @@ void HomeAssistant::processMessage()
             switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 2:
-                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), true);
+                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), (m_reportStateMillis == 0));
                 break;
 
             case 3:
-                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), true);
+                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), (m_reportStateMillis == 0));
                 break;
             }
 
@@ -300,15 +300,15 @@ void HomeAssistant::processMessage()
             switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 2:
-                light->updateColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3), true);
+                light->updateColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3), (m_reportStateMillis == 0));
                 break;
 
             case 3:
-                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), true);
+                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), (m_reportStateMillis == 0));
                 break;
 
             case 4:
-                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), true);
+                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), (m_reportStateMillis == 0));
                 break;
             }
 

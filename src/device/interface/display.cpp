@@ -53,24 +53,30 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
     for (int i = 0; i < devicesNumber; i++)
     {
         if (!deviceList[i]->getAvailability())
-        {
-            m_display.setCursor(0, counter * 10 + 10);
-            printAccents(deviceList[i]->getFriendlyName());
             counter++;
-        }
     }
 
     // Si aucune erreur n'a été détectée, affichage d'un message.
     if (counter == 0)
-    {
         displayMessage("Démarré !");
-    }
 
     // Affichage de la liste des périphériques indisponibles.
     else
     {
         m_display.setCursor(0, 0);
         displayMessage("", "ERREURS");
+
+        counter = 0;
+        for (int i = 0; i < devicesNumber; i++)
+        {
+            if (!deviceList[i]->getAvailability())
+            {
+                m_display.setCursor(0, counter * 10 + 10);
+                printAccents(deviceList[i]->getFriendlyName());
+                counter++;
+            }
+        }
+        
         display();
     }
 }
@@ -407,7 +413,7 @@ void Display::displayTray(bool on, bool shareInformation)
 
             else
                 delay(15);
-                
+
             delay(15);
         }
     }

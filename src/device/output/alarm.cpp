@@ -52,8 +52,8 @@ void Alarm::setup()
 
     pinMode(m_alarmRelayPin, OUTPUT);
 
-    if (!m_missileLauncher.begin(200))
-        return;
+    //if (!m_missileLauncher.begin(200))
+    return;
 
     m_doorLED.setup();
     m_beacon.setup();

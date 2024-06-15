@@ -219,7 +219,8 @@ void setup()
     }
 
     // L'alimentation permet un délai entre la coupure du courant et la coupure de la sortie.
-    HomeAssistantConnection.stopSystem(systemToRestart);
+    if (powerSupplyToShutdown)
+        HomeAssistantConnection.stopSystem(systemToRestart);
 
     // Arrêt de tous les périphériques de la liste.
     for (int i = 0; i < devicesNumber; i++)

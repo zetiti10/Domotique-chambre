@@ -43,7 +43,7 @@ void Television::setMusicDevices(Output *deviceList[], unsigned int devicesNumbe
 /// @param musicsNumber Le nombre de musiques de la liste de musiques.
 void Television::setMusicsList(const Music *const *musicList, unsigned int musicsNumber)
 {
-    if (musicsNumber <= 0)
+    if (musicsNumber == 0)
         return;
 
     m_musicList = musicList;

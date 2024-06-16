@@ -416,9 +416,6 @@ void SoundreactMode::setSensitivity(unsigned int sensitivity)
     if (sensitivity == m_sensitivity)
         return;
 
-    if (sensitivity < 0)
-        sensitivity = 0;
-
     if (sensitivity > 100)
         sensitivity = 100;
 
@@ -480,6 +477,7 @@ void SoundreactMode::loop()
         if (sound >= ((1.0 - (double(m_sensitivity) / 100.0)) * m_maxSound))
         {
             m_lastColorChange = time;
+            colorChanged = true;
 
             bool rSelected = random(2);
             bool gSelected = random(2);
@@ -536,13 +534,13 @@ void SoundreactMode::loop()
             int gValue = 0;
             int bValue = 0;
 
-            if ((m_strip.getR() - 5) >= 0)
+            if (m_strip.getR() >= 5)
                 rValue = m_strip.getR() - 5;
 
-            if ((m_strip.getG() - 5) >= 0)
+            if (m_strip.getG() >= 5)
                 gValue = m_strip.getG() - 5;
 
-            if ((m_strip.getB() - 5) >= 0)
+            if (m_strip.getB() >= 5)
                 bValue = m_strip.getB() - 5;
 
             m_strip.setColor(rValue, gValue, bValue);

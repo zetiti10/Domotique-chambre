@@ -606,13 +606,13 @@ void HomeAssistant::updateAirSensor(unsigned int ID, float temperature, float hu
     m_serial.println(hum);
 }
 
-void HomeAssistant::sayMessage(String &message)
+void HomeAssistant::sayMessage(String message)
 {
     m_serial.print(2);
     m_serial.println(message);
 }
 
-void HomeAssistant::playVideo(String &videoURL)
+void HomeAssistant::playVideo(String videoURL)
 {
     m_serial.print(4);
     m_serial.println(videoURL);
@@ -657,7 +657,7 @@ String HomeAssistant::addZeros(int number, int length)
     return result;
 }
 
-int HomeAssistant::getIntFromString(String &string, int position, int lenght)
+int HomeAssistant::getIntFromString(const String &string, int position, int lenght)
 {
     int result = 0;
 

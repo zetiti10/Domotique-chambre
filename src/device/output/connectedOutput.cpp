@@ -237,9 +237,6 @@ void ConnectedColorVariableLight::setLuminosity(unsigned int luminosity, bool sh
     if (!m_operational || !m_state)
         return;
 
-    if (luminosity < 0)
-        luminosity = 0;
-
     if (luminosity > 255)
         luminosity = 255;
 

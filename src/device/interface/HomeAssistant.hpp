@@ -51,15 +51,15 @@ public:
     virtual void updateBinaryInput(unsigned int ID, bool state);
     virtual void updateAnalogInput(unsigned int ID, int state);
     virtual void updateAirSensor(unsigned int ID, float temperature, float humidity);
-    virtual void sayMessage(String &message);
-    virtual void playVideo(String &videoURL);
+    virtual void sayMessage(String message);
+    virtual void playVideo(String videoURL);
     virtual void stopSystem(bool restart = false);
 
 protected:
     virtual Output *getDeviceFromID(unsigned int ID);
     virtual ConnectedOutput *getRemoteDeviceFromID(unsigned int ID);
     static String addZeros(int number, int length);
-    static int getIntFromString(String &string, int position, int lenght);
+    static int getIntFromString(const String &string, int position, int lenght);
     HardwareSerial &m_serial;
     String m_receivedMessage;
     Display &m_display;

@@ -15,7 +15,6 @@ public:
     Input(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection);
     virtual void setup() override;
     virtual void reportState() = 0;
-    virtual void loop() = 0;
 
 protected:
     HomeAssistant &m_connection;

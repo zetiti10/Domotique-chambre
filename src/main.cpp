@@ -203,22 +203,13 @@ void setup()
     while (1)
     {
         // Exécutuon des tâches périodiques des capteurs.
-        for (int i = 0; i < inputsNumber; i++)
-            inputList[i]->loop();
-
-        // Exécution des tâches périodiques des autres périphériques.
-        display.loop();
-        alarm.loop();
-        LEDStrip.loop();
-        HomeAssistantConnection.loop();
-        keypad.loop();
-        television.loop();
+        for (int i = 0; i < devicesNumber; i++)
+            deviceList[i]->loop();
 
         if (systemToShutdown)
             break;
     }
-
-    // L'alimentation permet un délai entre la coupure du courant et la coupure de la sortie.
+    
     if (powerSupplyToShutdown)
         HomeAssistantConnection.stopSystem(systemToRestart);
 

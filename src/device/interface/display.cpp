@@ -76,7 +76,7 @@ void Display::displayUnavailableDevices(Device *deviceList[], int &devicesNumber
                 counter++;
             }
         }
-        
+
         display();
     }
 }
@@ -283,7 +283,7 @@ void Display::displayDeviceState(bool on)
     display();
 }
 
-void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
+void Display::displayKeypadMenu(MenuIcons menuIcon, const __FlashStringHelper *menuName)
 {
     if (!m_operational)
         return;
@@ -324,7 +324,7 @@ void Display::displayKeypadMenu(MenuIcons menuIcon, String &menuName)
 /// @brief Affiche l'aide d'un menu, avec deux affichages qui s'alternent.
 /// @param menuHelpList La liste des commandes du menu pour chaque touche, d'une taille de 10 éléments (de 1 à 9, avec le 0 en dernier).
 /// @param menuTitle Le nom du menu.
-void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
+void Display::displayKeypadMenuHelp(const __FlashStringHelper **menuHelpList, const __FlashStringHelper *menuName)
 {
     if (!m_operational)
         return;
@@ -333,7 +333,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
 
     int begin = 0;
 
-    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (menuHelpList[5] == "" && menuHelpList[6] == "" && menuHelpList[7] == "" && menuHelpList[8] == "" && menuHelpList[9] == ""))
+    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (String(menuHelpList[5]) == "" && String(menuHelpList[6]) == "" && String(menuHelpList[7]) == "" && String(menuHelpList[8]) == "" && String(menuHelpList[9]) == ""))
         m_menuHelpMenu = 1;
 
     else
@@ -347,7 +347,7 @@ void Display::displayKeypadMenuHelp(String *menuHelpList, String &menuName)
 
     for (int i = begin; i < (begin + 5); i++)
     {
-        if (menuHelpList[i] == "")
+        if (String(menuHelpList[i]) == "")
             continue;
 
         if (i < 9)

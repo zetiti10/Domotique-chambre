@@ -30,7 +30,7 @@ public:
     HomeAssistant(const __FlashStringHelper* friendlyName, unsigned int ID, HardwareSerial &serial, Display &display);
     virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
     virtual void setup() override;
-    virtual void loop();
+    virtual void loop() override;
     virtual void processMessage();
     virtual void turnOnConnectedDevice(unsigned int ID);
     virtual void turnOffConnectedDevice(unsigned int ID);
@@ -51,8 +51,8 @@ public:
     virtual void updateBinaryInput(unsigned int ID, bool state);
     virtual void updateAnalogInput(unsigned int ID, int state);
     virtual void updateAirSensor(unsigned int ID, float temperature, float humidity);
-    virtual void sayMessage(String message);
-    virtual void playVideo(String videoURL);
+    virtual void sayMessage(String &message);
+    virtual void playVideo(String &videoURL);
     virtual void stopSystem(bool restart = false);
 
 protected:

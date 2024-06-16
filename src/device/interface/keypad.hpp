@@ -24,7 +24,7 @@ class KeypadMenu;
 class Keypad : public Device
 {
 public:
-    Keypad(const __FlashStringHelper* friendlyName, unsigned int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols);
+    Keypad(const __FlashStringHelper *friendlyName, unsigned int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols);
     virtual void setDevices(
         Output *deviceList[], int &devicesNumber,
         Output *lightList[], int &lightsNumber,
@@ -38,7 +38,7 @@ public:
         AirSensor *airSensorList[], int &airSensorsNumber,
         WardrobeDoorSensor *wardrobeDoorSensorList[], int &wardrobeDoorSensorsNumber);
     virtual void setup() override;
-    virtual void loop();
+    virtual void loop() override;
     virtual Display &getDisplay();
     virtual void setMenu(KeypadMenu *menu);
 
@@ -55,9 +55,9 @@ protected:
 class KeypadMenu
 {
 public:
-    KeypadMenu(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenu(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
-    virtual String getFriendlyName() const;
+    virtual const __FlashStringHelper *getFriendlyName() const;
     virtual void setParentMenu(KeypadMenu *menu);
     virtual KeypadMenu *getParentMenu() const;
     virtual void setPreviousMenu(KeypadMenu *menu);
@@ -72,7 +72,7 @@ public:
     virtual bool advancedClickControl();
 
 protected:
-    String m_friendlyName;
+    const __FlashStringHelper *m_friendlyName;
     Keypad &m_keypad;
 
     KeypadMenu *m_parentMenu;
@@ -83,7 +83,7 @@ protected:
 class KeypadMenuOutputList : public KeypadMenu
 {
 public:
-    KeypadMenuOutputList(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuOutputList(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setDevices(Output *outputList[], int &outputsNumber);
 
@@ -99,7 +99,7 @@ protected:
 class KeypadMenuLightList : public KeypadMenu
 {
 public:
-    KeypadMenuLightList(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuLightList(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setLights(Output *lightList[], KeypadMenu *lightMenuList[], int &lightsNumber);
 
@@ -116,7 +116,7 @@ protected:
 class KeypadMenuRGBLEDStripColorModeControl : public KeypadMenu
 {
 public:
-    KeypadMenuRGBLEDStripColorModeControl(const __FlashStringHelper* friendlyName, Keypad &keypad, ColorMode &colorMode);
+    KeypadMenuRGBLEDStripColorModeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, ColorMode &colorMode);
 
     virtual ColorMode &getColorMode();
 
@@ -131,7 +131,7 @@ protected:
 class KeypadMenuRGBLEDStripRainbowModeControl : public KeypadMenu
 {
 public:
-    KeypadMenuRGBLEDStripRainbowModeControl(const __FlashStringHelper* friendlyName, Keypad &keypad, RainbowMode &rainbowMode);
+    KeypadMenuRGBLEDStripRainbowModeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, RainbowMode &rainbowMode);
 
     virtual RainbowMode &getRainbowMode();
 
@@ -146,7 +146,7 @@ protected:
 class KeypadMenuRGBLEDStripSoundreactModeControl : public KeypadMenu
 {
 public:
-    KeypadMenuRGBLEDStripSoundreactModeControl(const __FlashStringHelper* friendlyName, Keypad &keypad, SoundreactMode &soundreactMode);
+    KeypadMenuRGBLEDStripSoundreactModeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, SoundreactMode &soundreactMode);
 
     virtual SoundreactMode &getSoundreactMode();
 
@@ -161,7 +161,7 @@ protected:
 class KeypadMenuRGBLEDStripAlarmModeControl : public KeypadMenu
 {
 public:
-    KeypadMenuRGBLEDStripAlarmModeControl(const __FlashStringHelper* friendlyName, Keypad &keypad, AlarmMode &alarmMode);
+    KeypadMenuRGBLEDStripAlarmModeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, AlarmMode &alarmMode);
 
     virtual AlarmMode &getAlarmMode();
 
@@ -176,7 +176,7 @@ protected:
 class KeypadMenuRGBLEDStripControl : public KeypadMenu
 {
 public:
-    KeypadMenuRGBLEDStripControl(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuRGBLEDStripControl(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setStrip(RGBLEDStrip *strip, ColorMode *colorMode, RainbowMode *rainbowMode, SoundreactMode *soundreactMode, AlarmMode *alarmMode);
 
@@ -193,12 +193,10 @@ protected:
     KeypadMenuRGBLEDStripAlarmModeControl *m_alarmMode;
 };
 
-
-
 class KeypadMenuConnectedLightLuminosityControl : public KeypadMenu
 {
 public:
-    KeypadMenuConnectedLightLuminosityControl(const __FlashStringHelper* friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light);
+    KeypadMenuConnectedLightLuminosityControl(const __FlashStringHelper *friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light);
 
     virtual ConnectedTemperatureVariableLight &getLight();
 
@@ -213,7 +211,7 @@ protected:
 class KeypadMenuConnectedLightTemperatureControl : public KeypadMenu
 {
 public:
-    KeypadMenuConnectedLightTemperatureControl(const __FlashStringHelper* friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light);
+    KeypadMenuConnectedLightTemperatureControl(const __FlashStringHelper *friendlyName, Keypad &keypad, ConnectedTemperatureVariableLight &light);
 
     virtual ConnectedTemperatureVariableLight &getLight();
 
@@ -228,7 +226,7 @@ protected:
 class KeypadMenuConnectedLightColorControl : public KeypadMenu
 {
 public:
-    KeypadMenuConnectedLightColorControl(const __FlashStringHelper* friendlyName, Keypad &keypad, ConnectedColorVariableLight &light);
+    KeypadMenuConnectedLightColorControl(const __FlashStringHelper *friendlyName, Keypad &keypad, ConnectedColorVariableLight &light);
 
     virtual ConnectedColorVariableLight &getLight();
 
@@ -243,7 +241,7 @@ protected:
 class KeypadMenuConnectedTemperatureVariableLightControl : public KeypadMenu
 {
 public:
-    KeypadMenuConnectedTemperatureVariableLightControl(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuConnectedTemperatureVariableLightControl(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setLight(ConnectedTemperatureVariableLight &light);
 
@@ -259,7 +257,7 @@ protected:
 class KeypadMenuConnectedColorVariableLightControl : public KeypadMenu
 {
 public:
-    KeypadMenuConnectedColorVariableLightControl(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuConnectedColorVariableLightControl(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setLight(ConnectedColorVariableLight &light);
 
@@ -278,7 +276,7 @@ class KeypadMenuTelevisionMusicSelector;
 class KeypadMenuTelevision : public KeypadMenu
 {
 public:
-    KeypadMenuTelevision(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuTelevision(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setTelevision(Television *television);
     virtual void setMusicSelectionMenu(KeypadMenuTelevisionMusicSelector *menu);
@@ -295,7 +293,7 @@ protected:
 class KeypadMenuTelevisionMusicSelector : public KeypadMenu
 {
 public:
-    KeypadMenuTelevisionMusicSelector(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuTelevisionMusicSelector(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setTelevision(Television *television);
 
@@ -313,7 +311,7 @@ class KeypadMenuAlarmMissileLauncherControl;
 class KeypadMenuAlarm : public KeypadMenu
 {
 public:
-    KeypadMenuAlarm(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuAlarm(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setAlarm(Alarm *alarm);
     virtual void setMissileLauncherControlMenu(KeypadMenuAlarmMissileLauncherControl *menu);
@@ -330,7 +328,7 @@ protected:
 class KeypadMenuAlarmMissileLauncherControl : public KeypadMenu
 {
 public:
-    KeypadMenuAlarmMissileLauncherControl(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuAlarmMissileLauncherControl(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setAlarm(Alarm *alarm);
 
@@ -356,7 +354,7 @@ enum KeypadMenuSensorType
 class KeypadMenuInputList : public KeypadMenu
 {
 public:
-    KeypadMenuInputList(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuInputList(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void setInputs(Input **inputList, KeypadMenu **menuList, KeypadMenuSensorType *sensorTypeList, int sensorsNumber);
 
@@ -374,7 +372,7 @@ protected:
 class KeypadMenuWardrobeControl : public KeypadMenu
 {
 public:
-    KeypadMenuWardrobeControl(const __FlashStringHelper* friendlyName, Keypad &keypad, WardrobeDoorSensor &sensor);
+    KeypadMenuWardrobeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, WardrobeDoorSensor &sensor);
 
     virtual void keyPressed(char key, bool longClick) override;
     virtual void displayHelp() override;
@@ -387,7 +385,7 @@ protected:
 class KeypadMenuSettings : public KeypadMenu
 {
 public:
-    KeypadMenuSettings(const __FlashStringHelper* friendlyName, Keypad &keypad);
+    KeypadMenuSettings(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
     virtual void keyPressed(char key, bool longClick) override;
     virtual void displayHelp() override;

@@ -35,9 +35,9 @@ class Television;
 class Display : public Device
 {
 public:
-    Display(const __FlashStringHelper* friendlyName, unsigned int ID);
+    Display(const __FlashStringHelper *friendlyName, unsigned int ID);
     virtual void setup() override;
-    virtual void displayUnavailableDevices(Device* deviceList[], int &devicesNumber);
+    virtual void displayUnavailableDevices(Device *deviceList[], int &devicesNumber);
     virtual void displayBell();
     virtual void displayMessage(const String &message, const String &title = "Info");
     virtual void displayVolume(VolumeType action = UNMUTE, int volume = 0);
@@ -47,14 +47,14 @@ public:
     virtual void displayBinarySensorValue(bool value);
     virtual void displayLEDState(int r, int g, int b);
     virtual void displayDeviceState(bool on);
-    virtual void displayKeypadMenu(MenuIcons menuIcon, String &menuName);
-    virtual void displayKeypadMenuHelp(String *menuHelpList, String &menuName);
+    virtual void displayKeypadMenu(MenuIcons menuIcon, const __FlashStringHelper *menuName);
+    virtual void displayKeypadMenuHelp(const __FlashStringHelper **menuHelpList, const __FlashStringHelper *menuName);
     virtual void displayTray(bool on, bool shareInformation = false);
     virtual void displayLightColorTemperature(int minimum, int maximum, int temperature);
     virtual void displayLuminosity(int luminosity);
     virtual void displayPercentage(String name, int value);
     virtual void displaySelectedMusic(Television &television, unsigned int musicIndex);
-    virtual void loop();
+    virtual void loop() override;
     virtual void shutdown() override;
 
 protected:
@@ -66,7 +66,7 @@ protected:
     Adafruit_SSD1306 m_display;
     unsigned long m_lastTime;
     unsigned long m_lastStateAnimation;
-    String *m_menuHelpList;
+    const __FlashStringHelper **m_menuHelpList;
     int m_menuHelpMenu;
 };
 

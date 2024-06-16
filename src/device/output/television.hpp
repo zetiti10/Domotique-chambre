@@ -41,7 +41,7 @@ public:
     virtual void setMicrophone(AnalogInput &microphone);
     virtual void setup() override;
     virtual void reportState() override;
-    virtual void loop();
+    virtual void loop() override;
     virtual void turnOn(bool shareInformation = false) override;
     virtual void turnOff(bool shareInformation = false) override;
     virtual void syncVolume(bool shareInformation = false);

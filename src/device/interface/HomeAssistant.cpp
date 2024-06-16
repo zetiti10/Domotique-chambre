@@ -606,13 +606,13 @@ void HomeAssistant::updateAirSensor(unsigned int ID, float temperature, float hu
     m_serial.println(hum);
 }
 
-void HomeAssistant::sayMessage(String message)
+void HomeAssistant::sayMessage(String &message)
 {
     m_serial.print(2);
     m_serial.println(message);
 }
 
-void HomeAssistant::playVideo(String videoURL)
+void HomeAssistant::playVideo(String &videoURL)
 {
     m_serial.print(4);
     m_serial.println(videoURL);

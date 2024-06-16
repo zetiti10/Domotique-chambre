@@ -13,6 +13,7 @@ public:
     virtual const __FlashStringHelper *getFriendlyName() const;
     virtual const unsigned int getID() const;
     virtual bool getAvailability() const;
+    virtual void loop();
     virtual void shutdown();
 
 protected:

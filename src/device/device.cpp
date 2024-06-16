@@ -38,6 +38,11 @@ bool Device::getAvailability() const
     return m_operational;
 }
 
+/// @brief Méthode d'exécution des tâches liées au périphérique.
+void Device::loop()
+{
+}
+
 /// @brief Méthode arrêtant le périphérique avant l'arrêt du système.
 void Device::shutdown()
 {

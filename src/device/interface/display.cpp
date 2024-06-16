@@ -333,7 +333,7 @@ void Display::displayKeypadMenuHelp(const __FlashStringHelper **menuHelpList, co
 
     int begin = 0;
 
-    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (String(menuHelpList[5]) == "" && String(menuHelpList[6]) == "" && String(menuHelpList[7]) == "" && String(menuHelpList[8]) == "" && String(menuHelpList[9]) == ""))
+    if ((menuHelpList != m_menuHelpList) || (m_menuHelpMenu == 2) || (menuHelpList[5] == nullptr && menuHelpList[6] == nullptr && menuHelpList[7] == nullptr && menuHelpList[8] == nullptr && menuHelpList[9] == nullptr))
         m_menuHelpMenu = 1;
 
     else
@@ -347,7 +347,7 @@ void Display::displayKeypadMenuHelp(const __FlashStringHelper **menuHelpList, co
 
     for (int i = begin; i < (begin + 5); i++)
     {
-        if (String(menuHelpList[i]) == "")
+        if (menuHelpList[i] == nullptr)
             continue;
 
         if (i < 9)

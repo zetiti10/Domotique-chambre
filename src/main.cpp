@@ -117,7 +117,7 @@ void setup()
     int HADevicesNumber = 11;
 
     // Liste des périphériques importés de Home Assistant.
-    Output *HARemoteDeviceList[] = {&mainLights, &sofaLight, &bedLight, &cameraLight};
+    ConnectedOutput *HARemoteDeviceList[] = {&mainLights, &sofaLight, &bedLight, &cameraLight};
     int HARemoteDevicesNumber = 4;
 
     // Liste des périphériques pour le clavier de contrôle.

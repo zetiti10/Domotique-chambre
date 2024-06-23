@@ -364,24 +364,24 @@ void Keypad::loop()
                     break;
 
                 case 'A':
-                    setMenu(m_mainMenu);
+                    setMenu(m_mainMenu, true);
                     break;
 
                 case 'B':
                     if (m_currentMenu->getParentMenu() != nullptr)
-                        setMenu(m_currentMenu->getParentMenu());
+                        setMenu(m_currentMenu->getParentMenu(), true);
 
                     break;
 
                 case 'C':
                     if (m_currentMenu->getPreviousMenu() != nullptr)
-                        setMenu(m_currentMenu->getPreviousMenu());
+                        setMenu(m_currentMenu->getPreviousMenu(), true);
 
                     break;
 
                 case 'D':
                     if (m_currentMenu->getNextMenu() != nullptr)
-                        setMenu(m_currentMenu->getNextMenu());
+                        setMenu(m_currentMenu->getNextMenu(), true);
 
                     break;
                 }
@@ -398,10 +398,12 @@ Display &Keypad::getDisplay()
     return m_display;
 }
 
-void Keypad::setMenu(KeypadMenu *menu)
+void Keypad::setMenu(KeypadMenu *menu, bool shareInformation)
 {
     m_currentMenu = menu;
-    m_currentMenu->displayMenu();
+
+    if (shareInformation)
+        m_currentMenu->displayMenu();
 }
 
 KeypadMenu::KeypadMenu(const __FlashStringHelper *friendlyName, Keypad &keypad) : m_friendlyName(friendlyName), m_keypad(keypad), m_parentMenu(nullptr), m_previousMenu(nullptr), m_nextMenu(nullptr) {}
@@ -497,7 +499,7 @@ void KeypadMenuLightList::keyPressed(char key, bool longClick)
             m_lightList[index]->toggle(true);
 
         else if (!(m_lightMenuList[index] == nullptr))
-            m_keypad.setMenu(m_lightMenuList[index]);
+            m_keypad.setMenu(m_lightMenuList[index], true);
     }
 }
 
@@ -557,7 +559,7 @@ void KeypadMenuRGBLEDStripControl::keyPressed(char key, bool longClick)
             m_strip->setMode(&m_colorMode->getColorMode(), true);
 
         else
-            m_keypad.setMenu(m_colorMode);
+            m_keypad.setMenu(m_colorMode, true);
 
         break;
 
@@ -566,7 +568,7 @@ void KeypadMenuRGBLEDStripControl::keyPressed(char key, bool longClick)
             m_strip->setMode(&m_rainbowMode->getRainbowMode(), true);
 
         else
-            m_keypad.setMenu(m_rainbowMode);
+            m_keypad.setMenu(m_rainbowMode, true);
 
         break;
 
@@ -575,7 +577,7 @@ void KeypadMenuRGBLEDStripControl::keyPressed(char key, bool longClick)
             m_strip->setMode(&m_soundreactMode->getSoundreactMode(), true);
 
         else
-            m_keypad.setMenu(m_soundreactMode);
+            m_keypad.setMenu(m_soundreactMode, true);
 
         break;
 
@@ -584,7 +586,7 @@ void KeypadMenuRGBLEDStripControl::keyPressed(char key, bool longClick)
             m_strip->setMode(&m_alarmMode->getAlarmMode(), true);
 
         else
-            m_keypad.setMenu(m_alarmMode);
+            m_keypad.setMenu(m_alarmMode, true);
 
         break;
     }
@@ -802,11 +804,11 @@ void KeypadMenuConnectedTemperatureVariableLightControl::keyPressed(char key, bo
         break;
 
     case '2':
-        m_keypad.setMenu(m_temperatureMenu);
+        m_keypad.setMenu(m_temperatureMenu, true);
         break;
 
     case '3':
-        m_keypad.setMenu(m_luminosityMenu);
+        m_keypad.setMenu(m_luminosityMenu, true);
         break;
     }
 }
@@ -858,15 +860,15 @@ void KeypadMenuConnectedColorVariableLightControl::keyPressed(char key, bool lon
         break;
 
     case '2':
-        m_keypad.setMenu(m_temperatureMenu);
+        m_keypad.setMenu(m_temperatureMenu, true);
         break;
 
     case '3':
-        m_keypad.setMenu(m_luminosityMenu);
+        m_keypad.setMenu(m_luminosityMenu, true);
         break;
 
     case '4':
-        m_keypad.setMenu(m_colorMenu);
+        m_keypad.setMenu(m_colorMenu, true);
         break;
     }
 }
@@ -1058,7 +1060,7 @@ void KeypadMenuTelevision::keyPressed(char key, bool longClick)
         break;
 
     case '5':
-        m_keypad.setMenu(m_musicSelectionMenu);
+        m_keypad.setMenu(m_musicSelectionMenu, true);
         break;
 
     case '6':
@@ -1195,7 +1197,7 @@ void KeypadMenuAlarm::keyPressed(char key, bool longClick)
         if (m_missileLauncherControlMenu == nullptr)
             break;
 
-        m_keypad.setMenu(m_missileLauncherControlMenu);
+        m_keypad.setMenu(m_missileLauncherControlMenu, true);
         break;
     }
 }
@@ -1353,7 +1355,7 @@ void KeypadMenuInputList::keyPressed(char key, bool longClick)
             {
                 if (longClick && m_sensorTypeList[index] == WARDROBE_DOOR_SENSOR)
                 {
-                    m_keypad.setMenu(m_menuList[index]);
+                    m_keypad.setMenu(m_menuList[index], true);
                     break;
                 }
 
@@ -1372,7 +1374,7 @@ void KeypadMenuInputList::keyPressed(char key, bool longClick)
         }
 
         else if (!(m_menuList[index] == nullptr))
-            m_keypad.setMenu(m_menuList[index]);
+            m_keypad.setMenu(m_menuList[index], true);
     }
 }
 

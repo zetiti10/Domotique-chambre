@@ -26,16 +26,20 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
-HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr), m_reportStateMillis(false) {}
+HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr), m_reportStateMillis(0) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
 /// @param devicesNumber Le nombre d'élements de la liste `deviceList`.
+/// @param inputDeviceList La liste des périphériques d'entrée du système de domotique connectés à Home Assistant.
+/// @param inputDevicesNumber Le nombre d'élements de la liste `inputDeviceList`.
 /// @param remoteDeviceList La liste des périphériques de sortie distants (provenant de Home Assistant).
 /// @param remoteDevicesNumber Le nombre d'élements de la liste `remoteDeviceList`.
 /// @param colorMode Le mode de couleur unique utilisé pour le ruban de DEL.
-/// @param colorMode Le mode multicolore utilisé pour le ruban de DEL.
-void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode)
+/// @param rainbowMode Le mode multicolore utilisé pour le ruban de DEL.
+/// @param soundreactMode Le mode son-réaction utilisé pour le ruban de DEL.
+/// @param alarmMode Le mode de l'alarme utilisé pour le ruban de DEL.
+void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode)
 {
     m_deviceList = deviceList;
     m_devicesNumber = devicesNumber;
@@ -72,6 +76,7 @@ void HomeAssistant::loop()
     if (!m_operational)
         return;
 
+    // Cette partie est dédiée à la synchronisation de l'Arduino Mega avec l'ESP8266-01. Ici, les lumières sont éteintes après avoir été allumées pour récupérer leur état.
     if (m_reportStateMillis != 0 && ((millis() - m_reportStateMillis) >= 10000))
     {
         for (int i = 0; i < m_remoteDevicesNumber; i++)

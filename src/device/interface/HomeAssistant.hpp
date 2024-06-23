@@ -28,7 +28,7 @@ class HomeAssistant : public Device
 {
 public:
     HomeAssistant(const __FlashStringHelper* friendlyName, unsigned int ID, HardwareSerial &serial, Display &display);
-    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, Output *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
+    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
     virtual void setup() override;
     virtual void loop() override;
     virtual void processMessage();
@@ -67,7 +67,7 @@ protected:
     int m_devicesNumber;
     Input **m_inputDeviceList;
     int m_inputDevicesNumber;
-    Output **m_remoteDeviceList;
+    ConnectedOutput **m_remoteDeviceList;
     int m_remoteDevicesNumber;
     ColorMode *m_colorMode;
     RainbowMode *m_rainbowMode;

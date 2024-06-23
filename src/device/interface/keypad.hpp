@@ -40,7 +40,7 @@ public:
     virtual void setup() override;
     virtual void loop() override;
     virtual Display &getDisplay();
-    virtual void setMenu(KeypadMenu *menu);
+    virtual void setMenu(KeypadMenu *menu, bool shareInformation = false);
 
 protected:
     Adafruit_Keypad m_keypad;

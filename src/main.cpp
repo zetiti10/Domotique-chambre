@@ -10,6 +10,7 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 // Nécessaire, ne pas enlever.
+#define RAW_BUFFER_LENGTH 100
 #include <IRremote.hpp>
 
 // Autres fichiers du programme.

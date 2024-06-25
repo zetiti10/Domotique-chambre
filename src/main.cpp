@@ -16,7 +16,7 @@
 #include "pinDefinitions.hpp"
 #include "deviceID.hpp"
 #include "EEPROM.hpp"
-#include "utils/restart.hpp"
+#include "utils/globalVariables.hpp"
 #include "device/interface/display.hpp"
 #include "device/interface/buzzer.hpp"
 #include "device/interface/keypad.hpp"
@@ -199,12 +199,23 @@ void setup()
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);
 
-    // Boucle d'exécution des tâches du système.
+    // Boucle d'exécution des tâches du système (identique au `svoid loop()`).
     while (1)
     {
-        // Exécutuon des tâches périodiques des capteurs.
+        // Exécutuon des tâches périodiques des périphériques.
         for (int i = 0; i < devicesNumber; i++)
             deviceList[i]->loop();
+
+        // Mesure des performances du système.
+        if ((millis() - TPSMeasureStartTime) <= 1000)
+            TPSCounter++;
+
+        else
+        {
+            TPS = TPSCounter;
+            TPSCounter = 0;
+            TPSMeasureStartTime = millis();
+        }
 
         if (systemToShutdown)
             break;

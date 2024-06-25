@@ -11,7 +11,7 @@
 #include <Adafruit_Keypad.h>
 
 // Autres fichiers du programme.
-#include "utils/restart.hpp"
+#include "utils/globalVariables.hpp"
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
 #include "device/output/tray.hpp"
@@ -1304,12 +1304,12 @@ void KeypadMenuAlarmMissileLauncherControl::displayHelp()
 {
     const __FlashStringHelper *help[10] = {nullptr};
 
-    help[2] = F("Haut");
-    help[4] = F("Gauche");
-    help[5] = F("Tirer un missile");
-    help[6] = F("Droite");
-    help[8] = F("Bas");
-    help[9] = F("Calibrer");
+    help[1] = F("Haut");
+    help[3] = F("Gauche");
+    help[4] = F("Tirer un missile");
+    help[5] = F("Droite");
+    help[7] = F("Bas");
+    help[8] = F("Calibrer");
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }
@@ -1443,6 +1443,19 @@ void KeypadMenuSettings::keyPressed(char key, bool longClick)
         systemToRestart = true;
         powerSupplyToShutdown = true;
         break;
+
+    case '4':
+    {
+        extern int __heap_start, *__brkval;
+        int v;
+        int freeSpace = (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
+        m_keypad.getDisplay().displayMessage("Disponible : " + String(freeSpace), "RAM");
+        break;
+    }
+
+    case '5':
+        m_keypad.getDisplay().displayMessage("Actuel : " + String(TPS), "TPS");
+        break;
     }
 }
 
@@ -1453,6 +1466,8 @@ void KeypadMenuSettings::displayHelp()
     help[0] = F("Arrêter le système");
     help[1] = F("Eteindre le système");
     help[2] = F("Redémarrer le système");
+    help[3] = F("RAM disponible");
+    help[4] = F("TPS actuel");
 
     m_keypad.getDisplay().displayKeypadMenuHelp(help, m_friendlyName);
 }

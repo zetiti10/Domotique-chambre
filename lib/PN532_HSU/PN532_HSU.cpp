@@ -27,8 +27,12 @@ void PN532_HSU::wakeup()
         DMSG("Dump serial buffer: ");
     }
     while(_serial->available()){
+#ifdef DEBUG  // Correction d'un avertissement.
         uint8_t ret = _serial->read();
         DMSG_HEX(ret);
+#else
+        _serial->read();
+#endif
     }
 
 }
@@ -41,8 +45,12 @@ int8_t PN532_HSU::writeCommand(const uint8_t *header, uint8_t hlen, const uint8_
         DMSG("Dump serial buffer: ");
     }
     while(_serial->available()){
+#ifdef DEBUG  // Correction d'un avertissement.
         uint8_t ret = _serial->read();
         DMSG_HEX(ret);
+#else
+        _serial->read();
+#endif
     }
 
     command = header[0];

@@ -28,7 +28,7 @@ class HomeAssistant : public Device
 {
 public:
     HomeAssistant(const __FlashStringHelper* friendlyName, unsigned int ID, HardwareSerial &serial, Display &display);
-    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode);
+    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, RGBLEDStripMode *colorModeList[], RGBLEDStripMode *rainbowModeList[], RGBLEDStripMode *soundreactModeList[], RGBLEDStripMode *alarmModeList[], int &RGBLEDSTripModesNumber);
     virtual void setup() override;
     virtual void loop() override;
     virtual void processMessage();
@@ -58,6 +58,7 @@ public:
 protected:
     virtual Output *getDeviceFromID(unsigned int ID);
     virtual ConnectedOutput *getRemoteDeviceFromID(unsigned int ID);
+    virtual RGBLEDStripMode *getRGBLEDStripModeFromID(unsigned int ID, RGBLEDStripMode **list);
     static String addZeros(int number, int length);
     static int getIntFromString(const String &string, int position, int lenght);
     HardwareSerial &m_serial;
@@ -69,10 +70,11 @@ protected:
     int m_inputDevicesNumber;
     ConnectedOutput **m_remoteDeviceList;
     int m_remoteDevicesNumber;
-    ColorMode *m_colorMode;
-    RainbowMode *m_rainbowMode;
-    SoundreactMode *m_soundreactMode;
-    AlarmMode *m_alarmMode;
+    RGBLEDStripMode **m_colorModeList;
+    RGBLEDStripMode **m_rainbowModeList;
+    RGBLEDStripMode **m_soundreactModeList;
+    RGBLEDStripMode **m_alarmModeList;
+    int m_RGBLEDStripModesNumber;
     unsigned long m_reportStateMillis;
 };
 

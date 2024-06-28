@@ -26,7 +26,7 @@
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
-HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorMode(nullptr), m_rainbowMode(nullptr), m_soundreactMode(nullptr), m_alarmMode(nullptr), m_reportStateMillis(0) {}
+HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorModeList(nullptr), m_rainbowModeList(nullptr), m_soundreactModeList(nullptr), m_alarmModeList(nullptr), m_RGBLEDStripModesNumber(0), m_reportStateMillis(0) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
@@ -35,11 +35,12 @@ HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned i
 /// @param inputDevicesNumber Le nombre d'élements de la liste `inputDeviceList`.
 /// @param remoteDeviceList La liste des périphériques de sortie distants (provenant de Home Assistant).
 /// @param remoteDevicesNumber Le nombre d'élements de la liste `remoteDeviceList`.
-/// @param colorMode Le mode de couleur unique utilisé pour le ruban de DEL.
-/// @param rainbowMode Le mode multicolore utilisé pour le ruban de DEL.
-/// @param soundreactMode Le mode son-réaction utilisé pour le ruban de DEL.
-/// @param alarmMode Le mode de l'alarme utilisé pour le ruban de DEL.
-void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, ColorMode &colorMode, RainbowMode &rainbowMode, SoundreactMode &soundreactMode, AlarmMode &alarmMode)
+/// @param colorMode La liste de modes de couleur unique utilisés pour les rubans de DEL.
+/// @param rainbowMode La liste de modes de couleur unique utilisés pour les rubans de DEL.
+/// @param soundreactMode La liste de modes de cson-réaction utilisés pour les rubans de DEL.
+/// @param alarmMode La liste de modes des alarmes utilisés pour les rubans de DEL.
+/// @param RGBLEDStripModesNumber Le nombre de modes dans chaque liste (correspondant au nombre de ruban de DEL RVB donné dans `deviceList`).
+void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, RGBLEDStripMode *colorModeList[], RGBLEDStripMode *rainbowModeList[], RGBLEDStripMode *soundreactModeList[], RGBLEDStripMode *alarmModeList[], int &RGBLEDSTripModesNumber)
 {
     m_deviceList = deviceList;
     m_devicesNumber = devicesNumber;
@@ -50,10 +51,11 @@ void HomeAssistant::setDevices(Output *deviceList[], int &devicesNumber, Input *
     m_remoteDeviceList = remoteDeviceList;
     m_remoteDevicesNumber = remoteDevicesNumber;
 
-    m_colorMode = &colorMode;
-    m_rainbowMode = &rainbowMode;
-    m_soundreactMode = &soundreactMode;
-    m_alarmMode = &alarmMode;
+    m_colorModeList = colorModeList;
+    m_rainbowModeList = rainbowModeList;
+    m_soundreactModeList = soundreactModeList;
+    m_alarmModeList = alarmModeList;
+    m_RGBLEDStripModesNumber = RGBLEDSTripModesNumber;
 }
 
 /// @brief Initialise la communication avec Home Assistant. Nécessite d'avoir défini les périphériques connectés auparavant. Méthode à exécuter avant d'initialiser les autres périphériques du système de domotique.
@@ -146,21 +148,22 @@ void HomeAssistant::processMessage()
             switch (getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
-                m_colorMode->setColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3));
-                m_display.displayLEDState(m_colorMode->getR(), m_colorMode->getG(), m_colorMode->getB());
-                strip->setMode(static_cast<RGBLEDStripMode *>(m_colorMode), true);
+                ColorMode *mode = static_cast<ColorMode *>(getRGBLEDStripModeFromID(strip->getID(), m_colorModeList));
+                mode->setColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3));
+                m_display.displayLEDState(mode->getR(), mode->getG(), mode->getB());
+                strip->setMode(static_cast<RGBLEDStripMode *>(mode), true);
                 break;
 
             case 1:
-                strip->setMode(static_cast<RGBLEDStripMode *>(m_rainbowMode), true);
+                strip->setMode(static_cast<RGBLEDStripMode *>(getRGBLEDStripModeFromID(strip->getID(), m_rainbowModeList)), true);
                 break;
 
             case 2:
-                strip->setMode(static_cast<RGBLEDStripMode *>(m_soundreactMode), true);
+                strip->setMode(static_cast<RGBLEDStripMode *>(getRGBLEDStripModeFromID(strip->getID(), m_soundreactModeList)), true);
                 break;
 
             case 3:
-                strip->setMode(static_cast<RGBLEDStripMode *>(m_alarmMode), true);
+                strip->setMode(static_cast<RGBLEDStripMode *>(getRGBLEDStripModeFromID(strip->getID(), m_alarmModeList)), true);
                 break;
             }
 
@@ -648,6 +651,17 @@ ConnectedOutput *HomeAssistant::getRemoteDeviceFromID(unsigned int ID)
     {
         if (m_remoteDeviceList[i]->getID() == ID)
             return static_cast<ConnectedOutput *>(m_remoteDeviceList[i]);
+    }
+
+    return nullptr;
+}
+
+RGBLEDStripMode *HomeAssistant::getRGBLEDStripModeFromID(unsigned int ID, RGBLEDStripMode **list)
+{
+    for (int i = 0; i < m_RGBLEDStripModesNumber; i++)
+    {
+        if (list[i]->getStripID() == ID)
+            return list[i];
     }
 
     return nullptr;

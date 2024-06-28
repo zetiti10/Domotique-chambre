@@ -54,6 +54,7 @@ public:
     virtual const __FlashStringHelper *getFriendlyName() const;
     virtual bool isActivated() const;
     virtual unsigned int getID() const;
+    virtual unsigned int getStripID() const;
 
 protected:
     virtual void activate();

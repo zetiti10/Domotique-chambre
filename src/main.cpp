@@ -96,6 +96,13 @@ void setup()
     SoundreactMode soundreactMode(F("Mode son-réaction"), ID_SOUND_REACT_MODE, LEDStrip, microphone, EEPROM_SOUND_REACT_ANIMATION_SENSITIVITY);
     LEDStrip.setMode(&colorMode);
 
+    // Listes des modes des rubans de DEL.
+    RGBLEDStripMode *colorModeList[] = {&colorMode};
+    RGBLEDStripMode *rainbowModeList[] = {&rainbowMode};
+    RGBLEDStripMode *soundreactModeList[] = {&soundreactMode};
+    RGBLEDStripMode *alarmModeList[] = {&alarmMode};
+    int RGBLEDStripNumber = 1;
+
     // Liste des musiques.
     const static Music *const musicList[] PROGMEM = {&worldsSmallestViolinMusic};
     int musicsNumber = 1;
@@ -158,7 +165,7 @@ void setup()
     randomSeed(analogRead(PIN_RANDOM_SEED_GENERATOR));
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
-    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorMode, rainbowMode, soundreactMode, alarmMode);
+    HomeAssistantConnection.setDevices(HADeviceList, HADevicesNumber, inputList, inputsNumber, HARemoteDeviceList, HARemoteDevicesNumber, colorModeList, rainbowModeList, soundreactModeList, alarmModeList, RGBLEDStripNumber);
 
     // Définition des périphériques contrôlables depuis le clavier de contrôle.
     keypad.setDevices(keypadDeviceList,

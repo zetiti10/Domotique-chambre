@@ -200,6 +200,11 @@ unsigned int RGBLEDStripMode::getID() const
     return m_ID;
 }
 
+unsigned int RGBLEDStripMode::getStripID() const
+{
+    return m_strip.getID();
+}
+
 /// @brief Active le mode.
 void RGBLEDStripMode::activate()
 {

@@ -65,8 +65,8 @@ public:
     virtual void setNextMenu(KeypadMenu *menu);
     virtual KeypadMenu *getNextMenu() const;
 
-    virtual void keyPressed(char key, bool longClick) = 0;
-    virtual void keyReleased(char key);
+    virtual void keyReleased(char key, bool longClick) = 0;
+    virtual void keyPressed(char key);
     virtual void displayHelp() = 0;
     virtual void displayMenu() = 0;
     virtual bool advancedClickControl();
@@ -87,7 +87,7 @@ public:
 
     virtual void setDevices(Output *outputList[], int &outputsNumber);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -103,7 +103,7 @@ public:
 
     virtual void setLights(Output *lightList[], KeypadMenu *lightMenuList[], int &lightsNumber);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -120,7 +120,7 @@ public:
 
     virtual ColorMode &getColorMode();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -135,7 +135,7 @@ public:
 
     virtual RainbowMode &getRainbowMode();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -150,7 +150,7 @@ public:
 
     virtual SoundreactMode &getSoundreactMode();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -165,7 +165,7 @@ public:
 
     virtual AlarmMode &getAlarmMode();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -180,7 +180,7 @@ public:
 
     virtual void setStrip(RGBLEDStrip *strip, ColorMode *colorMode, RainbowMode *rainbowMode, SoundreactMode *soundreactMode, AlarmMode *alarmMode);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -200,7 +200,7 @@ public:
 
     virtual ConnectedTemperatureVariableLight &getLight();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -215,7 +215,7 @@ public:
 
     virtual ConnectedTemperatureVariableLight &getLight();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -230,7 +230,7 @@ public:
 
     virtual ConnectedColorVariableLight &getLight();
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -245,7 +245,7 @@ public:
 
     virtual void setLight(ConnectedTemperatureVariableLight &light);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -261,7 +261,7 @@ public:
 
     virtual void setLight(ConnectedColorVariableLight &light);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -281,7 +281,7 @@ public:
     virtual void setTelevision(Television *television);
     virtual void setMusicSelectionMenu(KeypadMenuTelevisionMusicSelector *menu);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -297,7 +297,7 @@ public:
 
     virtual void setTelevision(Television *television);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -316,7 +316,7 @@ public:
     virtual void setAlarm(Alarm *alarm);
     virtual void setMissileLauncherControlMenu(KeypadMenuAlarmMissileLauncherControl *menu);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -332,8 +332,8 @@ public:
 
     virtual void setAlarm(Alarm *alarm);
 
-    virtual void keyPressed(char key, bool longClick) override;
-    virtual void keyReleased(char key) override;
+    virtual void keyReleased(char key, bool longClick) override;
+    virtual void keyPressed(char key) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
     virtual bool advancedClickControl() override;
@@ -358,7 +358,7 @@ public:
 
     virtual void setInputs(Input **inputList, KeypadMenu **menuList, KeypadMenuSensorType *sensorTypeList, int sensorsNumber);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -374,7 +374,7 @@ class KeypadMenuWardrobeControl : public KeypadMenu
 public:
     KeypadMenuWardrobeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, WardrobeDoorSensor &sensor);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 
@@ -387,7 +387,7 @@ class KeypadMenuSettings : public KeypadMenu
 public:
     KeypadMenuSettings(const __FlashStringHelper *friendlyName, Keypad &keypad);
 
-    virtual void keyPressed(char key, bool longClick) override;
+    virtual void keyReleased(char key, bool longClick) override;
     virtual void displayHelp() override;
     virtual void displayMenu() override;
 };

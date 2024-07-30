@@ -6,6 +6,9 @@
  * @date 2024-01-20
  */
 
+// Autres fichiers du programme.
+#include "globalVariables.hpp"
+
 // Variables liées à l'arrêt du système.
 bool systemToRestart = false;
 bool systemToShutdown = false;

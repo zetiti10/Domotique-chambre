@@ -17,7 +17,7 @@
 
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
-/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant. Attention, le capteur d'humidité à l'identifiant `ID`, et l'humidité a l'identifiant `ID + 1`.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param pin Broche liée au capteur.
 AirSensor::AirSensor(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, unsigned int pin) : Input(friendlyName, ID, connection), m_pin(pin), m_sensor(pin, DHT22), m_temperature(0), m_humidity(0), m_lastTime(0) {}

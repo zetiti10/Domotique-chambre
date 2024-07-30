@@ -11,6 +11,7 @@
 #include <Adafruit_Keypad.h>
 
 // Autres fichiers du programme.
+#include "keypad.hpp"
 #include "utils/globalVariables.hpp"
 #include "device/device.hpp"
 #include "device/interface/display.hpp"
@@ -21,10 +22,45 @@
 #include "device/output/television.hpp"
 #include "device/input/binaryInput.hpp"
 #include "device/input/analogInput.hpp"
-#include "keypad.hpp"
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
+/// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
+/// @param display L'écran utilisé par le système.
+/// @param userKeymap Les touches du clavier.
+/// @param row Les broches des lignes du clavier.
+/// @param col Les broches des colonnes du clavier.
+/// @param numRows Le nombre de lignes du clavier.
+/// @param numCols Le nombre de colonnes du clavier.
 Keypad::Keypad(const __FlashStringHelper *friendlyName, unsigned int ID, Display &display, byte *userKeymap, byte *row, byte *col, int numRows, int numCols) : Device(friendlyName, ID), m_keypad(userKeymap, row, col, numRows, numCols), m_keyPressTime(0), m_lastInteraction(0), m_display(display), m_mainMenu(nullptr), m_currentMenu(nullptr), m_devicesDefined(false) {}
 
+/// @brief Méthode permettant de définir les périphériques contrôlés depuis le clavier. Tous les menus seront crées ici.
+/// @param deviceList La liste des périphériques.
+/// @param devicesNumber Le nombre de périphériques.
+/// @param lightList La liste des lumières.
+/// @param lightsNumber Le nombre de lumières.
+/// @param RGBLEDStripList La liste des rubans de DEL RVB.
+/// @param colorModeList La liste des modes de couleur unique de rubans.
+/// @param rainbowModeList La liste des modes arc-en-ciel de rubans.
+/// @param soundreactModeList La liste des modes son-réaction de rubans.
+/// @param alarmModeList La liste des modes d'alarme de rubans.
+/// @param RGBLEDStripsNumber Le nombre de rubans de DEL RVB.
+/// @param connectedTemperatureVariableLightList La liste des lumières distantes à température de couleur variable.
+/// @param connectedTemperatureVariableLightsNumber Le nombre de lumières distantes à température de couleur variable.
+/// @param connectedColorVariableLightList La liste des lumières distantes à couleur variable.
+/// @param connectedColorVariableLightsNumber Le nombre de lumières distantes à couleur variable.
+/// @param televisionList La liste des télévisions.
+/// @param televisionsNumber Le nombre de télévisions.
+/// @param alarmList La liste des alarmes.
+/// @param alarmsNumber Le nombre de alarmes.
+/// @param binaryInputList La liste des capteurs binaires.
+/// @param binaryInputsNumber Le nombre de capteurs binaires.
+/// @param analogInputList La liste des capteurs analogiques.
+/// @param analogInputsNumber Le nombre de capteurs analogiques.
+/// @param airSensorList La liste des capteurs d'air.
+/// @param airSensorsNumber Le nombre de capteurs d'air.
+/// @param wardrobeDoorSensorList La liste des capteurs de portes d'armoire.
+/// @param wardrobeDoorSensorsNumber Le nombre de capteurs de portes d'armoire.
 void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightList[], int &lightsNumber, RGBLEDStrip *RGBLEDStripList[], ColorMode *colorModeList[], RainbowMode *rainbowModeList[], SoundreactMode *soundreactModeList[], AlarmMode *alarmModeList[], int &RGBLEDStripsNumber, ConnectedTemperatureVariableLight *connectedTemperatureVariableLightList[], int &connectedTemperatureVariableLightsNumber, ConnectedColorVariableLight *connectedColorVariableLightList[], int &connectedColorVariableLightsNumber, Television *televisionList[], int &televisionsNumber, Alarm *alarmList[], int &alarmsNumber, BinaryInput *binaryInputList[], int &binaryInputsNumber, AnalogInput *analogInputList[], int &analogInputsNumber, AirSensor *airSensorList[], int &airSensorsNumber, WardrobeDoorSensor *wardrobeDoorSensorList[], int &wardrobeDoorSensorsNumber)
 {
     KeypadMenu *previousMenu = nullptr;
@@ -296,6 +332,7 @@ void Keypad::setDevices(Output *deviceList[], int &devicesNumber, Output *lightL
     m_devicesDefined = true;
 }
 
+/// @brief Initialise le clavier. Méthode à appeler après la définition des périphériques.
 void Keypad::setup()
 {
     if (m_operational || !m_devicesDefined || m_currentMenu == nullptr)
@@ -307,6 +344,7 @@ void Keypad::setup()
     m_operational = true;
 }
 
+/// @brief Méthode d'exécution des tâches liées au clavier.
 void Keypad::loop()
 {
     if (!m_operational)
@@ -314,19 +352,22 @@ void Keypad::loop()
 
     m_keypad.tick();
 
+    // Retour au menu principal après un certain délais sans interraction.
     if (!(m_currentMenu == m_mainMenu) && ((m_lastInteraction + 600000) <= millis()))
         setMenu(m_mainMenu);
 
+    // Si une action est détectée.
     while (m_keypad.available())
     {
         keypadEvent event = m_keypad.read();
 
+        // Touche pressée.
         if (event.bit.EVENT == KEY_JUST_PRESSED)
         {
             if (m_currentMenu->advancedClickControl())
             {
                 if (event.bit.KEY >= '1' && event.bit.KEY <= '9')
-                    m_currentMenu->keyPressed(event.bit.KEY, false);
+                    m_currentMenu->keyReleased(event.bit.KEY, false);
             }
 
             if (m_keyPressTime != 0)
@@ -335,22 +376,25 @@ void Keypad::loop()
             m_keyPressTime = millis();
         }
 
+        // Touche relâchée.
         else
         {
             if (m_keyPressTime == 0)
                 continue;
 
+            // Calcul du temps de clique.
             bool longClick = ((millis() - m_keyPressTime) >= 300);
 
             if (event.bit.KEY >= '1' && event.bit.KEY <= '9')
             {
                 if (m_currentMenu->advancedClickControl())
-                    m_currentMenu->keyReleased(event.bit.KEY);
+                    m_currentMenu->keyPressed(event.bit.KEY);
 
                 else
-                    m_currentMenu->keyPressed(event.bit.KEY, longClick);
+                    m_currentMenu->keyReleased(event.bit.KEY, longClick);
             }
 
+            // Exécution des actions.
             else
             {
                 switch (event.bit.KEY)
@@ -393,11 +437,16 @@ void Keypad::loop()
     }
 }
 
+/// @brief Méthode permettant de récupèrer l'écran du système.
+/// @return L'écran du système.
 Display &Keypad::getDisplay()
 {
     return m_display;
 }
 
+/// @brief Méthode permettant de définir le menu actuel.
+/// @param menu Un pointeur vers le menu à choisir.
+/// @param shareInformation Affiche ou non le changement de menu à l'écran.
 void Keypad::setMenu(KeypadMenu *menu, bool shareInformation)
 {
     m_currentMenu = menu;
@@ -406,51 +455,74 @@ void Keypad::setMenu(KeypadMenu *menu, bool shareInformation)
         m_currentMenu->displayMenu();
 }
 
+/// @brief Constructeur de la classe.
+/// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du clavier.
+/// @param keypad L'objet du clavier.
 KeypadMenu::KeypadMenu(const __FlashStringHelper *friendlyName, Keypad &keypad) : m_friendlyName(friendlyName), m_keypad(keypad), m_parentMenu(nullptr), m_previousMenu(nullptr), m_nextMenu(nullptr) {}
 
+/// @brief Méthode permettant d'obtenir le nom du clavier.
+/// @return Le nom du clavier.
 const __FlashStringHelper *KeypadMenu::getFriendlyName() const
 {
     return m_friendlyName;
 }
 
+/// @brief Méthode permettant de définir le menu parent de ce menu (accessible avec la touche B).
+/// @param menu Le menu parent.
 void KeypadMenu::setParentMenu(KeypadMenu *menu)
 {
     m_parentMenu = menu;
 }
 
+/// @brief Méthode permettant de récupérer le menu parent.
+/// @return Un pointeur vers le menu parent.
 KeypadMenu *KeypadMenu::getParentMenu() const
 {
     return m_parentMenu;
 }
 
+/// @brief Méthode permettant de définir le menu précédent (accessible avec la touche C).
+/// @param menu Le menu précédent.
 void KeypadMenu::setPreviousMenu(KeypadMenu *menu)
 {
     m_previousMenu = menu;
 }
 
+/// @brief Méthode permettant de récupérer le menu précédent.
+/// @return Un pointeur vers le menu précédent.
 KeypadMenu *KeypadMenu::getPreviousMenu() const
 {
     return m_previousMenu;
 }
 
+/// @brief Méthode permettant de définir le menu suivant (accessible avec la touche D).
+/// @param menu Le menu suivant.
 void KeypadMenu::setNextMenu(KeypadMenu *menu)
 {
     m_nextMenu = menu;
 }
 
+/// @brief Méthode permettant de récupérer le menu suivant.
+/// @return Un pointeur vers le menu suivant.
 KeypadMenu *KeypadMenu::getNextMenu() const
 {
     return m_nextMenu;
 }
 
-void KeypadMenu::keyReleased(char key)
+/// @brief Méthode appelée lorsque ce menu est actuellement utilisé, et qu'une touche a été pressée.
+/// @param key La touche.
+void KeypadMenu::keyPressed(char key)
 {
 }
 
+/// @brief Méthode permettant de définir le type de menu : le contrôle avancé permet ud'avoir un appel à la méthode `void KeypadMenu::keyPressed(char key)` lorsqu'une touche est pressée.
+/// @return Si le menu est avancé ou non.
 bool KeypadMenu::advancedClickControl()
 {
     return false;
 }
+
+// À partir d'ici, les classes correspondent à des types de menus différents.
 
 KeypadMenuOutputList::KeypadMenuOutputList(const __FlashStringHelper *friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad), m_outputList(nullptr), m_outputsNumber(0) {}
 
@@ -460,7 +532,7 @@ void KeypadMenuOutputList::setDevices(Output *outputList[], int &outputsNumber)
     m_outputsNumber = outputsNumber;
 }
 
-void KeypadMenuOutputList::keyPressed(char key, bool longClick)
+void KeypadMenuOutputList::keyReleased(char key, bool longClick)
 {
     if ((key - '0' - 1) < m_outputsNumber)
         m_outputList[key - '0' - 1]->toggle(true);
@@ -490,7 +562,7 @@ void KeypadMenuLightList::setLights(Output *lightList[], KeypadMenu *lightMenuLi
     m_lightsNumber = lightsNumber;
 }
 
-void KeypadMenuLightList::keyPressed(char key, bool longClick)
+void KeypadMenuLightList::keyReleased(char key, bool longClick)
 {
     int index = key - '0' - 1;
     if (index < m_lightsNumber)
@@ -543,7 +615,7 @@ void KeypadMenuRGBLEDStripControl::setStrip(RGBLEDStrip *strip, ColorMode *color
     m_alarmMode->setPreviousMenu(m_soundreactMode);
 }
 
-void KeypadMenuRGBLEDStripControl::keyPressed(char key, bool longClick)
+void KeypadMenuRGBLEDStripControl::keyReleased(char key, bool longClick)
 {
     if (m_strip == nullptr)
         return;
@@ -617,7 +689,7 @@ ColorMode &KeypadMenuRGBLEDStripColorModeControl::getColorMode()
     return m_colorMode;
 }
 
-void KeypadMenuRGBLEDStripColorModeControl::keyPressed(char key, bool longClick)
+void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick)
 {
     int precision = 20;
 
@@ -735,7 +807,7 @@ RainbowMode &KeypadMenuRGBLEDStripRainbowModeControl::getRainbowMode()
     return m_rainbowMode;
 }
 
-void KeypadMenuRGBLEDStripRainbowModeControl::keyPressed(char key, bool longClick)
+void KeypadMenuRGBLEDStripRainbowModeControl::keyReleased(char key, bool longClick)
 {
     int precision = 10;
 
@@ -775,7 +847,7 @@ SoundreactMode &KeypadMenuRGBLEDStripSoundreactModeControl::getSoundreactMode()
     return m_soundreactMode;
 }
 
-void KeypadMenuRGBLEDStripSoundreactModeControl::keyPressed(char key, bool longClick)
+void KeypadMenuRGBLEDStripSoundreactModeControl::keyReleased(char key, bool longClick)
 {
     int precision = 5;
 
@@ -815,7 +887,7 @@ AlarmMode &KeypadMenuRGBLEDStripAlarmModeControl::getAlarmMode()
     return m_alarmMode;
 }
 
-void KeypadMenuRGBLEDStripAlarmModeControl::keyPressed(char key, bool longClick)
+void KeypadMenuRGBLEDStripAlarmModeControl::keyReleased(char key, bool longClick)
 {
     // Rien...
 }
@@ -846,7 +918,7 @@ void KeypadMenuConnectedTemperatureVariableLightControl::setLight(ConnectedTempe
     m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
 }
 
-void KeypadMenuConnectedTemperatureVariableLightControl::keyPressed(char key, bool longClick)
+void KeypadMenuConnectedTemperatureVariableLightControl::keyReleased(char key, bool longClick)
 {
     if (m_temperatureMenu == nullptr)
         return;
@@ -902,7 +974,7 @@ void KeypadMenuConnectedColorVariableLightControl::setLight(ConnectedColorVariab
     m_luminosityMenu->setPreviousMenu(m_temperatureMenu);
 }
 
-void KeypadMenuConnectedColorVariableLightControl::keyPressed(char key, bool longClick)
+void KeypadMenuConnectedColorVariableLightControl::keyReleased(char key, bool longClick)
 {
     if (m_temperatureMenu == nullptr)
         return;
@@ -951,7 +1023,7 @@ ConnectedTemperatureVariableLight &KeypadMenuConnectedLightLuminosityControl::ge
     return m_light;
 }
 
-void KeypadMenuConnectedLightLuminosityControl::keyPressed(char key, bool longClick)
+void KeypadMenuConnectedLightLuminosityControl::keyReleased(char key, bool longClick)
 {
     int precision = 20;
 
@@ -989,7 +1061,7 @@ ConnectedTemperatureVariableLight &KeypadMenuConnectedLightTemperatureControl::g
     return m_light;
 }
 
-void KeypadMenuConnectedLightTemperatureControl::keyPressed(char key, bool longClick)
+void KeypadMenuConnectedLightTemperatureControl::keyReleased(char key, bool longClick)
 {
     int precision = 200;
 
@@ -1027,7 +1099,7 @@ ConnectedColorVariableLight &KeypadMenuConnectedLightColorControl::getLight()
     return m_light;
 }
 
-void KeypadMenuConnectedLightColorControl::keyPressed(char key, bool longClick)
+void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
 {
     int precision = 20;
 
@@ -1144,7 +1216,7 @@ void KeypadMenuTelevision::setMusicSelectionMenu(KeypadMenuTelevisionMusicSelect
     m_musicSelectionMenu = menu;
 }
 
-void KeypadMenuTelevision::keyPressed(char key, bool longClick)
+void KeypadMenuTelevision::keyReleased(char key, bool longClick)
 {
     if (m_television == nullptr)
         return;
@@ -1203,7 +1275,7 @@ void KeypadMenuTelevisionMusicSelector::setTelevision(Television *television)
     m_television = television;
 }
 
-void KeypadMenuTelevisionMusicSelector::keyPressed(char key, bool longClick)
+void KeypadMenuTelevisionMusicSelector::keyReleased(char key, bool longClick)
 {
     if (m_television == nullptr)
         return;
@@ -1269,7 +1341,7 @@ void KeypadMenuAlarm::setMissileLauncherControlMenu(KeypadMenuAlarmMissileLaunch
     m_missileLauncherControlMenu = menu;
 }
 
-void KeypadMenuAlarm::keyPressed(char key, bool longClick)
+void KeypadMenuAlarm::keyReleased(char key, bool longClick)
 {
     if (m_alarm == nullptr)
         return;
@@ -1338,7 +1410,7 @@ void KeypadMenuAlarmMissileLauncherControl::setAlarm(Alarm *alarm)
     m_missileLauncher = &m_alarm->getMissileLauncher();
 }
 
-void KeypadMenuAlarmMissileLauncherControl::keyPressed(char key, bool longClick)
+void KeypadMenuAlarmMissileLauncherControl::keyReleased(char key, bool longClick)
 {
     if (m_missileLauncher == nullptr)
         return;
@@ -1377,7 +1449,7 @@ void KeypadMenuAlarmMissileLauncherControl::keyPressed(char key, bool longClick)
     }
 }
 
-void KeypadMenuAlarmMissileLauncherControl::keyReleased(char key)
+void KeypadMenuAlarmMissileLauncherControl::keyPressed(char key)
 {
     if (m_missileLauncher == nullptr)
         return;
@@ -1442,7 +1514,7 @@ void KeypadMenuInputList::setInputs(Input **inputList, KeypadMenu **menuList, Ke
     m_sensorsNumber = sensorsNumber;
 }
 
-void KeypadMenuInputList::keyPressed(char key, bool longClick)
+void KeypadMenuInputList::keyReleased(char key, bool longClick)
 {
     int index = key - '0' - 1;
     if (index < m_sensorsNumber)
@@ -1503,7 +1575,7 @@ void KeypadMenuInputList::displayMenu()
 
 KeypadMenuWardrobeControl::KeypadMenuWardrobeControl(const __FlashStringHelper *friendlyName, Keypad &keypad, WardrobeDoorSensor &sensor) : KeypadMenu(friendlyName, keypad), m_sensor(sensor) {}
 
-void KeypadMenuWardrobeControl::keyPressed(char key, bool longClick)
+void KeypadMenuWardrobeControl::keyReleased(char key, bool longClick)
 {
     switch (key)
     {
@@ -1530,7 +1602,7 @@ void KeypadMenuWardrobeControl::displayMenu()
 
 KeypadMenuSettings::KeypadMenuSettings(const __FlashStringHelper *friendlyName, Keypad &keypad) : KeypadMenu(friendlyName, keypad) {}
 
-void KeypadMenuSettings::keyPressed(char key, bool longClick)
+void KeypadMenuSettings::keyReleased(char key, bool longClick)
 {
     switch (key)
     {

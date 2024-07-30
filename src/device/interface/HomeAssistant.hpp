@@ -27,11 +27,10 @@ class ConnectedColorVariableLight;
 class HomeAssistant : public Device
 {
 public:
-    HomeAssistant(const __FlashStringHelper* friendlyName, unsigned int ID, HardwareSerial &serial, Display &display);
-    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, RGBLEDStripMode *colorModeList[], RGBLEDStripMode *rainbowModeList[], RGBLEDStripMode *soundreactModeList[], RGBLEDStripMode *alarmModeList[], int &RGBLEDSTripModesNumber);
+    HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display);
+    virtual void setDevices(Output *deviceList[], int &devicesNumber, Input *inputDeviceList[], int &inputDevicesNumber, ConnectedOutput *remoteDeviceList[], int &remoteDevicesNumber, RGBLEDStripMode *colorModeList[], RGBLEDStripMode *rainbowModeList[], RGBLEDStripMode *soundreactModeList[], RGBLEDStripMode *alarmModeList[], int &RGBLEDStripModesNumber);
     virtual void setup() override;
     virtual void loop() override;
-    virtual void processMessage();
     virtual void turnOnConnectedDevice(unsigned int ID);
     virtual void turnOffConnectedDevice(unsigned int ID);
     virtual void toggleConnectedDevice(unsigned int ID);
@@ -46,7 +45,7 @@ public:
     virtual void updateAlarmTriggeredState(unsigned int ID, bool state);
     virtual void updateAlarmMissileLauncherBaseAngle(unsigned int ID, int angle);
     virtual void updateAlarmMissileLauncherAngleAngle(unsigned int ID, int angle);
-    virtual void updateAlarmMissileLauncherMissilesState(unsigned int ID, int firstMissile, int secondMissile, int thirdMissile);
+    virtual void updateAlarmMissileLauncherMissilesState(unsigned int ID, bool firstMissile, bool secondMissile, bool thirdMissile);
     virtual void updateTelevisionVolume(unsigned int ID, int mode, int volume = 0);
     virtual void updateBinaryInput(unsigned int ID, bool state);
     virtual void updateAnalogInput(unsigned int ID, int state);
@@ -56,6 +55,7 @@ public:
     virtual void stopSystem(bool restart = false);
 
 protected:
+    virtual void processMessage();
     virtual Output *getDeviceFromID(unsigned int ID);
     virtual ConnectedOutput *getRemoteDeviceFromID(unsigned int ID);
     virtual RGBLEDStripMode *getRGBLEDStripModeFromID(unsigned int ID, RGBLEDStripMode **list);

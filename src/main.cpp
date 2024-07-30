@@ -9,8 +9,7 @@
 // Ajout des bibilothèques au programme.
 #include <Arduino.h>
 #include <EEPROM.h>
-// Nécessaire, ne pas enlever.
-#include <IRremote.hpp>
+#include <IRremote.hpp> // Nécessaire, ne pas enlever.
 
 // Autres fichiers du programme.
 #include "pinDefinitions.hpp"
@@ -161,7 +160,7 @@ void setup()
     // Démarrage de la communication avec l'ordinateur.
     Serial.begin(115200);
 
-    // Génère une SEED pour la fonction random.
+    // Génère une graine pour la fonction random.
     randomSeed(analogRead(PIN_RANDOM_SEED_GENERATOR));
 
     // Définition des périphériques utilisés dans la connextion à Home Assistant.
@@ -206,7 +205,7 @@ void setup()
     // Compte rendu des informations de l'initialisation du système.
     display.displayUnavailableDevices(deviceList, devicesNumber);
 
-    // Boucle d'exécution des tâches du système (identique au `svoid loop()`).
+    // Boucle d'exécution des tâches du système (identique au `void loop()`).
     while (1)
     {
         // Exécutuon des tâches périodiques des périphériques.
@@ -227,7 +226,7 @@ void setup()
         if (systemToShutdown)
             break;
     }
-    
+
     if (powerSupplyToShutdown)
         HomeAssistantConnection.stopSystem(systemToRestart);
 

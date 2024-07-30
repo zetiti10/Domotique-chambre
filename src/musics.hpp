@@ -1,8 +1,10 @@
 #ifndef MUSICS_DEFINITIONS
 #define MUSICS_DEFINITIONS
 
+// Autres fichiers du programme.
 #include "device/output/television.hpp"
 
+// Musique : World Smallest Violin.
 const Action worldsSmallestViolinActions[] PROGMEM = {
     {3900, "09011000000000255255255041002"},
     {8000, "09000"},

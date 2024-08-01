@@ -1038,7 +1038,7 @@ void KeypadMenuConnectedLightLuminosityControl::keyReleased(char key, bool longC
     case '1':
     {
         unsigned int newValue = m_light.getLuminosity();
-        if (int(m_light.getLuminosity()) <= (100 - precision))
+        if (int(m_light.getLuminosity()) <= (255 - precision))
             newValue += precision;
 
         m_light.setLuminosity(newValue, true);
@@ -1088,7 +1088,7 @@ void KeypadMenuConnectedLightTemperatureControl::keyReleased(char key, bool long
     case '1':
     {
         unsigned int newValue = m_light.getColorTemperature();
-        if (int(m_light.getColorTemperature()) <= (100 - precision))
+        if (int(m_light.getColorTemperature()) <= (10000 - precision))
             newValue += precision;
 
         m_light.setColorTemperature(newValue, true);

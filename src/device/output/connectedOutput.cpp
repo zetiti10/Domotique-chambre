@@ -128,7 +128,7 @@ void ConnectedTemperatureVariableLight::setColorTemperature(unsigned int tempera
 }
 
 /// @brief Méthode permettant de définir la luminosité de la lampe
-/// @param luminosity La luminosité à définir.
+/// @param luminosity La luminosité à définir, de `0` à `255`.
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
 void ConnectedTemperatureVariableLight::setLuminosity(unsigned int luminosity, bool shareInformation)
 {

@@ -697,12 +697,9 @@ void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick
     {
     case '1':
     {
-        int newValue = m_colorMode.getR() + precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_colorMode.getR();
+        if (int(m_colorMode.getR()) <= (255 - precision))
+            newValue += precision;
 
         m_colorMode.setColor(newValue, m_colorMode.getG(), m_colorMode.getB());
         m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
@@ -711,12 +708,9 @@ void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick
 
     case '2':
     {
-        int newValue = m_colorMode.getG() + precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_colorMode.getG();
+        if (int(m_colorMode.getG()) <= (255 - precision))
+            newValue += precision;
 
         m_colorMode.setColor(m_colorMode.getR(), newValue, m_colorMode.getB());
         m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
@@ -725,12 +719,9 @@ void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick
 
     case '3':
     {
-        int newValue = m_colorMode.getB() + precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_colorMode.getB();
+        if (int(m_colorMode.getB()) <= (255 - precision))
+            newValue += precision;
 
         m_colorMode.setColor(m_colorMode.getR(), m_colorMode.getG(), newValue);
         m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
@@ -739,12 +730,9 @@ void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick
 
     case '4':
     {
-        int newValue = m_colorMode.getR() - precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_colorMode.getR();
+        if (int(m_colorMode.getR()) >= precision)
+            newValue -= precision;
 
         m_colorMode.setColor(newValue, m_colorMode.getG(), m_colorMode.getB());
         m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
@@ -753,12 +741,9 @@ void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick
 
     case '5':
     {
-        int newValue = m_colorMode.getG() - precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_colorMode.getG();
+        if (int(m_colorMode.getG()) >= precision)
+            newValue -= precision;
 
         m_colorMode.setColor(m_colorMode.getR(), newValue, m_colorMode.getB());
         m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
@@ -767,12 +752,9 @@ void KeypadMenuRGBLEDStripColorModeControl::keyReleased(char key, bool longClick
 
     case '6':
     {
-        int newValue = m_colorMode.getB() - precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_colorMode.getB();
+        if (int(m_colorMode.getB()) >= precision)
+            newValue -= precision;
 
         m_colorMode.setColor(m_colorMode.getR(), m_colorMode.getG(), newValue);
         m_keypad.getDisplay().displayLEDState(m_colorMode.getR(), m_colorMode.getG(), m_colorMode.getB());
@@ -814,14 +796,26 @@ void KeypadMenuRGBLEDStripRainbowModeControl::keyReleased(char key, bool longCli
     switch (key)
     {
     case '1':
-        m_rainbowMode.setAnimationSpeed(m_rainbowMode.getAnimationSpeed() + precision);
+    {
+        unsigned int newValue = m_rainbowMode.getAnimationSpeed();
+        if (int(m_rainbowMode.getAnimationSpeed()) <= (100 - precision))
+            newValue += precision;
+
+        m_rainbowMode.setAnimationSpeed(newValue);
         m_keypad.getDisplay().displayPercentage("Vitesse", m_rainbowMode.getAnimationSpeed());
         break;
+    }
 
     case '2':
-        m_rainbowMode.setAnimationSpeed(m_rainbowMode.getAnimationSpeed() - precision);
+    {
+        unsigned int newValue = m_rainbowMode.getAnimationSpeed();
+        if (int(m_rainbowMode.getAnimationSpeed()) >= precision)
+            newValue -= precision;
+
+        m_rainbowMode.setAnimationSpeed(newValue);
         m_keypad.getDisplay().displayPercentage("Vitesse", m_rainbowMode.getAnimationSpeed());
         break;
+    }
     }
 }
 
@@ -854,14 +848,26 @@ void KeypadMenuRGBLEDStripSoundreactModeControl::keyReleased(char key, bool long
     switch (key)
     {
     case '1':
-        m_soundreactMode.setSensitivity(m_soundreactMode.getSensitivity() + precision);
+    {
+        unsigned int newValue = m_soundreactMode.getSensitivity();
+        if (int(m_soundreactMode.getSensitivity()) <= (100 - precision))
+            newValue += precision;
+
+        m_soundreactMode.setSensitivity(newValue);
         m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getSensitivity());
         break;
+    }
 
     case '2':
-        m_soundreactMode.setSensitivity(m_soundreactMode.getSensitivity() - precision);
+    {
+        unsigned int newValue = m_soundreactMode.getSensitivity();
+        if (int(m_soundreactMode.getSensitivity()) >= precision)
+            newValue -= precision;
+
+        m_soundreactMode.setSensitivity(newValue);
         m_keypad.getDisplay().displayPercentage("Sensibilité", m_soundreactMode.getSensitivity());
         break;
+    }
     }
 }
 
@@ -1030,12 +1036,24 @@ void KeypadMenuConnectedLightLuminosityControl::keyReleased(char key, bool longC
     switch (key)
     {
     case '1':
-        m_light.setLuminosity(m_light.getLuminosity() + precision, true);
+    {
+        unsigned int newValue = m_light.getLuminosity();
+        if (int(m_light.getLuminosity()) <= (100 - precision))
+            newValue += precision;
+
+        m_light.setLuminosity(newValue, true);
         break;
+    }
 
     case '2':
-        m_light.setLuminosity(m_light.getLuminosity() - precision, true);
+    {
+        unsigned int newValue = m_light.getLuminosity();
+        if (int(m_light.getLuminosity()) >= precision)
+            newValue -= precision;
+
+        m_light.setLuminosity(newValue, true);
         break;
+    }
     }
 }
 
@@ -1068,12 +1086,24 @@ void KeypadMenuConnectedLightTemperatureControl::keyReleased(char key, bool long
     switch (key)
     {
     case '1':
-        m_light.setColorTemperature(m_light.getColorTemperature() + precision, true);
+    {
+        unsigned int newValue = m_light.getColorTemperature();
+        if (int(m_light.getColorTemperature()) <= (100 - precision))
+            newValue += precision;
+
+        m_light.setColorTemperature(newValue, true);
         break;
+    }
 
     case '2':
-        m_light.setColorTemperature(m_light.getColorTemperature() - precision, true);
+    {
+        unsigned int newValue = m_light.getColorTemperature();
+        if (int(m_light.getColorTemperature()) >= precision)
+            newValue -= precision;
+
+        m_light.setColorTemperature(newValue, true);
         break;
+    }
     }
 }
 
@@ -1107,12 +1137,9 @@ void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
     {
     case '1':
     {
-        int newValue = m_light.getRLuminosity() + precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_light.getRLuminosity();
+        if (int(m_light.getRLuminosity()) <= (255 - precision))
+            newValue += precision;
 
         m_light.setColor(newValue, m_light.getGLuminosity(), m_light.getBLuminosity(), true);
         break;
@@ -1120,12 +1147,9 @@ void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
 
     case '2':
     {
-        int newValue = m_light.getGLuminosity() + precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_light.getGLuminosity();
+        if (int(m_light.getGLuminosity()) <= (255 - precision))
+            newValue += precision;
 
         m_light.setColor(m_light.getRLuminosity(), newValue, m_light.getBLuminosity(), true);
         break;
@@ -1133,12 +1157,9 @@ void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
 
     case '3':
     {
-        int newValue = m_light.getBLuminosity() + precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_light.getBLuminosity();
+        if (int(m_light.getBLuminosity()) <= (255 - precision))
+            newValue += precision;
 
         m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity(), newValue, true);
         break;
@@ -1146,12 +1167,9 @@ void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
 
     case '4':
     {
-        int newValue = m_light.getRLuminosity() - precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_light.getRLuminosity();
+        if (int(m_light.getRLuminosity()) >= precision)
+            newValue -= precision;
 
         m_light.setColor(newValue, m_light.getGLuminosity(), m_light.getBLuminosity(), true);
         break;
@@ -1159,12 +1177,9 @@ void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
 
     case '5':
     {
-        int newValue = m_light.getGLuminosity() - precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_light.getGLuminosity();
+        if (int(m_light.getGLuminosity()) >= precision)
+            newValue -= precision;
 
         m_light.setColor(m_light.getRLuminosity(), newValue, m_light.getBLuminosity(), true);
         break;
@@ -1172,12 +1187,9 @@ void KeypadMenuConnectedLightColorControl::keyReleased(char key, bool longClick)
 
     case '6':
     {
-        int newValue = m_light.getBLuminosity() - precision;
-        if (newValue > 255)
-            newValue = 255;
-
-        if (newValue < 0)
-            newValue = 0;
+        unsigned int newValue = m_light.getBLuminosity();
+        if (int(m_light.getBLuminosity()) >= precision)
+            newValue -= precision;
 
         m_light.setColor(m_light.getRLuminosity(), m_light.getGLuminosity(), newValue, true);
         break;

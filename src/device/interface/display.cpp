@@ -2,7 +2,7 @@
  * @file device/interface/display.cpp
  * @author Louis L
  * @brief Classe gérant l'écran du système de domotique.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

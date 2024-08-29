@@ -2,7 +2,7 @@
  * @file utils/globalVariables.cpp
  * @author Louis L
  * @brief Fichier contenant les variables globales du système.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

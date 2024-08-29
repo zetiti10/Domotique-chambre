@@ -2,7 +2,7 @@
  * @file device/input/analogInput.cpp
  * @author Louis L
  * @brief Classe représentant un capteur dont l'état est anlogique.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

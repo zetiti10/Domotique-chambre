@@ -2,7 +2,7 @@
  * @file device/output/binaryOutput.cpp
  * @author Louis L
  * @brief Objet simple incluant, en plus de l'héritage de Device, une broche de l'Arduino pour la contrôler.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

@@ -2,7 +2,7 @@
  * @file device/output/television.cpp
  * @author Louis L
  * @brief Classe gérant une télévision.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

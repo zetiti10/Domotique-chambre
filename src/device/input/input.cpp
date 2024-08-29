@@ -2,7 +2,7 @@
  * @file device/input/input.cpp
  * @author Louis L
  * @brief Classe mère commune à tous les capteurs du système de domotique.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

@@ -2,7 +2,7 @@
  * @file device/output/tray.cpp
  * @author Louis L
  * @brief Classe représentant la motorisation du plateau du bureau.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

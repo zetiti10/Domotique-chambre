@@ -2,7 +2,7 @@
  * @file device/output/RGBLEDStrip.cpp
  * @author Louis L
  * @brief Objet représentant un ruban de DEL RVB.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

@@ -2,7 +2,7 @@
  * @file device/input/airSensor.cpp
  * @author Louis L
  * @brief Classe représentant un capteur DHT11.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

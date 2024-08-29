@@ -2,7 +2,7 @@
  * @file utils/television.cpp
  * @author Louis L
  * @brief Fonction de lecture d'une chaîne de caractère stockée dans la mémoire du programme.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

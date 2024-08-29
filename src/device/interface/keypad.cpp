@@ -2,7 +2,7 @@
  * @file device/interface/keypad.cpp
  * @author Louis L
  * @brief Classe gérant un petit clavier avec un système de sous-menus.
- * @version 2.0 dev
+ * @version 2.0
  * @date 2024-01-20
  */
 

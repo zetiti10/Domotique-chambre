@@ -32,7 +32,7 @@ const Action worldsSmallestViolinActions[] PROGMEM = {
     {58004, "09000"},
     {58005, "97000"},
 };
-const char worldsSmallestViolinName[] PROGMEM = "Test PPAP";
+const char worldsSmallestViolinName[] PROGMEM = "World's Smallest Violin";
 const char worldsSmallestViolinVideoURL[] PROGMEM = "https://www.udrop.com/LLUx/Worlds_Smallest_Violin.mp4?download_token=8db514c04dd1eb8aab4381e5dbfbe91481864bec379e8640c5b0058d230bfb01";
 const Music worldsSmallestViolinMusic PROGMEM = {
     worldsSmallestViolinName,

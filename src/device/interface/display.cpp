@@ -133,7 +133,7 @@ void Display::displayVolume(VolumeType action, int volume)
         m_display.drawRect(14, 45, 100, 6, WHITE);
 
         if (volume > 0)
-            m_display.fillRect(15, 47, map(volume, 0, 25, 0, 98), 2, WHITE);
+            m_display.fillRect(16, 47, map(volume, 0, 25, 0, 96), 2, WHITE);
 
         this->printCenteredAccents(String(volume), 1, 57);
     }
@@ -222,17 +222,17 @@ void Display::displayLEDState(int r, int g, int b)
     // Rouge.
     m_display.setCursor(22, 0);
     m_display.print(F("R"));
-    m_display.fillRect(26, 18, 2, int(map(r, 0, 255, 0, 45)), WHITE);
+    m_display.fillRect(26, 19, 2, int(map(r, 0, 255, 0, 43)), WHITE);
     m_display.drawRect(24, 17, 6, 47, WHITE);
     // Vert.
     m_display.setCursor(62, 0);
     m_display.print(F("V"));
-    m_display.fillRect(66, 18, 2, int(map(g, 0, 255, 0, 45)), WHITE);
+    m_display.fillRect(66, 19, 2, int(map(g, 0, 255, 0, 43)), WHITE);
     m_display.drawRect(64, 17, 6, 47, WHITE);
     // Bleu.
     m_display.setCursor(101, 0);
     m_display.print(F("B"));
-    m_display.fillRect(103, 18, 2, int(map(b, 0, 255, 0, 45)), WHITE);
+    m_display.fillRect(103, 19, 2, int(map(b, 0, 255, 0, 43)), WHITE);
     m_display.drawRect(101, 17, 6, 47, WHITE);
     this->display();
 }
@@ -413,7 +413,7 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
 
     this->resetDisplay();
     m_display.drawBitmap(0, 0, lightColorTemperatureBitmap, 128, 64, WHITE);
-    m_display.drawRect(14, 45, 100, 6, WHITE);
+    m_display.drawRect(13, 45, 102, 6, WHITE);
 
     if (temperature > minimum)
         m_display.fillRect(15, 47, map(temperature, minimum, maximum, 0, 98), 2, WHITE);
@@ -432,7 +432,7 @@ void Display::displayLuminosity(int luminosity)
 
     this->resetDisplay();
     m_display.drawBitmap(0, 0, lightLuminosityBitmap, 128, 64, WHITE);
-    m_display.drawRect(14, 45, 100, 6, WHITE);
+    m_display.drawRect(13, 45, 102, 6, WHITE);
 
     if (luminosity > 0)
         m_display.fillRect(15, 47, map(luminosity, 0, 255, 0, 98), 2, WHITE);
@@ -451,10 +451,10 @@ void Display::displayPercentage(String name, int value)
 
     this->resetDisplay();
     this->printCenteredAccents(name, 1, 20);
-    m_display.drawRect(14, 45, 100, 6, WHITE);
+    m_display.drawRect(13, 45, 102, 6, WHITE);
 
     if (value > 0)
-        m_display.fillRect(15, 47, value, 2, WHITE);
+        m_display.fillRect(15, 47, map(value, 0, 100, 0, 98), 2, WHITE);
 
     this->printCenteredAccents(String(value), 1, 57);
     this->display();
@@ -521,7 +521,7 @@ void Display::loop()
             m_display.drawRoundRect(40, 13, 48, 26, 13, WHITE);
             m_display.drawCircle(m_deviceStateAnimationStep, 26, 8, WHITE);
             m_display.drawCircle(m_deviceStateAnimationStep, 26, 7, WHITE);
-            m_display.fillCircle(m_deviceStateAnimationStep, 26, 6, WHITE);
+            m_display.fillCircle(m_deviceStateAnimationStep, 26, 4, WHITE);
             m_display.display();
             m_deviceStateAnimationStep += 4;
 

@@ -20,7 +20,7 @@
 /// @brief Constructeur de la classe.
 /// @param friendlyName Le nom formaté pour être présenté à l'utilisateur du périphérique.
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
-Display::Display(const __FlashStringHelper *friendlyName, unsigned int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_lastStateAnimation(0), m_menuHelpList(nullptr), m_menuHelpMenu(1) {}
+Display::Display(const __FlashStringHelper *friendlyName, unsigned int ID) : Device(friendlyName, ID), m_display(128, 64, &Wire, -1), m_lastTime(0), m_menuHelpList(nullptr), m_menuHelpMenu(1), m_deviceStateAnimationType(true), m_deviceStateAnimationStep(0) {}
 
 /// @brief Initialise l'objet.
 void Display::setup()
@@ -133,7 +133,7 @@ void Display::displayVolume(VolumeType action, int volume)
         m_display.drawRect(14, 45, 100, 6, WHITE);
 
         if (volume > 0)
-            m_display.fillRect(15, 46, map(volume, 0, 25, 0, 98), 4, WHITE);
+            m_display.fillRect(15, 47, map(volume, 0, 25, 0, 98), 2, WHITE);
 
         this->printCenteredAccents(String(volume), 1, 57);
     }
@@ -222,17 +222,17 @@ void Display::displayLEDState(int r, int g, int b)
     // Rouge.
     m_display.setCursor(22, 0);
     m_display.print(F("R"));
-    m_display.fillRect(25, 18, 4, int(map(r, 0, 255, 0, 45)), WHITE);
+    m_display.fillRect(26, 18, 2, int(map(r, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(24, 17, 6, 47, WHITE);
     // Vert.
     m_display.setCursor(62, 0);
     m_display.print(F("V"));
-    m_display.fillRect(65, 18, 4, int(map(g, 0, 255, 0, 45)), WHITE);
+    m_display.fillRect(66, 18, 2, int(map(g, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(64, 17, 6, 47, WHITE);
     // Bleu.
     m_display.setCursor(101, 0);
     m_display.print(F("B"));
-    m_display.fillRect(102, 18, 4, int(map(b, 0, 255, 0, 45)), WHITE);
+    m_display.fillRect(103, 18, 2, int(map(b, 0, 255, 0, 45)), WHITE);
     m_display.drawRect(101, 17, 6, 47, WHITE);
     this->display();
 }
@@ -241,7 +241,7 @@ void Display::displayLEDState(int r, int g, int b)
 /// @param on Mise en marche ou errêt.
 void Display::displayDeviceState(bool on)
 {
-    if (!m_operational || (millis() - m_lastStateAnimation) <= 500)
+    if (!m_operational)
         return;
 
     this->resetDisplay();
@@ -249,29 +249,16 @@ void Display::displayDeviceState(bool on)
     // Animation de mise en marche.
     if (on)
     {
-        for (int i = 51; i < 75; i += 4)
-        {
-            m_display.clearDisplay();
-            m_display.drawRoundRect(41, 14, 46, 24, 12, WHITE);
-            m_display.fillCircle(i, 26, 8, WHITE);
-            m_display.display();
-        }
+        m_deviceStateAnimationType = true;
+        m_deviceStateAnimationStep = 51;
     }
 
     // Animation d'arrêt.
     else
     {
-        for (int i = 75; i > 51; i -= 4)
-        {
-            m_display.clearDisplay();
-            m_display.drawRoundRect(41, 14, 46, 24, 12, WHITE);
-            m_display.drawCircle(i, 26, 8, WHITE);
-            m_display.display();
-        }
+        m_deviceStateAnimationType = false;
+        m_deviceStateAnimationStep = 75;
     }
-
-    m_lastStateAnimation = millis();
-    this->display();
 }
 
 /// @brief Affiche le menu actuel du clavier.
@@ -429,7 +416,7 @@ void Display::displayLightColorTemperature(int minimum, int maximum, int tempera
     m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (temperature > minimum)
-        m_display.fillRect(15, 46, map(temperature, minimum, maximum, 0, 98), 4, WHITE);
+        m_display.fillRect(15, 47, map(temperature, minimum, maximum, 0, 98), 2, WHITE);
 
     String text = String(temperature) + "K";
     this->printCenteredAccents(text, 1, 57);
@@ -448,7 +435,7 @@ void Display::displayLuminosity(int luminosity)
     m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (luminosity > 0)
-        m_display.fillRect(15, 46, map(luminosity, 0, 255, 0, 98), 4, WHITE);
+        m_display.fillRect(15, 47, map(luminosity, 0, 255, 0, 98), 2, WHITE);
 
     this->printCenteredAccents(String(map(luminosity, 0, 255, 0, 100)), 1, 57);
     this->display();
@@ -467,7 +454,7 @@ void Display::displayPercentage(String name, int value)
     m_display.drawRect(14, 45, 100, 6, WHITE);
 
     if (value > 0)
-        m_display.fillRect(15, 46, value, 4, WHITE);
+        m_display.fillRect(15, 47, value, 2, WHITE);
 
     this->printCenteredAccents(String(value), 1, 57);
     this->display();
@@ -510,16 +497,57 @@ void Display::displaySelectedMusic(Television &television, unsigned int musicInd
     this->display();
 }
 
-/// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps.
+/// @brief Méthode d'exécution des tâches liées à l'écran : mise en veille de l'écran au bout d'un certain temps...
 void Display::loop()
 {
-    if (m_operational && (m_lastTime != 0) && ((millis() - m_lastTime) >= 15000))
+    if (!m_operational)
+        return;
+
+    if ((m_lastTime != 0) && ((millis() - m_lastTime) >= 15000))
     {
         m_lastTime = 0;
         resetDisplay();
         m_display.display();
         m_menuHelpList = nullptr;
         m_menuHelpMenu = 1;
+    }
+
+    if (m_deviceStateAnimationStep != 0)
+    {
+        if (m_deviceStateAnimationType)
+        {
+            m_display.clearDisplay();
+            m_display.drawRoundRect(41, 14, 46, 24, 12, WHITE);
+            m_display.drawRoundRect(40, 13, 48, 26, 13, WHITE);
+            m_display.drawCircle(m_deviceStateAnimationStep, 26, 8, WHITE);
+            m_display.drawCircle(m_deviceStateAnimationStep, 26, 7, WHITE);
+            m_display.fillCircle(m_deviceStateAnimationStep, 26, 6, WHITE);
+            m_display.display();
+            m_deviceStateAnimationStep += 4;
+
+            if (m_deviceStateAnimationStep >= 75)
+            {
+                m_deviceStateAnimationStep = 0;
+                this->display();
+            }
+        }
+
+        else
+        {
+            m_display.clearDisplay();
+            m_display.drawRoundRect(41, 14, 46, 24, 12, WHITE);
+            m_display.drawRoundRect(40, 13, 48, 26, 13, WHITE);
+            m_display.drawCircle(m_deviceStateAnimationStep, 26, 8, WHITE);
+            m_display.drawCircle(m_deviceStateAnimationStep, 26, 7, WHITE);
+            m_display.display();
+            m_deviceStateAnimationStep -= 4;
+
+            if (m_deviceStateAnimationStep <= 51)
+            {
+                m_deviceStateAnimationStep = 0;
+                this->display();
+            }
+        }
     }
 }
 
@@ -626,4 +654,5 @@ void Display::display()
 {
     m_display.display();
     m_lastTime = millis();
+    m_deviceStateAnimationStep = 0;
 }

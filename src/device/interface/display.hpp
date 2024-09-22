@@ -65,9 +65,10 @@ protected:
 
     Adafruit_SSD1306 m_display;
     unsigned long m_lastTime;
-    unsigned long m_lastStateAnimation;
     const __FlashStringHelper **m_menuHelpList;
     int m_menuHelpMenu;
+    bool m_deviceStateAnimationType;
+    int m_deviceStateAnimationStep;
 };
 
 #endif

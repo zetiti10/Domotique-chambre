@@ -101,7 +101,7 @@ void Television::loop()
             m_display.displayMessage("C'est parti !");
         }
 
-        if ((millis() - m_detectionStartTime) >= 20000)
+        if ((millis() - m_detectionStartTime) >= 40000)
         {
             stopMusic();
             m_display.displayMessage("Musique non détectée", "Erreur");

@@ -370,7 +370,7 @@ void Television::playMusic(unsigned int musicIndex)
 
     delay(1000);
 
-    while (this->getVolume() < 15)
+    while (this->getVolume() < 18)
     {
         this->increaseVolume();
         delay(500);

@@ -103,8 +103,8 @@ void setup()
     int RGBLEDStripNumber = 1;
 
     // Liste des musiques.
-    const static Music *const musicList[] PROGMEM = {&worldsSmallestViolinMusic, &testMusic};
-    int musicsNumber = 2;
+    const static Music *const musicList[] PROGMEM = {&worldsSmallestViolinMusic, &CruelSummerMusic, &testMusic};
+    int musicsNumber = 3;
 
     // Création d'une liste contenant des références vers tous les actionneurs utilisés par le système de musique animée.
     Output *outputList[] = {&tray, &LEDCube, &disco, &beacon, &wardrobeLights, &street, &deskLight, &doorLED, &LEDStrip, &alarm, &mainLights, &sofaLight, &bedLight, &cameraLight};

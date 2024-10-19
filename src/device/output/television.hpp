@@ -62,7 +62,7 @@ public:
 protected:
     virtual void moveDisplayServo(unsigned int angle);
     virtual void switchDisplay();
-    virtual bool detectTriggerSound();
+    virtual int detectTriggerSound();
     virtual void scheduleMusic();
     virtual Output *getDeviceFromID(unsigned int ID);
     virtual Action getAction(Music music, unsigned int actionIndex);

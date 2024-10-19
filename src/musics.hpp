@@ -40,4 +40,22 @@ const Music worldsSmallestViolinMusic PROGMEM = {
     worldsSmallestViolinActions,
     25};
 
+// Musique : Test.
+const Action testActions[] PROGMEM = {
+    {2000, "05001"},
+    {2480, "05000"},
+    {2960, "05001"},
+    {3440, "05000"},
+    {3441, "96001"},
+    {3920, "96000 "},
+    {4400, "09011255000255000255000050003"},
+};
+const char testName[] PROGMEM = "Test";
+const char testVideoURL[] PROGMEM = "https://files.catbox.moe/zeq9bn.mp4";
+const Music testMusic PROGMEM = {
+    testName,
+    testVideoURL,
+    testActions,
+    7};
+
 #endif

@@ -94,10 +94,21 @@ void Television::loop()
 
     if (m_waitingForTriggerSound)
     {
-        if (detectTriggerSound())
+        int frequency = detectTriggerSound();
+        if (frequency != 0)
         {
             m_waitingForTriggerSound = false;
-            m_musicStartTime = millis() - 1250;
+
+            if (frequency == 1000)
+                m_musicStartTime = millis() - 1120;
+            
+            else if(frequency == 1500)
+                m_musicStartTime = millis() - 1320;
+            
+            else if(frequency == 2000)
+                m_musicStartTime = millis() - 1520;
+            
+
             m_display.displayMessage("C'est parti !");
         }
 
@@ -433,13 +444,15 @@ void Television::switchDisplay()
 
 /// @brief Méthode permettant de détecter un son à une fréquence particulière.
 /// @return Le résultat de l'analyse.
-bool Television::detectTriggerSound()
+int Television::detectTriggerSound()
 {
     unsigned long startTime = millis();
     unsigned long previousPeakTime = millis();
     int previousValue = 0;
     int maxValue = 0;
-    int counter = 0;
+    int kHz1Counter = 0;
+    int kHz1_5Counter = 0;
+    int kHz2Counter = 0;
     while ((millis() - startTime) <= 500)
     {
         int currentValue = m_microphone->getValue() - 287;
@@ -455,10 +468,26 @@ bool Television::detectTriggerSound()
 
                 if (abs(int(frequency) - 1000) < 50)
                 {
-                    if (counter == 5)
-                        return true;
+                    if (kHz1Counter == 5)
+                        return 1000;
 
-                    counter++;
+                    kHz1Counter++;
+                }
+                
+                else if (abs(int(frequency) - 1500) < 50)
+                {
+                    if (kHz1_5Counter == 5)
+                        return 1500;
+
+                    kHz1_5Counter++;
+                }
+
+                else if (abs(int(frequency) - 2000) < 50)
+                {
+                    if (kHz2Counter == 5)
+                        return 2000;
+
+                    kHz2Counter++;
                 }
 
                 previousPeakTime = millis();
@@ -468,7 +497,7 @@ bool Television::detectTriggerSound()
         previousValue = currentValue;
     }
 
-    return false;
+    return 0;
 }
 
 /// @brief Méthode d'exécution des tâches périodiques liées au mode musique animée.

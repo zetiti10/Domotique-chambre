@@ -115,7 +115,7 @@ ConnectedTemperatureVariableLight::ConnectedTemperatureVariableLight(const __Fla
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
 void ConnectedTemperatureVariableLight::setColorTemperature(unsigned int temperature, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational)
         return;
 
     if (temperature < m_minimalColorTemperature)
@@ -132,7 +132,7 @@ void ConnectedTemperatureVariableLight::setColorTemperature(unsigned int tempera
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
 void ConnectedTemperatureVariableLight::setLuminosity(unsigned int luminosity, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational)
         return;
 
     if (luminosity > 255)
@@ -197,7 +197,7 @@ ConnectedColorVariableLight::ConnectedColorVariableLight(const __FlashStringHelp
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
 void ConnectedColorVariableLight::setColor(unsigned int r, unsigned int g, unsigned int b, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational)
         return;
 
     if (r > 255)
@@ -217,7 +217,7 @@ void ConnectedColorVariableLight::setColor(unsigned int r, unsigned int g, unsig
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
 void ConnectedColorVariableLight::setColorTemperature(unsigned int temperature, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational)
         return;
 
     if (temperature < m_minimalColorTemperature)
@@ -234,7 +234,7 @@ void ConnectedColorVariableLight::setColorTemperature(unsigned int temperature, 
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
 void ConnectedColorVariableLight::setLuminosity(unsigned int luminosity, bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational)
         return;
 
     if (luminosity > 255)

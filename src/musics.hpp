@@ -167,7 +167,7 @@ const Action CruelSummerActions[] PROGMEM = {
     {173120, "03000"},
     {177600, "99000"},
 };
-const char CruelSummerName[] PROGMEM = "Test";
+const char CruelSummerName[] PROGMEM = "Cruel Summer";
 const char CruelSummerVideoURL[] PROGMEM = "https://files.catbox.moe/z0b1qk.mp4";
 const Music CruelSummerMusic PROGMEM = {
     CruelSummerName,

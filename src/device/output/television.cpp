@@ -370,7 +370,7 @@ void Television::playMusic(unsigned int musicIndex)
 
     delay(1000);
 
-    while (this->getVolume() < 18)
+    while (this->getVolume() < 15)
     {
         this->increaseVolume();
         delay(500);
@@ -591,9 +591,13 @@ void Television::scheduleMusic()
             break;
         }
 
+        // Gestion des ampoules connectées à température variable.
         case 2:
         {
             ConnectedTemperatureVariableLight *light = static_cast<ConnectedTemperatureVariableLight *>(output);
+
+            if (!light->getState())
+                light->turnOn();
 
             switch (getIntFromString(action, 4, 1))
             {
@@ -609,9 +613,13 @@ void Television::scheduleMusic()
             break;
         }
 
+        // Gestion des ampoules connectées à couleur variable.
         case 3:
         {
             ConnectedColorVariableLight *light = static_cast<ConnectedColorVariableLight *>(output);
+
+            if (!light->getState())
+                light->turnOn();
 
             switch (getIntFromString(action, 4, 1))
             {

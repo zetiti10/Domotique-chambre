@@ -20,7 +20,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-ConnectedOutput::ConnectedOutput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display) : Output(friendlyName, ID, connection, display) {}
+ConnectedOutput::ConnectedOutput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display) : Output(friendlyName, ID, connection, display), m_noInformationShare(0) {}
 
 /// @brief Initialise l'objet.
 void ConnectedOutput::setup()
@@ -53,6 +53,9 @@ void ConnectedOutput::turnOn(bool shareInformation)
         return;
 
     m_connection.turnOnConnectedDevice(m_ID);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Arrête le périphérique distant.
@@ -63,30 +66,33 @@ void ConnectedOutput::turnOff(bool shareInformation)
         return;
 
     m_connection.turnOffConnectedDevice(m_ID);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Méthode permettant de mettre à jour l'état du périphérique.
 /// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
-void ConnectedOutput::updateOn(bool shareInformation)
+void ConnectedOutput::updateOn()
 {
     if (!m_operational || m_state)
         return;
 
     m_state = true;
-    if (shareInformation)
+    if (m_noInformationShare < millis())
         m_display.displayDeviceState(true);
 }
 
 /// @brief Méthode permettant de mettre à jour l'état du périphérique.
 /// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
-void ConnectedOutput::updateOff(bool shareInformation)
+void ConnectedOutput::updateOff()
 {
     if (!m_operational || !m_state)
         return;
 
     m_state = false;
-    if (shareInformation)
-        m_display.displayDeviceState(false);
+    if (m_noInformationShare < millis())
+        m_display.displayDeviceState(true);
 }
 
 /// @brief Définis le périphérique comme opérationnel.
@@ -125,6 +131,9 @@ void ConnectedTemperatureVariableLight::setColorTemperature(unsigned int tempera
         temperature = m_maximalColorTemperature;
 
     m_connection.setConnectedTemperatureVariableLightTemperature(m_ID, temperature);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Méthode permettant de définir la luminosité de la lampe
@@ -139,6 +148,9 @@ void ConnectedTemperatureVariableLight::setLuminosity(unsigned int luminosity, b
         luminosity = 255;
 
     m_connection.setConnectedTemperatureVariableLightLuminosity(m_ID, luminosity);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Méthode retournant la température de couleur actuelle de la lampe.
@@ -158,26 +170,26 @@ unsigned int ConnectedTemperatureVariableLight::getLuminosity() const
 /// @brief Méthode permettant de mettre à jour la température de couleur de la lampe.
 /// @param temperature La température de couleur.
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
-void ConnectedTemperatureVariableLight::updateColorTemperature(unsigned int temperature, bool shareInformation)
+void ConnectedTemperatureVariableLight::updateColorTemperature(unsigned int temperature)
 {
     if (!m_operational || !m_state || m_colorTemperature == temperature)
         return;
 
     m_colorTemperature = temperature;
-    if (shareInformation)
+    if (m_noInformationShare < millis())
         m_display.displayLightColorTemperature(m_minimalColorTemperature, m_maximalColorTemperature, m_colorTemperature);
 }
 
 /// @brief Méthode permettant de mettre à jour la luminosité de la lampe
 /// @param luminosity La luminosité à mettre à jour.
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
-void ConnectedTemperatureVariableLight::updateLuminosity(unsigned int luminosity, bool shareInformation)
+void ConnectedTemperatureVariableLight::updateLuminosity(unsigned int luminosity)
 {
     if (!m_operational || !m_state || m_luminosity == luminosity)
         return;
 
     m_luminosity = luminosity;
-    if (shareInformation)
+    if (m_noInformationShare < millis())
         m_display.displayLuminosity(m_luminosity);
 }
 
@@ -210,6 +222,9 @@ void ConnectedColorVariableLight::setColor(unsigned int r, unsigned int g, unsig
         b = 255;
 
     m_connection.setConnectedColorVariableLightColor(m_ID, r, g, b);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Méthode permettant de définir la température de couleur de la lampe.
@@ -227,6 +242,9 @@ void ConnectedColorVariableLight::setColorTemperature(unsigned int temperature, 
         temperature = m_maximalColorTemperature;
 
     m_connection.setConnectedColorVariableLightTemperature(m_ID, temperature);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Méthode permettant de définir la luminosité de la lampe
@@ -241,6 +259,9 @@ void ConnectedColorVariableLight::setLuminosity(unsigned int luminosity, bool sh
         luminosity = 255;
 
     m_connection.setConnectedColorVariableLightLuminosity(m_ID, luminosity);
+
+    if (!shareInformation)
+        m_noInformationShare = millis() + 500;
 }
 
 /// @brief Permet d'obtenir l'intensité actuelle de la composante rouge de la lampe.
@@ -269,7 +290,7 @@ unsigned int ConnectedColorVariableLight::getBLuminosity() const
 /// @param g L'intensité de la composante vert, de `0`, à `255`.
 /// @param b L'intensité de la composante bleu, de `0`, à `255`.
 /// @param shareInformation Affiche ou non l'animation sur l'écran.
-void ConnectedColorVariableLight::updateColor(unsigned int r, unsigned int g, unsigned int b, bool shareInformation)
+void ConnectedColorVariableLight::updateColor(unsigned int r, unsigned int g, unsigned int b)
 {
     if (!m_operational || !m_state || (m_RColor == r && m_GColor == g && m_BColor == b))
         return;
@@ -277,6 +298,6 @@ void ConnectedColorVariableLight::updateColor(unsigned int r, unsigned int g, un
     m_RColor = r;
     m_GColor = g;
     m_BColor = b;
-    if (shareInformation)
+    if (m_noInformationShare < millis())
         m_display.displayLEDState(m_RColor, m_GColor, m_BColor);
 }

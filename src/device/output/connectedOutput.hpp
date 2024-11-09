@@ -20,11 +20,13 @@ public:
     virtual void turnOff(bool shareInformation = false) override;
 
 protected:
-    virtual void updateOn(bool shareInformation = false);
-    virtual void updateOff(bool shareInformation = false);
+    virtual void updateOn();
+    virtual void updateOff();
 
     virtual void setAvailable();
     virtual void setUnavailable();
+
+    unsigned long m_noInformationShare;
 
     friend class HomeAssistant;
 };
@@ -40,8 +42,8 @@ public:
     virtual unsigned int getLuminosity() const;
 
 protected:
-    virtual void updateColorTemperature(unsigned int temperature, bool shareInformation = false);
-    virtual void updateLuminosity(unsigned int luminosity, bool shareInformation = false);
+    virtual void updateColorTemperature(unsigned int temperature);
+    virtual void updateLuminosity(unsigned int luminosity);
 
     unsigned int m_minimalColorTemperature;
     unsigned int m_maximalColorTemperature;
@@ -64,7 +66,7 @@ public:
     virtual unsigned int getBLuminosity() const;
 
 protected:
-    virtual void updateColor(unsigned int r, unsigned int g, unsigned int b, bool shareInformation = false);
+    virtual void updateColor(unsigned int r, unsigned int g, unsigned int b);
 
     unsigned int m_RColor;
     unsigned int m_GColor;

@@ -26,7 +26,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
 /// @param display L'écran utilisé par le système de domotique.
-HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorModeList(nullptr), m_rainbowModeList(nullptr), m_soundreactModeList(nullptr), m_alarmModeList(nullptr), m_RGBLEDStripModesNumber(0), m_reportStateMillis(0) {}
+HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorModeList(nullptr), m_rainbowModeList(nullptr), m_soundreactModeList(nullptr), m_alarmModeList(nullptr), m_RGBLEDStripModesNumber(0) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
@@ -77,15 +77,6 @@ void HomeAssistant::loop()
 {
     if (!m_operational)
         return;
-
-    // Cette partie est dédiée à la synchronisation de l'Arduino Mega avec l'ESP8266-01. Ici, les lumières sont éteintes après avoir été allumées pour récupérer leur état.
-    if (m_reportStateMillis != 0 && ((millis() - m_reportStateMillis) >= 10000))
-    {
-        for (int i = 0; i < m_remoteDevicesNumber; i++)
-            m_remoteDeviceList[i]->reportState();
-
-        m_reportStateMillis = 0;
-    }
 
     // On récupère de manière non-bloquante les messages en provenance de l'ESP.
     while (m_serial.available() > 0)
@@ -611,11 +602,11 @@ void HomeAssistant::processMessage()
             switch (this->getIntFromString(m_receivedMessage, 5, 1))
             {
             case 0:
-                output->updateOff((m_reportStateMillis == 0));
+                output->updateOff();
                 break;
 
             case 1:
-                output->updateOn((m_reportStateMillis == 0));
+                output->updateOn();
                 break;
             }
 
@@ -630,11 +621,11 @@ void HomeAssistant::processMessage()
             switch (this->getIntFromString(m_receivedMessage, 5, 1))
             {
             case 2:
-                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), (m_reportStateMillis == 0));
+                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4));
                 break;
 
             case 3:
-                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), (m_reportStateMillis == 0));
+                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3));
                 break;
             }
 
@@ -649,15 +640,15 @@ void HomeAssistant::processMessage()
             switch (this->getIntFromString(m_receivedMessage, 5, 1))
             {
             case 2:
-                light->updateColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3), (m_reportStateMillis == 0));
+                light->updateColor(this->getIntFromString(m_receivedMessage, 6, 3), this->getIntFromString(m_receivedMessage, 9, 3), this->getIntFromString(m_receivedMessage, 12, 3));
                 break;
 
             case 3:
-                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4), (m_reportStateMillis == 0));
+                light->updateColorTemperature(this->getIntFromString(m_receivedMessage, 6, 4));
                 break;
 
             case 4:
-                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3), (m_reportStateMillis == 0));
+                light->updateLuminosity(this->getIntFromString(m_receivedMessage, 6, 3));
                 break;
             }
 
@@ -700,8 +691,6 @@ void HomeAssistant::processMessage()
 
             for (int i = 0; i < m_remoteDevicesNumber; i++)
                 m_remoteDeviceList[i]->reportState();
-
-            m_reportStateMillis = millis();
 
             break;
         }

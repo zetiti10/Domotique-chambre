@@ -26,7 +26,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param serial Le port série utilisé pour la communication entre l'Arduino et l'ESP.
 /// @param display L'écran utilisé par le système de domotique.
-HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorModeList(nullptr), m_rainbowModeList(nullptr), m_soundreactModeList(nullptr), m_alarmModeList(nullptr), m_RGBLEDStripModesNumber(0) {}
+HomeAssistant::HomeAssistant(const __FlashStringHelper *friendlyName, unsigned int ID, HardwareSerial &serial, Display &display) : Device(friendlyName, ID), m_serial(serial), m_display(display), m_deviceList(nullptr), m_devicesNumber(0), m_inputDeviceList(nullptr), m_inputDevicesNumber(0), m_remoteDeviceList(nullptr), m_remoteDevicesNumber(0), m_colorModeList(nullptr), m_rainbowModeList(nullptr), m_soundreactModeList(nullptr), m_alarmModeList(nullptr), m_RGBLEDStripModesNumber(0), m_initialisationFinishTime(0) {}
 
 /// @brief Initialise la liste des périphériques connectés.
 /// @param deviceList La liste des périphériques de sortie du système de domotique connectés à Home Assistant.
@@ -77,6 +77,14 @@ void HomeAssistant::loop()
 {
     if (!m_operational)
         return;
+
+    if((m_initialisationFinishTime != 0) && (m_initialisationFinishTime < millis()))
+    {
+        for (int i = 0; i < m_remoteDevicesNumber; i++)
+            m_remoteDeviceList[i]->reportState();
+
+        m_initialisationFinishTime = 0;
+    }
 
     // On récupère de manière non-bloquante les messages en provenance de l'ESP.
     while (m_serial.available() > 0)
@@ -691,6 +699,9 @@ void HomeAssistant::processMessage()
 
             for (int i = 0; i < m_remoteDevicesNumber; i++)
                 m_remoteDeviceList[i]->reportState();
+
+            // Les périphériques connectés ont leur état mis à jour en deux temps, la méthode sera de nouveau exécuté plus tard.
+            m_initialisationFinishTime = millis() + 5000;
 
             break;
         }

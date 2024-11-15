@@ -20,7 +20,7 @@
 /// @param ID L'identifiant unique du périphérique utilisé pour communiquer avec Home Assistant.
 /// @param connection L'instance utilisée pour la communication avec Home Assistant.
 /// @param display L'écran à utiliser pour afficher des informations / animations.
-ConnectedOutput::ConnectedOutput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display) : Output(friendlyName, ID, connection, display), m_noInformationShare(0) {}
+ConnectedOutput::ConnectedOutput(const __FlashStringHelper *friendlyName, unsigned int ID, HomeAssistant &connection, Display &display) : Output(friendlyName, ID, connection, display), m_noInformationShare(0), m_reportState(false) {}
 
 /// @brief Initialise l'objet.
 void ConnectedOutput::setup()
@@ -42,14 +42,20 @@ void ConnectedOutput::reportState()
         return;
 
     // Changement de l'état de l'appareil pour reçevoir une mise à jour de son état.
-    this->toggle();
+    if (m_reportState)
+        this->turnOff();
+    
+    else
+        this->turnOn();
+
+    m_reportState = !m_reportState;
 }
 
 /// @brief Met en marche le périphérique distant.
 /// @param shareInformation Affiche ou non l'animation d'allumage sur l'écran.
 void ConnectedOutput::turnOn(bool shareInformation)
 {
-    if (!m_operational || m_state)
+    if (!m_operational)
         return;
 
     m_connection.turnOnConnectedDevice(m_ID);
@@ -62,7 +68,7 @@ void ConnectedOutput::turnOn(bool shareInformation)
 /// @param shareInformation Affiche ou non l'animation d'arrêt sur l'écran.
 void ConnectedOutput::turnOff(bool shareInformation)
 {
-    if (!m_operational || !m_state)
+    if (!m_operational)
         return;
 
     m_connection.turnOffConnectedDevice(m_ID);
@@ -92,7 +98,7 @@ void ConnectedOutput::updateOff()
 
     m_state = false;
     if (m_noInformationShare < millis())
-        m_display.displayDeviceState(true);
+        m_display.displayDeviceState(false);
 }
 
 /// @brief Définis le périphérique comme opérationnel.

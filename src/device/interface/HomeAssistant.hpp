@@ -75,6 +75,7 @@ protected:
     RGBLEDStripMode **m_soundreactModeList;
     RGBLEDStripMode **m_alarmModeList;
     int m_RGBLEDStripModesNumber;
+    unsigned long m_initialisationFinishTime;
 };
 
 #endif

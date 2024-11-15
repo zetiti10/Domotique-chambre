@@ -27,6 +27,7 @@ protected:
     virtual void setUnavailable();
 
     unsigned long m_noInformationShare;
+    bool m_reportState;
 
     friend class HomeAssistant;
 };
